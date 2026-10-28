@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en"><head>
+<!-- Lumi Studio v4 — editorial pink + curated 12x8 presets -->
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#fff2f7"><meta name="description" content="Lumi Studio — cute remote LED studio, RGB lights and shared virtual kitty"><title>Lumi Studio ♡ Remote Arduino</title>
+<meta name="theme-color" content="#fff2f7"><meta name="description" content="Lumi Studio — cute remote LED studio, RGB lights and shared virtual kitty"><title>Lumi Studio — A little space for two</title>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.16.0/dist/mqtt.min.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#0a0e14;--surface:#141b26;--surface2:#1b2634;--stroke:#2c3b4b;--text:#f0f5f8;--muted:#9aaaba;--accent:#76e3d0;--accent2:#b9a0ff;--amber:#ffc590;--red:#f18b9f;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-synthesis:none}
@@ -187,13 +188,115 @@ button.danger{background:#fff0f4;border-color:#eabacb;color:#b84674}
 .tool-buttons{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:7px}
 .tool-buttons button{padding:10px 6px!important;font-size:12px!important}
 @media(max-width:400px){.preset-picker{flex-direction:column}.preset-picker button{min-height:42px}.tool-buttons{grid-template-columns:1fr 1fr}.tool-buttons button:first-child{grid-column:1/-1}}
+
+/* — Lumi Studio 4 · Soft editorial, pink & cream — */
+:root{color-scheme:light;--bg:#fcf8f8;--surface:#fff;--surface2:#fff5f8;--stroke:#efdfe6;--text:#4d2e40;--muted:#8b7582;--accent:#c84f88;--accent2:#bc7ea7;--amber:#efad76;--red:#df6c8e;font-family:'Avenir Next','Segoe UI',ui-sans-serif,system-ui,sans-serif}
+body{font-size:14px;line-height:1.55;background:linear-gradient(160deg,#fffbfc 0%,#fcf7f8 42%,#fdf5f8 100%);color:#503246}
+body::before{background:radial-gradient(ellipse at 100% 0%,rgba(249,214,230,.55),transparent 39%),radial-gradient(ellipse at 0% 83%,rgba(246,222,231,.48),transparent 40%);opacity:.7}
+.shell{max-width:1130px;padding:20px 28px 58px}
+.top{margin-bottom:26px;padding-bottom:18px;border-bottom:1px solid #e9dde2}
+.mark{width:45px;height:45px;background:linear-gradient(160deg,#ffeff4,#fbe3ec);border:1px solid #f0ccdc;border-radius:15px;transform:none;box-shadow:0 3px 9px #bf799316}
+.mark svg{width:38px;height:38px;transform:none}
+.brand-name{font-size:22px;font-weight:850;letter-spacing:-1.2px;color:#63334e}
+.brand-caption{font-size:10px;color:#a58194;letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.connection-chip{font-size:11px;min-height:38px;font-weight:750;box-shadow:none;background:#fff;border:1px solid #ead5df;padding:9px 14px;color:#7d6773}
+.connection-chip:hover{background:#fff4f8;border-color:#e0aabc}
+.connection-chip.online{background:#eaf7ef;border-color:#bbdfca;color:#367e54}
+.connection-chip.online .dot{background:#4ea16e;box-shadow:0 0 0 4px #4ea16e16}
+.hero{min-height:185px;padding:25px 34px;border-radius:20px;background:linear-gradient(112deg,#fffefe 5%,#fff8fa 54%,#fce7f0 100%);border:1px solid #efd8e3;box-shadow:0 10px 30px #9960780a;margin-bottom:26px}
+.hero::before{display:none}
+.hero-copy{max-width:68%}
+.eyebrow{color:#bd6e92;letter-spacing:1.8px;font-size:10px;margin-bottom:8px}
+h1{font-size:clamp(28px,3.7vw,43px);letter-spacing:-1.8px;color:#59324a;line-height:1.15;margin-bottom:12px;font-weight:760}
+h1 em{color:#cf568b;font-family:Georgia,'Times New Roman',serif;font-weight:500}
+.subtitle{font-size:13px;line-height:1.8;color:#8a7080;max-width:540px}
+.hero-accent{font-size:10px;color:#aa567e;border:1px solid #efcdda;background:#fff9fb;padding:7px 12px;margin-top:15px;font-weight:700}
+.kitty-scene{width:214px;margin:-16px 4px -24px 0;filter:drop-shadow(0 10px 14px #bc718c12)}
+.kitty-caption{font-size:9px;color:#b47793;letter-spacing:.4px;font-weight:650}
+.devices-kicker{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:1px 2px 12px;color:#927787;font-size:11px}
+.devices-kicker span:first-child{font-size:10px;letter-spacing:1.8px;font-weight:850;color:#b25c84}
+.device-bar{gap:12px;margin:0 0 30px}
+.device-card{border-radius:16px;min-height:95px;padding:15px 16px;background:#fff;border:1px solid #eddeE5;box-shadow:0 3px 14px #a36c8310;transform:none;transition:background .15s,border-color .15s,box-shadow .15s}
+.device-card:hover{background:#fffafd;transform:none;box-shadow:0 5px 18px #a36c8318;border-color:#d9acbf}
+.device-card.active,.device-card.rgb.active,.device-card.pet.active{background:#fff5f9;border:1px solid #d786a8;box-shadow:inset 0 0 0 1px #e5abc4,0 5px 14px #a36c8310}
+.device-symbol{width:49px;height:49px;border-radius:12px;background:#fbedf3;border:1px solid #f2d7e2;box-shadow:none;font-size:22px;color:#cc709b}
+.device-card.rgb .device-symbol{border:3px solid #fff;background:conic-gradient(#f4a7b9,#f8e2aa,#c4e9cd,#addbeb,#c2b9e9,#f4a7b9);color:#8c4b74}
+.device-card.pet .device-symbol{background:#fdf0f5;border:1px solid #f1d5e1}
+.pet-nav-icon{width:31px;height:31px}
+.device-mini-paw{width:18px;height:18px;font-size:10px;right:-6px;bottom:-5px;box-shadow:none}
+.device-name{font-size:15px;font-weight:810;letter-spacing:-.4px;color:#593750}
+.device-sub{font-size:11px;color:#967b89;margin-top:3px}
+.device-trailing{font-size:16px;color:#bd879e}
+.device-heading{margin-bottom:15px}.device-heading h2{font-size:21px;color:#593448}.device-heading p{color:#98818e;font-size:12px}
+.subnav{background:#f5eaf0;border:1px solid #e8d6df;border-radius:12px;margin-bottom:18px;padding:4px;box-shadow:none}
+.subtab{font-size:12px;padding:9px 16px;font-weight:740;border-radius:9px;color:#9a7288}
+.subtab:hover{background:#fbe2ed;color:#a54b78}
+.subtab.active,.rgb-area .subtab.active{background:#fff!important;color:#ab477a!important;border-color:#ecd8e2!important;box-shadow:0 1px 4px #ad81951c}
+.section-head{margin-bottom:16px}.section-head h2,h2{font-size:21px;color:#603b50}.section-description{font-size:12px;color:#967e8c}
+.tag,.tag.rose{font-size:9px;color:#a85e84;background:#fdf1f6;border:1px solid #ecd4df;letter-spacing:1px;padding:7px 10px}
+.panel{border-radius:16px;padding:21px;background:#fff;border:1px solid #ecdee5;box-shadow:0 4px 17px #7850690d}
+.panel-title{font-size:14px;margin-bottom:12px;color:#603b50;font-weight:830}
+.step-label{font-size:9px;letter-spacing:1.6px;color:#b66e92}
+label{color:#76576b;font-size:11px;font-weight:750}
+.small,.section-description{line-height:1.75}
+input[type=text],input[type=password]{border:1px solid #ead8e1;border-radius:10px;background:#fffafb;color:#603c52;padding:12px 13px;box-shadow:none}
+input[type=text]:focus,input[type=password]:focus{border-color:#cf729d}
+input::placeholder{color:#bca1af}
+input[type=range]{accent-color:#cc568d}
+button.action{border-radius:10px;padding:11px 14px;font-size:12px;font-weight:790;box-shadow:none;background:#fff9fb;color:#975774;border:1px solid #ecd4df;transition:background .15s,border-color .15s,box-shadow .15s}
+button.action:hover{background:#fff0f5;box-shadow:none;border-color:#dcb1c5}
+button.primary{background:#c94f87;border-color:#c94f87;color:white;box-shadow:0 4px 10px #b96b8b22}
+button.primary:hover{background:#b93f79;border-color:#b93f79;box-shadow:0 5px 13px #b96b8b26}
+button.ghost{background:#fff9fb;border-color:#ead4df;color:#8e5674}
+.feedback,.status{color:#a5527c!important;font-size:11px}
+.security-note{background:#fff5f9;border-color:#efd7e2;color:#8c6b7d;line-height:1.75}
+.security-note strong{color:#a14777}
+.canvas-board{background:#fcf7fa;border-radius:13px;border:1px solid #eee0e7;padding:19px}
+.matrix{gap:5px;max-width:580px}
+.pixel{background:#f6e5ed;border:1px solid #efd4e0;border-radius:5px;box-shadow:none}
+.pixel.on{background:#d45d94;border:1px solid #c74a82;box-shadow:inset 0 0 0 1px #fff3}
+.pixel:hover{border-color:#cf7199}
+.canvas-footer{color:#8f7986}.canvas-note{color:#a18795;font-size:10px;margin-top:13px}
+.count-pill{background:#f9ebf2;color:#a1597e;border:1px solid #efd6e2;font-size:11px}
+.preset-picker{gap:8px;margin:8px 0 15px}
+.preset-picker select{background:#fff;color:#65475a;border:1px solid #e7d2df;border-radius:10px;font-size:12px;min-height:43px;padding:10px 12px}
+.tool-divider{border-top-color:#f0e3e9;margin:18px 0}.tool-helper{color:#99828f}
+.nudge-controls{gap:8px;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,42px)}
+.nudge-controls button{min-height:42px;font-size:21px!important;background:#fff6fa}
+.tool-buttons{gap:8px}
+.hint{border-top-color:#eee0e8;color:#94798a}
+.message-stage{background:linear-gradient(125deg,#fffafc,#fdf0f6);border-color:#ead9e3}
+.marquee-window{background:#4f3044;border-color:#a47391}
+.message-ideas button{background:#fff5f9}
+.effect-option{border-radius:11px;background:#fffafa;border-color:#eddeE4;color:#624258}
+.effect-option:hover{background:#fff2f8;border-color:#dea9c1}
+.effect-option.selected{background:#fff1f7;border-color:#cb709b;box-shadow:inset 0 0 0 1px #edc8d8}
+.studio-preview{background:radial-gradient(circle at 50% 43%,#fff,#fdf3f7 80%);border-color:#efdee5}
+.secondary-control,.pet-adopt,.pet-tip{background:#fcf5f8}
+.pet-scene{border-radius:15px;background:radial-gradient(ellipse at 50% 52%,#fff,#fdf1f6 83%);border-color:#f0dce6}
+.pet-main-panel{padding:20px}.pet-namebar h3{color:#644156}
+.pet-bubble{color:#985c7e;background:#fff;border-color:#f0d5e1}
+.pet-action{background:#fff8fb;border-color:#ead6e0;color:#875873;min-height:88px;border-radius:12px}
+.pet-action:hover:not(:disabled){background:#fff0f6;border-color:#dda8bf;transform:none}
+.pet-stat .pet-track{background:#f5e8ee;border-color:#ecdae3}
+.pet-track>div{background:linear-gradient(90deg,#ed99be,#d55f98)}
+.footer{border-top:1px solid #e9d9e1;font-size:11px;color:#aa879a;margin-top:38px}
+@media(min-width:900px){.split{grid-template-columns:minmax(0,1.35fr) minmax(315px,.85fr)}.split.equal{grid-template-columns:1fr 1fr}}
+@media(max-width:930px){.hero{padding:25px 24px}.kitty-scene{width:195px}.hero-copy{max-width:75%}}
+@media(max-width:700px){.shell{padding:16px 17px 42px}.hero{padding:21px 23px;min-height:0}.kitty-scene{width:115px;right:0;top:auto;bottom:0;margin:0;opacity:.48}.hero-copy{max-width:82%}.hero h1{font-size:30px}.device-bar{gap:9px}.device-card{padding:12px;min-height:84px}.device-symbol{width:42px;height:42px;font-size:20px}.device-name{font-size:13px}.device-sub{font-size:10px}.panel{padding:17px}.devices-kicker{margin-top:-2px}}
+@media(max-width:570px){.shell{padding:15px 13px 40px}.top{margin-bottom:17px}.hero{padding:21px 17px;margin-bottom:22px}.hero-copy{max-width:100%}.hero h1{font-size:27px;padding-right:12px}.hero .subtitle{max-width:95%}.kitty-scene{opacity:.14;width:100px;right:1px;top:4px}.device-bar{grid-template-columns:1fr;gap:8px}.device-card{min-height:67px;padding:11px 14px;border-radius:13px}.device-symbol{width:42px;height:42px}.device-name{font-size:14px}.device-sub{font-size:11px}.device-trailing{margin-left:auto}.devices-kicker{font-size:10px;margin-bottom:10px}.panel{padding:16px}.matrix{gap:4px}.device-heading h2{font-size:19px}.subtab{font-size:11px;padding:9px 12px}.pet-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.pet-action{min-height:84px}}
+@media(max-width:570px){.device-bar{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.device-card{flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:98px;padding:11px 5px;gap:6px}.device-card .device-symbol{width:39px;height:39px;font-size:19px}.device-card .device-name{font-size:12px;white-space:nowrap}.device-card .device-sub{display:none}.device-card .device-trailing{display:none}.device-card .pet-nav-icon{width:27px;height:27px}}
+@media(max-width:380px){.hero h1{font-size:25px}.devices-kicker span:last-child{display:none}.connection-chip{max-width:135px}.device-card{gap:10px}}
+@media(prefers-reduced-motion:reduce){.device-card,.pet-action{transition:none}.pet-art,.pet-tail,.pet-head,.pet-floating-heart{animation:none}}
+
 </style></head>
 <body><div class="shell">
 <header class="top">
-  <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none"><path d="M9 29 12 10 24 19Q32 16 40 19L52 10 55 29Q58 42 49 49Q42 55 32 55Q22 55 15 49Q6 42 9 29Z" fill="#fffdfd" stroke="#b05280" stroke-width="2.8" stroke-linejoin="round"/><path d="m15 17 1 13 10-8m23-5-1 13-10-8" fill="#ffbfd8"/><path d="M19 36q4-5 8 0m10 0q4-5 8 0" stroke="#75415d" stroke-width="3" stroke-linecap="round"/><ellipse cx="17" cy="41" rx="5" ry="3" fill="#ffd0e1"/><ellipse cx="47" cy="41" rx="5" ry="3" fill="#ffd0e1"/><path d="m28 42 4 3 4-3-4-2Z" fill="#d65d91"/><path d="M32 45q-2 5-6 2m6-2q2 5 6 2" stroke="#75415d" stroke-width="1.7" stroke-linecap="round"/></svg></span><div><div class="brand-name">lumi<span style="color:var(--accent)">.</span></div><div class="brand-caption">the cozy control studio</div></div></div>
+  <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none"><path d="M9 29 12 10 24 19Q32 16 40 19L52 10 55 29Q58 42 49 49Q42 55 32 55Q22 55 15 49Q6 42 9 29Z" fill="#fffdfd" stroke="#b05280" stroke-width="2.8" stroke-linejoin="round"/><path d="m15 17 1 13 10-8m23-5-1 13-10-8" fill="#ffbfd8"/><path d="M19 36q4-5 8 0m10 0q4-5 8 0" stroke="#75415d" stroke-width="3" stroke-linecap="round"/><ellipse cx="17" cy="41" rx="5" ry="3" fill="#ffd0e1"/><ellipse cx="47" cy="41" rx="5" ry="3" fill="#ffd0e1"/><path d="m28 42 4 3 4-3-4-2Z" fill="#d65d91"/><path d="M32 45q-2 5-6 2m6-2q2 5 6 2" stroke="#75415d" stroke-width="1.7" stroke-linecap="round"/></svg></span><div><div class="brand-name">lumi<span style="color:var(--accent)">.</span></div><div class="brand-caption">a little space for two</div></div></div>
   <div class="top-right"><button class="connection-chip" id="connectionChip" data-goto="connect" type="button" title="Manage connection"><span class="dot"></span><span id="connectionChipText">Not connected</span> <span aria-hidden="true" style="opacity:.6">⚙</span></button></div>
 </header>
-<div class="hero"><div class="hero-copy"><div class="eyebrow">✿ &nbsp; YOUR LITTLE CORNER OF THE INTERNET</div><h1>A little light, <em>a lot of love.</em></h1><p class="subtitle">Draw something cute, send a note, play with your shared kitty, or make the colors dance. Your tiny creations find their way to the Arduino, wherever you are.</p><div class="hero-accent">♡ &nbsp; Together from anywhere &nbsp; · &nbsp; UNO R4 WiFi</div></div><div class="kitty-scene" aria-hidden="true"><svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg" fill="none"><defs><linearGradient id="kitHalo" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffdfec"/><stop offset="1" stop-color="#ffd5e9"/></linearGradient></defs><ellipse cx="164" cy="113" rx="119" ry="87" fill="url(#kitHalo)"/><path d="M92 115Q89 93 94 65L99 35 138 63Q165 52 190 63L229 35 234 82Q246 137 218 160Q195 181 163 181Q131 181 108 160Q88 142 92 115Z" fill="#fffdfd" stroke="#b5618b" stroke-width="4" stroke-linejoin="round"/><path d="M103 50 106 87 135 68Z M223 50 220 87 191 68Z" fill="#ffb9d4"/><path d="M113 116q12-14 25 0m51 0q12-14 25 0" stroke="#73405d" stroke-width="5" stroke-linecap="round"/><ellipse cx="117" cy="133" rx="13" ry="7" fill="#ffccdd"/><ellipse cx="208" cy="133" rx="13" ry="7" fill="#ffccdd"/><path d="m155 127 8 6 8-6q-7-7-16 0Z" fill="#da669a"/><path d="M163 133q-3 8-12 6m12-6q3 8 12 6" stroke="#73405d" stroke-width="2.6" stroke-linecap="round"/><path d="m113 142-23-2m24 9-23 4m121-11 23-2m-24 9 23 4" stroke="#bb7a9a" stroke-width="2.2" stroke-linecap="round"/><path d="M265 42c-12-15-29 0-12 14l12 10 12-10c17-14 0-29-12-14Z" fill="#e86f9f"/><path d="M59 142c-9-10-21 2-9 12l9 7 9-7c12-10 0-22-9-12Z" fill="#efa2be"/><path d="m70 83 4-10 4 10 10 4-10 4-4 10-4-10-10-4Z" fill="#fff" stroke="#e79dbc" stroke-width="2"/><path d="m263 148 4-10 4 10 10 4-10 4-4 10-4-10-10-4Z" fill="#fff" stroke="#e79dbc" stroke-width="2"/></svg><span class="kitty-caption">just a happy little kitty ♡</span></div></div>
+<div class="hero"><div class="hero-copy"><div class="eyebrow">✿ &nbsp; YOUR LITTLE CORNER OF THE INTERNET</div><h1>A little light, <em>a lot of love.</em></h1><p class="subtitle">Draw something cute, send a note, play with your shared kitty, or make the colors dance. Your tiny creations find their way to the Arduino, wherever you are.</p><div class="hero-accent">♡ &nbsp; Together from anywhere &nbsp; · &nbsp; UNO R4 WiFi</div></div><div class="kitty-scene" aria-hidden="true"><svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg" fill="none"><defs><linearGradient id="kitHalo" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffdfec"/><stop offset="1" stop-color="#ffd5e9"/></linearGradient></defs><ellipse cx="164" cy="113" rx="119" ry="87" fill="url(#kitHalo)"/><path d="M92 115Q89 93 94 65L99 35 138 63Q165 52 190 63L229 35 234 82Q246 137 218 160Q195 181 163 181Q131 181 108 160Q88 142 92 115Z" fill="#fffdfd" stroke="#b5618b" stroke-width="4" stroke-linejoin="round"/><path d="M103 50 106 87 135 68Z M223 50 220 87 191 68Z" fill="#ffb9d4"/><path d="M113 116q12-14 25 0m51 0q12-14 25 0" stroke="#73405d" stroke-width="5" stroke-linecap="round"/><ellipse cx="117" cy="133" rx="13" ry="7" fill="#ffccdd"/><ellipse cx="208" cy="133" rx="13" ry="7" fill="#ffccdd"/><path d="m155 127 8 6 8-6q-7-7-16 0Z" fill="#da669a"/><path d="M163 133q-3 8-12 6m12-6q3 8 12 6" stroke="#73405d" stroke-width="2.6" stroke-linecap="round"/><path d="m113 142-23-2m24 9-23 4m121-11 23-2m-24 9 23 4" stroke="#bb7a9a" stroke-width="2.2" stroke-linecap="round"/><path d="M265 42c-12-15-29 0-12 14l12 10 12-10c17-14 0-29-12-14Z" fill="#e86f9f"/><path d="M59 142c-9-10-21 2-9 12l9 7 9-7c12-10 0-22-9-12Z" fill="#efa2be"/><path d="m70 83 4-10 4 10 10 4-10 4-4 10-4-10-10-4Z" fill="#fff" stroke="#e79dbc" stroke-width="2"/><path d="m263 148 4-10 4 10 10 4-10 4-4 10-4-10-10-4Z" fill="#fff" stroke="#e79dbc" stroke-width="2"/></svg><span class="kitty-caption">a tiny friend for your little moments</span></div></div>
+<div class="devices-kicker"><span>YOUR LITTLE STUDIO</span><span>Choose what to play with <span aria-hidden="true">↘</span></span></div>
 <nav class="device-bar" aria-label="Choose a device">
   <button type="button" class="device-card" data-device="matrix" aria-selected="false"><span class="device-symbol" aria-hidden="true">▦<span class="device-mini-paw">✿</span></span><span><span class="device-name">LED Matrix</span><span class="device-sub">Pixel art &amp; secret little notes</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
   <button type="button" class="device-card rgb" data-device="rgb" aria-selected="false"><span class="device-symbol" aria-hidden="true">◉<span class="device-mini-paw">♡</span></span><span><span class="device-name">RGB Light</span><span class="device-sub">A rainbow of colors &amp; effects</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
@@ -216,7 +319,7 @@ button.danger{background:#fff0f4;border-color:#eabacb;color:#b84674}
     </div>
     <div class="panel stack">
       <div><div class="step-label">HOW IT WORKS</div><div class="panel-title">One connection, lots of little moments.</div><p class="small">Once connected, open LED Matrix for drawings and messages, RGB Light for colors and animations, or Our Kitty to care for your shared virtual pet.</p></div>
-      <div class="security-note"><strong>Private by design.</strong> Your Active Key is only used for the Adafruit IO connection. It is not saved in this file. Each person uses their own account and key; the feed owner shares the feed with Read + Write access.</div>
+      <div class="security-note"><strong>Your key stays in your browser.</strong> Your Active Key is used only for the Adafruit IO connection; it is not built into this public website. Each person signs in with their own account and key.</div>
       <div class="small">No Arduino upload is needed to switch between these features. Your existing sketch handles the LED features. The shared kitty lives in its own Adafruit IO feed, so no Arduino upload is needed.</div>
     </div>
   </div>
@@ -226,23 +329,23 @@ button.danger{background:#fff0f4;border-color:#eabacb;color:#b84674}
    <header class="device-heading"><div><h2>LED Matrix</h2><p>96 individual LEDs. One little canvas for whatever you imagine.</p></div><span class="tag">12 × 8 DISPLAY</span></header>
    <nav class="subnav" role="tablist" aria-label="LED Matrix tools"><button class="subtab active" type="button" data-view-tab="draw" role="tab" aria-selected="true">Pixel art</button><button class="subtab" type="button" data-view-tab="message" role="tab" aria-selected="false">Scrolling messages</button></nav>
 <section role="region" id="panel-draw" data-view="draw" hidden>
-  <div class="section-head"><div><h2>Pixel art playground</h2><p class="section-description">Light up any of the 96 pixels. Tap or drag to draw, then send your design in one update.</p></div><span class="tag rose">12 × 8</span></div>
+  <div class="section-head"><div><h2>Pixel art studio</h2><p class="section-description">Design on a tiny 12 × 8 canvas. Choose a preset or make your own, then send it when it’s ready.</p></div><span class="tag rose">12 × 8</span></div>
   <div class="split">
     <div class="panel">
       <div class="canvas-board"><div id="grid" class="matrix" role="group" aria-label="12 by 8 LED drawing grid"></div><div class="canvas-note">The 180° orientation fix is built in — your design will face the right way.</div></div>
       <div class="canvas-footer"><span id="counter" class="count-pill">0 / 96 selected</span><span id="dirty" class="status">Unsent changes</span></div>
     </div>
     <div class="panel">
-      <div class="step-label">YOUR TOOLBOX</div><div class="panel-title">Make it yours ♡</div>
+      <div class="step-label">THE CREATIVE CORNER</div><div class="panel-title">Shape your design</div>
       <label for="presetSelect">Choose a design</label>
-      <div class="preset-picker"><select id="presetSelect" aria-label="Choose a pixel art preset"><option value="">Pick a cute preset…</option>
-        <optgroup label="Cats &amp; cute"><option value="cat">Kitty face</option><option value="paw">Paw print</option><option value="heart">Heart</option><option value="doubleheart">Two hearts</option><option value="fish">Little fish</option><option value="bow">Ribbon bow</option><option value="flower">Flower</option><option value="butterfly">Butterfly</option></optgroup>
-        <optgroup label="Faces &amp; symbols"><option value="smile">Smiley face</option><option value="wink">Winking face</option><option value="star">Star</option><option value="moon">Crescent moon</option><option value="sparkle">Sparkles</option><option value="music">Music note</option><option value="arrow">Arrow</option></optgroup>
-        <optgroup label="Patterns"><option value="checker">Checkerboard</option><option value="stripes">Stripes</option><option value="border">Frame</option><option value="dots">Polka dots</option><option value="diagonal">Diagonal stripes</option></optgroup>
+      <div class="preset-picker"><select id="presetSelect" aria-label="Choose a pixel art preset"><option value="">Choose a little design…</option>
+        <optgroup label="Cats, love &amp; cute things"><option value="kitty">Cat face</option><option value="paw">Paw print</option><option value="heart">Heart</option><option value="doubleheart">Two hearts</option><option value="fish">Fish</option><option value="bow">Ribbon bow</option><option value="flower">Flower</option><option value="butterfly">Butterfly</option></optgroup>
+        <optgroup label="Little symbols"><option value="smiley">Smiley</option><option value="star">Star</option><option value="sparkles">Sparkles</option><option value="moon">Moon</option><option value="envelope">Love letter</option><option value="music">Music note</option><option value="check">Check mark</option></optgroup>
+        <optgroup label="Geometric patterns"><option value="checker">Checkerboard</option><option value="stripes">Stripes</option><option value="border">Outline frame</option><option value="dots">Polka dots</option></optgroup>
       </select><button class="action primary" id="loadPreset" type="button">Load</button></div>
       <div class="tool-divider"></div>
       <div class="panel-title tool-title">Move your drawing</div>
-      <p class="small tool-helper">Nudge the design one LED at a time. Pixels moving past the edge disappear.</p>
+      <p class="small tool-helper">Move your artwork one pixel in any direction.</p>
       <div class="nudge-controls" role="group" aria-label="Move your drawing one LED">
         <button type="button" class="action ghost nudge-up" id="nudgeUp" title="Nudge up one LED" aria-label="Nudge up one LED">↑</button>
         <button type="button" class="action ghost nudge-left" id="nudgeLeft" title="Nudge left one LED" aria-label="Nudge left one LED">←</button>
@@ -386,7 +489,7 @@ button.danger{background:#fff0f4;border-color:#eabacb;color:#b84674}
 </section>
  </div>
 </main>
-<footer class="footer"><span>Lumi Studio ♡ Made for little moments &amp; big love</span><span>♡ &nbsp; UNO R4 WiFi &amp; Adafruit IO</span></footer>
+<footer class="footer"><span>Lumi Studio ♡ Made for little moments, together</span><span>♡ &nbsp; UNO R4 WiFi &amp; Adafruit IO</span></footer>
 </div>
 <script>
 (() => {
@@ -535,61 +638,155 @@ button.danger{background:#fff0f4;border-color:#eabacb;color:#b84674}
     fillPattern((x,y)=>rows[y][x]==='#');
   }
   const artwork = {
-    heart:[
-      '.##....##...', '####..####..', '##########..', '.########...',
-      '..######....', '...####.....', '....##......', '............'
+    kitty: [
+      '##........##',
+      '###......###',
+      '.##########.',
+      '.#........#.',
+      '.#..#..#..#.',
+      '.#....##..#.',
+      '..#......#..',
+      '...######...'
     ],
-    doubleheart:[
-      '............', '.##....##...', '####..####..', '.##########.',
-      '..###..###..', '...#....#...', '............', '............'
+    paw: [
+      '..##....##..',
+      '..##.##.##..',
+      '.....##.....',
+      '............',
+      '....####....',
+      '...######...',
+      '..########..',
+      '...######...'
     ],
-    cat:[
-      '##........##', '###......###', '.##########.', '.##########.',
-      '###.####.###', '#####..#####', '.##########.', '..########..'
+    heart: [
+      '..##....##..',
+      '.####..####.',
+      '############',
+      '############',
+      '.##########.',
+      '..########..',
+      '...######...',
+      '.....##.....'
     ],
-    paw:[
-      '.##..##..##.', '.##..##..##.', '............', '....####....',
-      '...######...', '..########..', '...######...', '....####....'
+    doubleheart: [
+      '............',
+      '.##....##...',
+      '####..####..',
+      '.##########.',
+      '..###..###..',
+      '...#....#...',
+      '............',
+      '............'
     ],
-    fish:[
-      '............', '............', '..####....#.', '.######..##.',
-      '###########.', '.######..##.', '..####....#.', '............'
+    fish: [
+      '............',
+      '....######..',
+      '..########.#',
+      '.###.#######',
+      '.###########',
+      '..########.#',
+      '....######..',
+      '............'
     ],
-    bow:[
-      '............', '.###....###.', '#####..#####', '############',
-      '############', '#####..#####', '.###....###.', '............'
+    bow: [
+      '............',
+      '.###....###.',
+      '.####..####.',
+      '.##########.',
+      '.##########.',
+      '.####..####.',
+      '.###....###.',
+      '............'
     ],
-    flower:[
-      '.....##.....', '...######...', '...##..##...', '.####..####.',
-      '...######...', '.....##.....', '.....##.....', '....####....'
+    flower: [
+      '.....##.....',
+      '...######...',
+      '...##..##...',
+      '.####..####.',
+      '...##..##...',
+      '...######...',
+      '.....##.....',
+      '.....##.....'
     ],
-    butterfly:[
-      '##...##...##', '###..##..###', '.###.##.###.', '..########..',
-      '..########..', '.###.##.###.', '###..##..###', '##...##...##'
+    butterfly: [
+      '##...##...##',
+      '###..##..###',
+      '.###.##.###.',
+      '..########..',
+      '..########..',
+      '.###.##.###.',
+      '###..##..###',
+      '##...##...##'
     ],
-    wink:[
-      '............', '............', '..##....##..', '..##...####.',
-      '............', '...######...', '..#......#..', '...######...'
+    smiley: [
+      '...######...',
+      '..########..',
+      '.##.##.##.#.',
+      '.##.##.##.#.',
+      '.##......##.',
+      '.##.#..#.##.',
+      '..##.##.##..',
+      '...######...'
     ],
-    star:[
-      '.....##.....', '.....##.....', '.##########.', '..########..',
-      '...######...', '....####....', '...##..##...', '..##....##..'
+    star: [
+      '.....##.....',
+      '.....##.....',
+      '.##########.',
+      '..########..',
+      '...######...',
+      '....####....',
+      '...##..##...',
+      '..##....##..'
     ],
-    moon:[
-      '....#####...', '..####......', '.####.......', '.####.......',
-      '.####.......', '..####......', '....#####...', '............'
+    sparkles: [
+      '..#.......#.',
+      '.###......#.',
+      '..#.....###.',
+      '........#.#.',
+      '.....#......',
+      '....###.....',
+      '.....#......',
+      '............'
     ],
-    sparkle:[
-      '.#....#....#', '###..###..###', '.#....#....#', '............',
-      '...#....#...', '..###..###..', '...#....#...', '............'
+    moon: [
+      '....#####...',
+      '..####......',
+      '.####.......',
+      '.####.......',
+      '.####.......',
+      '..####......',
+      '....#####...',
+      '............'
     ],
-    music:[
-      '....#######.', '....#.....#.', '....#.....#.', '....#.....#.',
-      '....#.....#.', '..###...###.', '.####..####.', '..##....##..'
+    envelope: [
+      '............',
+      '.##########.',
+      '.#........#.',
+      '.###......#.',
+      '.#.###..###.',
+      '.#...##...#.',
+      '.##########.',
+      '............'
     ],
-    arrow:[
-      '......#.....', '......##....', '#########...', '##########..',
-      '#########...', '......##....', '......#.....', '............'
+    music: [
+      '....#######.',
+      '....#.....#.',
+      '....#.....#.',
+      '....#.....#.',
+      '....#.....#.',
+      '..###...###.',
+      '.####..####.',
+      '..##....##..'
+    ],
+    check: [
+      '............',
+      '..........##',
+      '.........##.',
+      '..##....##..',
+      '...##..##...',
+      '....####....',
+      '.....##.....',
+      '............'
     ]
   };
   const patternFunctions={
