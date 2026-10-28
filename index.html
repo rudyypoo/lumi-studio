@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0d18">
+<meta name="description" content="Remote Arduino pixel art, secret messages, RGB color wheel and animations">
+<title>Lumi Studio · Remote Arduino</title>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.16.0/dist/mqtt.min.js"></script>
+<style>
+  :root {
+    color-scheme: dark;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --bg:#0b0d18; --panel:#161b2b; --panel2:#1c2234;
+    --stroke:#343a53; --muted:#9ca8c1; --text:#f1f2fa;
+    --violet:#ac94ff; --pink:#ff8cb6; --success:#55ddb2;
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(circle at 10% 8%,rgba(120,82,225,.19),transparent 30%),radial-gradient(circle at 100% 50%,rgba(193,81,155,.08),transparent 36%),var(--bg);font-size:15px}
+  button,input{font:inherit}
+  button{cursor:pointer}
+  button:disabled{cursor:not-allowed;opacity:.48;filter:none!important}
+  button:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid #d4c7ff;outline-offset:3px}
+  .shell{max-width:1080px;margin:0 auto;padding:26px 24px 70px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:27px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .mark{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#a788fa,#f485ae);color:#18102a;box-shadow:0 7px 30px #9a79f222}
+  .mark svg{width:25px;height:25px}
+  .brand-name{font-size:19px;letter-spacing:-.6px;font-weight:800;line-height:1.1}
+  .brand-caption{font-size:12px;color:var(--muted);margin-top:3px}
+  .connection-chip{display:flex;align-items:center;gap:8px;background:#1b2133;border:1px solid var(--stroke);border-radius:100px;color:#b5bdd2;padding:9px 13px;font-size:12px;font-weight:700;max-width:190px}
+  .connection-chip:hover{border-color:#8b79b4}
+  .connection-chip .dot{height:8px;width:8px;flex:none;background:#718099;border-radius:50%}
+  .connection-chip.online .dot{background:var(--success);box-shadow:0 0 0 4px #55ddb21d}
+  .connection-chip.connecting .dot{background:#ffca7a}
+  .intro{display:flex;gap:18px;justify-content:space-between;align-items:center;margin-bottom:25px}
+  .eyebrow{font-size:11px;letter-spacing:2px;color:#d3a8ef;text-transform:uppercase;font-weight:800;margin-bottom:10px}
+  h1{font-weight:800;font-size:clamp(28px,4.5vw,43px);letter-spacing:-1.4px;line-height:1.1;margin:0}
+  h1 em{font-style:normal;background:linear-gradient(90deg,#bea6ff,#ffa2c7);color:transparent;background-clip:text}
+  .subtitle{color:var(--muted);line-height:1.65;font-size:14px;margin:12px 0 0;max-width:620px}
+  .hero-shape{position:relative;width:100px;height:100px;flex:0 0 100px;display:grid;place-items:center}
+  .hero-glow{width:80px;height:80px;border-radius:50%;background:conic-gradient(from 45deg,#f09ac5,#5a69d9,#56d9d1,#ecb875,#f09ac5);filter:blur(2px);box-shadow:0 0 45px #9582f84d}
+  .hero-dot{position:absolute;width:57px;height:57px;background:#0b0d18;border-radius:50%;display:grid;place-items:center;font-size:29px;color:#f3d6fa}
+  .tabs{display:flex;gap:5px;padding:6px;background:#151a29;border:1px solid #30374d;border-radius:16px;overflow-x:auto;scrollbar-width:none;margin-bottom:17px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:1;white-space:nowrap;text-align:center;color:#a9b3c8;border:1px solid transparent;border-radius:11px;background:transparent;padding:12px 11px;font-size:13px;font-weight:700;transition:background .15s,border-color .15s}
+  .tab:hover{background:#ffffff0a;color:#fff}
+  .tab.active{background:#31324f;color:#f6f1ff;border-color:#645a8a;box-shadow:0 3px 16px #00000023}
+  .tab .tab-icon{margin-right:7px;vertical-align:-2px;opacity:.9}
+  .main{min-height:440px}
+  .section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:19px}
+  h2{font-size:23px;margin:0;letter-spacing:-.55px;line-height:1.2}
+  .section-description{font-size:13px;color:var(--muted);margin:8px 0 0;line-height:1.6}
+  .tag{border:1px solid #48506b;border-radius:100px;color:#c7cbea;font-size:11px;font-weight:750;padding:6px 10px;white-space:nowrap;background:#242a3f}
+  .tag.rose{border-color:#795373;color:#f4acd1;background:#3c263f}
+  .panel{border:1px solid var(--stroke);border-radius:18px;background:linear-gradient(155deg,#1a2032,#151a29 75%);padding:21px;box-shadow:0 10px 35px #00000017}
+  .panel+.panel{margin-top:14px}
+  .panel-title{font-size:14px;font-weight:750;margin:0 0 12px}
+  .split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(270px,1fr);gap:16px;align-items:start}
+  .split.equal{grid-template-columns:1fr 1fr}
+  .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+  .stack{display:grid;gap:12px}
+  .small{font-size:12px;line-height:1.6;color:var(--muted)}
+  .status{font-size:12px;color:#ccaff9}
+  .panel p{color:var(--muted)}
+  .subtle{color:var(--muted)}
+  label{display:block;color:#c1c8d9;font-size:12px;font-weight:650;margin-bottom:7px}
+  input[type=text],input[type=password]{width:100%;color:var(--text);border:1px solid #424962;background:#101626;padding:13px;border-radius:10px;min-width:0;font-size:14px}
+  input::placeholder{color:#69748b}
+  input[type=range]{width:100%;accent-color:#ab88fa;cursor:pointer;margin:11px 0 7px}
+  input[type=color]{width:58px;height:46px;padding:4px;border:1px solid #46516d;border-radius:10px;background:#151b2c;cursor:pointer;flex:none}
+  button.action{border:1px solid #586078;border-radius:10px;padding:11px 15px;background:#303a52;color:#f6f7fb;font-weight:700}
+  button.action:hover{filter:brightness(1.16)}
+  button.primary{background:linear-gradient(105deg,#ad8bf5,#d08bcb);color:#161224;border:1px solid #d2a6ef}
+  button.ghost{background:#222a3d;border-color:#414b64;color:#dce4f8}
+  button.danger{background:#332432;border-color:#714b60;color:#ffc0d3}
+  button.full{width:100%;padding:15px;font-size:15px}
+  button.small-btn{padding:9px 12px;font-size:12px}
+  .feedback{min-height:20px;color:#9ee5cb!important;font-size:12px;line-height:1.6;margin:11px 0 0}
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .fields .wide{grid-column:1/-1}
+  .connect-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:17px 0}
+  .security-note{background:#24243b;border:1px solid #434561;padding:14px;border-radius:12px;line-height:1.65;color:#c6c7de;font-size:12px}
+  /* Pixel canvas */
+  .canvas-board{background:#0c111d;border:1px solid #343e57;border-radius:13px;padding:16px;}
+  .matrix{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;width:100%;margin:auto;max-width:610px;touch-action:none;user-select:none}
+  .pixel{width:100%;aspect-ratio:1;min-height:18px;border:1px solid #394458;border-radius:6px;background:#293244;padding:0;transition:background .1s,box-shadow .1s}
+  .pixel:hover{border-color:#9e8cb9}
+  .pixel.on{background:#ff6d93;border-color:#ffacc3;box-shadow:0 0 9px #fa4f854a}
+  .canvas-note{font-size:11px;color:#7e8caa;text-align:center;margin:13px 0 0;letter-spacing:.1px}
+  .canvas-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;font-size:12px;color:#bdc6db}
+  .count-pill{background:#262e43;border:1px solid #3c4860;border-radius:100px;padding:5px 10px}
+  .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
+  .preset-grid button{padding:13px 9px!important;font-size:13px}
+  .step-label{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#a6a9cb;font-weight:800;margin-bottom:11px}
+  .hint{display:flex;gap:10px;align-items:flex-start;border-top:1px solid #343b52;padding-top:15px;margin-top:16px;font-size:12px;color:#a9b5cb;line-height:1.6}
+  .hint strong{color:#dfd5f6}
+  /* Message page */
+  .message-stage{border:1px solid #343e58;min-height:170px;background:radial-gradient(ellipse at center,#212742,#0e1320 78%);border-radius:13px;display:grid;place-items:center;overflow:hidden;padding:25px}
+  .marquee-window{width:100%;max-width:430px;border-radius:9px;background:#0a0f14;border:1px solid #2e3b42;box-shadow:0 6px 25px #0005;overflow:hidden}
+  .marquee-text{padding:17px 0;font-family:ui-monospace,Consolas,monospace;font-size:22px;letter-spacing:3px;font-weight:800;color:#ffad6e;white-space:nowrap;text-shadow:0 0 17px #fbb56b88;animation:marquee 12s linear infinite;width:max-content}
+  @keyframes marquee{from{transform:translateX(430px)}to{transform:translateX(-120%)}}
+  .message-meta{display:flex;justify-content:space-between;gap:12px;color:#aab7cc;font-size:11px;margin:9px 0 20px}
+  .message-ideas{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+  .message-ideas button{font-size:12px!important;padding:8px 11px!important}
+  /* Color wheel */
+  .wheel-layout{display:grid;grid-template-columns:minmax(240px,1fr) minmax(240px,1fr);gap:28px;align-items:center}
+  .wheel-holder{display:flex;justify-content:center;align-items:center;max-width:310px;margin:0 auto;width:100%}
+  #wheel{display:block;width:100%;height:auto;aspect-ratio:1;touch-action:none;cursor:crosshair;filter:drop-shadow(0 13px 24px #0004)}
+  .preview{height:100px;background:#b44cff;border:1px solid #ffffff2e;border-radius:14px;box-shadow:inset 0 0 18px #0003;}
+  .color-code{font-size:25px;font-weight:800;letter-spacing:.4px;margin:13px 0 17px;text-align:center}
+  .swatches{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+  .swatch{height:31px;width:31px;background:#fff;border:2px solid #a5acc1;border-radius:100px;padding:0;transition:transform .14s}
+  .swatch:hover{transform:scale(1.12)}
+  /* FX page */
+  .effects-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(290px,.9fr);gap:16px;align-items:start}
+  .effect-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .effect-option{min-height:79px;text-align:left;border:1px solid #414a64;border-radius:12px;background:#22293d;color:#f3f2fa;padding:12px;transition:background .15s,border-color .15s}
+  .effect-option:hover{background:#2c3350}
+  .effect-option.selected{background:#393051;border-color:#b28bf5;box-shadow:0 0 0 1px #b28bf555}
+  .effect-name{display:block;font-weight:800;font-size:13px}
+  .effect-description{display:block;color:#aab4c9;line-height:1.4;font-size:11px;margin-top:5px}
+  .studio-preview{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:170px;background:radial-gradient(circle,#252244,#0e1421 72%);border:1px solid #394462;border-radius:13px;padding:22px}
+  .studio-light{width:91px;height:91px;border-radius:50%;background:#aa53ff;box-shadow:0 0 43px #aa53ff88;transition:background-color .1s,box-shadow .1s}
+  #studioPreviewLabel{margin-top:15px;text-align:center;color:#b9c3da;font-size:11px}
+  .setting-value{float:right;color:#d2b9fd;font-weight:800}
+  .studio-settings{display:grid;gap:15px;margin:18px 0}
+  .secondary-control{display:flex;gap:11px;align-items:center;margin:13px 0;border:1px solid #41485f;background:#242a40;padding:10px;border-radius:11px}
+  .studio-note{font-size:11px;line-height:1.6;color:#9da9c4;margin:4px 0}
+  .fx-picked{color:#ceb7ff;font-size:12px;font-weight:700;margin:16px 0 12px}
+  .button-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .footer{margin:26px 0 0;text-align:center;color:#77839e;font-size:11px;line-height:1.7}
+  @media(max-width:820px){
+    .split,.split.equal,.effects-layout{grid-template-columns:1fr}
+    .wheel-layout{grid-template-columns:1fr}
+    .hero-shape{display:none}
+    .effect-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .tabs .tab{min-width:max-content;padding:11px 14px}
+  }
+  @media(max-width:560px){
+    .shell{padding:16px 12px 38px}
+    .top{margin-bottom:24px}
+    .mark{width:39px;height:39px}
+    .brand-caption{font-size:11px}
+    .intro{margin-bottom:21px}
+    .tabs{margin:0 -4px 14px;padding:5px}
+    .tab{font-size:12px}
+    .tab .tab-icon{display:none}
+    h2{font-size:21px}
+    .section-head{margin-bottom:14px}
+    .panel{padding:15px;border-radius:15px}
+    .fields,.effect-grid{grid-template-columns:1fr 1fr}
+    .matrix{gap:4px}
+    .canvas-board{padding:10px}
+    .wheel-layout{gap:15px}
+    .wheel-holder{max-width:275px}
+    .message-meta{flex-direction:column;gap:3px}
+  }
+  @media(prefers-reduced-motion:reduce){.marquee-text{animation:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top">
+  <div class="brand">
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 9 10l-7 2 7 2 3 8 3-8 7-2-7-2-3-8Z"/><path d="M19 2v4M17 4h4"/></svg></div>
+    <div><div class="brand-name">lumi<span style="color:#c6a4ff">.</span></div><div class="brand-caption">Remote Arduino Studio</div></div>
+  </div>
+  <button class="connection-chip" id="connectionChip" data-goto="connect" type="button" title="Open connection settings"><span class="dot"></span><span id="connectionChipText">Not connected</span></button>
+</header>
+<div class="intro">
+  <div><div class="eyebrow">MAKE SOMETHING GLOW</div><h1>A little light, <em>from anywhere.</em></h1><p class="subtitle">Draw tiny masterpieces, send sweet messages, and paint with color — all from the other side of the world.</p></div>
+  <div class="hero-shape" aria-hidden="true"><div class="hero-glow"></div><div class="hero-dot">✧</div></div>
+</div>
+<nav class="tabs" role="tablist" aria-label="Studio features">
+  <button class="tab" role="tab" id="tab-draw" data-tab="draw" aria-controls="panel-draw" aria-selected="false"><span class="tab-icon">▦</span>Pixel Art</button>
+  <button class="tab" role="tab" id="tab-message" data-tab="message" aria-controls="panel-message" aria-selected="false"><span class="tab-icon">✉</span>Messages</button>
+  <button class="tab" role="tab" id="tab-color" data-tab="color" aria-controls="panel-color" aria-selected="false"><span class="tab-icon">◉</span>Color Wheel</button>
+  <button class="tab" role="tab" id="tab-effects" data-tab="effects" aria-controls="panel-effects" aria-selected="false"><span class="tab-icon">✦</span>Animations</button>
+  <button class="tab" role="tab" id="tab-connect" data-tab="connect" aria-controls="panel-connect" aria-selected="true"><span class="tab-icon">⌁</span>Connection</button>
+</nav>
+<main class="main">
+<!-- Connection starts visible because no credentials are saved -->
+<section role="tabpanel" id="panel-connect" data-panel="connect" aria-labelledby="tab-connect">
+  <div class="section-head"><div><h2>Connect your studio</h2><p class="section-description">Use your own Adafruit IO account to send updates securely to the shared Arduino.</p></div><span class="tag">STEP 01</span></div>
+  <div class="split equal">
+    <div class="panel">
+      <div class="panel-title">Adafruit IO credentials</div>
+      <div class="fields">
+        <div><label for="user">Your username</label><input id="user" type="text" autocomplete="username" placeholder="Your Adafruit username"></div>
+        <div><label for="owner">Feed owner's username</label><input id="owner" type="text" placeholder="Arduino owner's username"></div>
+        <div class="wide"><label for="key">Your private Active Key</label><input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your Adafruit IO key"></div>
+      </div>
+      <div class="connect-actions"><button class="action primary" id="connect">Connect to Arduino</button><button class="action ghost" id="disconnect" disabled>Disconnect</button></div>
+      <div class="small" role="status">Connection: <strong id="status" style="color:#dcc8ff">Not connected</strong></div>
+    </div>
+    <div class="panel stack">
+      <div><div class="step-label">HOW IT WORKS</div><div class="panel-title">One connection, four ways to create.</div><p class="small">Once connected, choose a tab to send pixel drawings, messages, a solid RGB color, or animated light effects.</p></div>
+      <div class="security-note"><strong>Private by design.</strong> Your Active Key is only used for the Adafruit IO connection. It is not saved in this file. Each person uses their own account and key; the feed owner shares the feed with Read + Write access.</div>
+      <div class="small">No Arduino upload is needed to switch between these features. Your existing sketch handles all four.</div>
+    </div>
+  </div>
+</section>
+<!-- Pixel art -->
+<section role="tabpanel" id="panel-draw" data-panel="draw" aria-labelledby="tab-draw" hidden>
+  <div class="section-head"><div><h2>Pixel art canvas</h2><p class="section-description">Light up any of the 96 pixels. Tap or drag to draw, then send your design in one update.</p></div><span class="tag rose">12 × 8</span></div>
+  <div class="split">
+    <div class="panel">
+      <div class="canvas-board"><div id="grid" class="matrix" role="group" aria-label="12 by 8 LED drawing grid"></div><div class="canvas-note">The 180° orientation fix is built in — your design will face the right way.</div></div>
+      <div class="canvas-footer"><span id="counter" class="count-pill">0 / 96 selected</span><span id="dirty" class="status">Unsent changes</span></div>
+    </div>
+    <div class="panel">
+      <div class="step-label">YOUR TOOLBOX</div><div class="panel-title">Start with a preset</div>
+      <div class="preset-grid"><button class="action ghost" id="heart">♡ Heart</button><button class="action ghost" id="smile">☺ Smiley</button><button class="action ghost" id="checker">▦ Checker</button><button class="action ghost" id="all">All On</button><button class="action ghost" id="clear" style="grid-column:1/-1">Clear Canvas</button></div>
+      <button class="action primary full" id="apply" disabled>Send Design to Arduino</button>
+      <p class="feedback" id="feedback" role="status">Draw whatever you like. Nothing is sent until you press Send.</p>
+      <div class="hint"><span aria-hidden="true">✧</span><span><strong>Tip:</strong> Click a pixel again to erase it. Your unsent edits are preserved when switching tabs.</span></div>
+    </div>
+  </div>
+</section>
+<!-- Messages -->
+<section role="tabpanel" id="panel-message" data-panel="message" aria-labelledby="tab-message" hidden>
+  <div class="section-head"><div><h2>Notes in lights</h2><p class="section-description">Send something sweet, silly, or secret. Your words scroll across the Arduino's LED matrix.</p></div><span class="tag">28 CHARS</span></div>
+  <div class="split equal">
+    <div class="panel">
+      <div class="step-label">WRITE YOUR NOTE</div>
+      <label for="message">Message</label>
+      <input id="message" type="text" maxlength="28" autocomplete="off" placeholder="I MISS YOU" aria-describedby="messageCount">
+      <div class="message-meta"><span id="messageCount">0 / 28 characters</span><span>Letters, numbers and basic punctuation</span></div>
+      <button class="action primary full" id="sendMessage" disabled>Send Scrolling Message</button>
+      <p class="feedback" id="messageFeedback" role="status">Connect to Adafruit IO first.</p>
+      <div class="hint"><span aria-hidden="true">✉</span><span>Text scrolls once, then your last pixel art design returns. Messages are visible in the Adafruit IO feed history.</span></div>
+    </div>
+    <div class="panel">
+      <div class="step-label">LITTLE LED NOTE</div>
+      <div class="message-stage"><div class="marquee-window"><div class="marquee-text" id="messageMarquee">I MISS YOU ♥ &nbsp; &nbsp; &nbsp; </div></div></div>
+      <p class="small">Animated webpage preview only. The physical Arduino displays letters using its built-in 12 × 8 matrix.</p>
+      <div class="step-label" style="margin-top:20px">TRY A MESSAGE</div>
+      <div class="message-ideas"><button class="action ghost" type="button" data-message="I MISS YOU">I MISS YOU</button><button class="action ghost" type="button" data-message="HELLO THERE!">HELLO THERE!</button><button class="action ghost" type="button" data-message="GOOD NIGHT">GOOD NIGHT</button></div>
+    </div>
+  </div>
+</section>
+<!-- Colors -->
+<section role="tabpanel" id="panel-color" data-panel="color" aria-labelledby="tab-color" hidden>
+  <div class="section-head"><div><h2>Find your color</h2><p class="section-description">Drag around the wheel to explore shades. Send the one you love to the physical RGB LED.</p></div><span class="tag rose">FULL SPECTRUM</span></div>
+  <div class="panel">
+    <div class="wheel-layout">
+      <div class="wheel-holder"><canvas id="wheel" width="280" height="280" aria-label="Interactive RGB color wheel" title="Drag to choose a color"></canvas></div>
+      <div>
+        <div class="step-label">YOUR COLOR</div>
+        <div class="preview" id="colorPreview"></div>
+        <div class="color-code" id="colorHex">#B44CFF</div>
+        <label for="brightness">Brightness <span class="setting-value" id="brightnessPercent">100%</span></label>
+        <input type="range" id="brightness" min="0" max="100" value="100" step="1">
+        <button class="action primary full" id="sendColor" disabled>Send Color to Arduino</button>
+        <button class="action ghost full" id="rgbOff" disabled style="margin-top:8px">Turn RGB LED Off</button>
+        <p class="feedback" id="rgbFeedback" role="status">Connect to Adafruit IO first.</p>
+      </div>
+    </div>
+    <div style="border-top:1px solid #353d56;margin-top:18px;padding-top:17px">
+      <div class="row" style="justify-content:space-between"><div class="step-label" style="margin:0">QUICK COLORS</div><button class="action ghost small-btn" type="button" id="randomColor">Surprise color</button></div>
+      <div class="swatches" id="swatches" aria-label="Quick color presets"></div>
+      <div class="small">Picking a color only changes this preview. Your LED changes when you press Send.</div>
+    </div>
+  </div>
+</section>
+<!-- Animation studio -->
+<section role="tabpanel" id="panel-effects" data-panel="effects" aria-labelledby="tab-effects" hidden>
+  <div class="section-head"><div><h2>Light show studio</h2><p class="section-description">Choose an animation and set the mood. A single Send starts an effect on the Arduino.</p></div><span class="tag rose">11 EFFECTS</span></div>
+  <div class="effects-layout">
+    <div class="panel"><div class="step-label">CHOOSE YOUR EFFECT</div><div id="effectGrid" class="effect-grid" role="group" aria-label="Choose RGB animation"></div></div>
+    <div class="panel">
+      <div class="studio-preview"><div class="studio-light" id="studioLight"></div><small id="studioPreviewLabel">Webpage-only preview</small></div>
+      <div class="studio-settings">
+        <div><label for="fxSpeed">Animation speed <span class="setting-value" id="fxSpeedValue">50%</span></label><input type="range" id="fxSpeed" min="1" max="100" value="50"></div>
+        <div><label for="fxBrightness">LED brightness <span class="setting-value" id="fxBrightnessValue">80%</span></label><input type="range" id="fxBrightness" min="0" max="100" value="80"></div>
+      </div>
+      <div class="secondary-control"><input type="color" id="accentColor" value="#17ddac" aria-label="Second fade color"><div><div style="font-size:13px;font-weight:750">Second fade color</div><p class="studio-note">Used for Two-color Fade with your main wheel color. <button class="action ghost small-btn" data-goto="color" type="button" style="margin-top:6px">Choose main color</button></p></div></div>
+      <div class="fx-picked" id="selectedEffect">Selected: Rainbow Cycle</div>
+      <div class="button-row"><button class="action primary" id="startEffect" disabled>Start Animation</button><button class="action ghost" id="stopEffect" disabled>Stop &amp; Hold</button></div>
+      <button class="action ghost full" id="surpriseEffect" disabled style="margin-top:9px">Surprise Me — Random Effect</button>
+      <p class="feedback" id="effectFeedback" role="status">Connect to Adafruit IO first.</p>
+      <div class="hint"><span aria-hidden="true">✧</span><span>Colors animate on the Arduino itself, without sending new internet commands every frame. A normal color command stops an animation.</span></div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="footer">Made for little moments across long distances. · Powered by Arduino UNO R4 WiFi + Adafruit IO.</footer>
+</div>
+<script>
+(() => {
+
+  const $ = id => document.getElementById(id);
+
+  // Show one tool at a time. Switching tabs never discards an unsent design.
+  const tabs = Array.from(document.querySelectorAll('[role=tab]'));
+  const panels = Array.from(document.querySelectorAll('[role=tabpanel]'));
+  function switchTab(name, focus=false) {
+    for (const tab of tabs) {
+      const active=tab.dataset.tab===name;
+      tab.setAttribute('aria-selected', active ? 'true' : 'false');
+      tab.tabIndex=active ? 0 : -1;
+      tab.classList.toggle('active', active);
+      if(active && focus) tab.focus();
+    }
+    for (const panel of panels) panel.hidden=panel.dataset.panel!==name;
+    document.title='Lumi Studio · '+({draw:'Pixel art',message:'Messages',color:'Color wheel',effects:'Animations',connect:'Connection'}[name]||'Remote Arduino');
+    if(name==='color') requestAnimationFrame(drawWheel);
+  }
+  tabs.forEach((tab,i) => {
+    tab.addEventListener('click', ()=>switchTab(tab.dataset.tab));
+    tab.addEventListener('keydown', e => {
+      if(!['ArrowRight','ArrowLeft','Home','End'].includes(e.key))return;
+      e.preventDefault();
+      const n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+      switchTab(tabs[n].dataset.tab,true);
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>switchTab(el.dataset.goto)));
+  switchTab('connect');
+  let firstConnect=true;
+
+  let draft = Array(96).fill(false);
+  let client = null;
+  let topic = '';
+  let dirty = true;
+  let sending = false;
+  let sendingMessage = false;
+  let sendingRGB = false;
+  let sendingEffect = false;
+  let dragValue = null;
+
+  const buttons = [];
+  function status(s) {
+    $('status').textContent = s;
+    const good=s==='Connected';
+    const chip=$('connectionChip');
+    chip.classList.toggle('online',good);
+    chip.classList.toggle('connecting',/Connecting|Reconnecting/.test(s));
+    $('connectionChipText').textContent=good?'Online':s;
+  }
+  function feedback(s) { $('feedback').textContent = s; }
+  function messageFeedback(s) { $('messageFeedback').textContent = s; }
+  function rgbFeedback(s) { $('rgbFeedback').textContent = s; }
+  function updateUI() {
+    for (let i=0;i<96;i++) {
+      buttons[i].classList.toggle('on', draft[i]);
+      buttons[i].setAttribute('aria-pressed', draft[i]?'true':'false');
+    }
+    $('counter').textContent = draft.filter(Boolean).length + ' / 96 selected';
+    $('dirty').textContent = dirty ? 'Unsent changes' : 'Last design sent';
+  }
+  function setPixel(i, v) {
+    if (draft[i] === v) return;
+    draft[i] = v;
+    dirty = true;
+    updateUI();
+  }
+  for (let i=0;i<96;i++) {
+    const b=document.createElement('button');
+    b.className='pixel';
+    b.type='button';
+    b.title='LED '+(i+1);
+    b.setAttribute('aria-label','Toggle LED '+(i+1));
+    b.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      dragValue = !draft[i];
+      setPixel(i, dragValue);
+    });
+    b.addEventListener('pointerenter', e => { if(e.buttons === 1 && dragValue!==null) setPixel(i,dragValue); });
+    b.addEventListener('keydown', e => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setPixel(i,!draft[i]); }
+    });
+    $('grid').appendChild(b);
+    buttons.push(b);
+  }
+  document.addEventListener('pointerup', () => {dragValue=null;});
+  document.addEventListener('pointercancel', () => {dragValue=null;});
+  // Support drawing by dragging a finger across the canvas on touchscreens.
+  $('grid').addEventListener('pointermove', e => {
+    if(dragValue===null || e.pointerType==='mouse')return;
+    const target=document.elementFromPoint(e.clientX,e.clientY);
+    if(target && target.classList.contains('pixel')) {
+      const i=buttons.indexOf(target);
+      if(i>=0)setPixel(i,dragValue);
+    }
+  });
+  function fillPattern(f) {draft=Array.from({length:96},(_,i)=>Boolean(f(i%12,Math.floor(i/12))));dirty=true;updateUI();}
+  $('clear').onclick=()=>fillPattern(()=>false);
+  $('all').onclick=()=>fillPattern(()=>true);
+  $('checker').onclick=()=>fillPattern((x,y)=>(x+y)%2===0);
+  $('smile').onclick=()=>fillPattern((x,y)=>(y===2&&[3,4,7,8].includes(x))||(y===4&&(x===2||x===9))||(y===5&&x>=3&&x<=8));
+  $('heart').onclick=()=>fillPattern((x,y)=>[
+    '.##....##...',
+    '####..####..',
+    '##########..',
+    '.########...',
+    '..######....',
+    '...####.....',
+    '....##......',
+    '............'
+  ][y][x]==='#');
+  updateUI();
+
+  function encodeRotated() {
+    // physical LED index = 95 - webpage index: rotate 180 degrees.
+    const physical=Array(96).fill(false);
+    for(let i=0;i<96;i++) physical[95-i]=draft[i];
+    let hex='';
+    for(let n=0;n<96;n+=4) {
+      let v=0;
+      for(let bit=0;bit<4;bit++) v=(v<<1) | (physical[n+bit] ? 1:0);
+      hex+=v.toString(16).toUpperCase();
+    }
+    return hex;
+  }
+  $('connect').onclick=()=>{
+    const username=$('user').value.trim();
+    const owner=$('owner').value.trim();
+    const key=$('key').value.trim();
+    if(!username||!owner||!key) {feedback('Enter your username, the feed owner, and your own AIO key.');return;}
+    if(!window.mqtt) {feedback('MQTT.js did not load. Check your internet connection and reload the page.');return;}
+    topic=owner+'/feeds/remote-control';
+    if(client) client.end(true);
+    status('Connecting...');
+    $('connect').disabled=true;
+    // WebSocket is encrypted. No router port forwarding required.
+    client=mqtt.connect('wss://io.adafruit.com:443/mqtt/', {
+      username:username,password:key,protocolVersion:4,clean:true,
+      clientId:'matrix96-'+Math.random().toString(16).slice(2,12),
+      reconnectPeriod:5000,connectTimeout:15000
+    });
+    client.on('connect',()=>{
+      status('Connected');
+      if(firstConnect) { firstConnect=false; switchTab('draw'); }
+      $('connect').disabled=true;
+      $('disconnect').disabled=false;
+      $('apply').disabled=false;
+      $('sendMessage').disabled=false;
+      $('sendColor').disabled=false; $('rgbOff').disabled=false;
+      $('startEffect').disabled=false; $('stopEffect').disabled=false; $('surpriseEffect').disabled=false;
+      client.subscribe(topic, {qos:0}, err=>{
+        if(err) feedback('Connected, but feed subscription failed. Check shared feed permission.');
+        else feedback('Connected. Select LEDs and press Send Design to Arduino.');
+      });
+    });
+    client.on('message',(t,p)=>{
+      if (t === topic && /^RGB:[0-9a-f]{6}$/i.test(p.toString())) rgbFeedback('RGB command received: #' + p.toString().slice(4).toUpperCase());
+      if (t === topic && p.toString().startsWith('FX:')) effectFeedback('Effect command received: ' + p.toString().slice(3, 70));
+      if(t===topic && /^[0-9A-Fa-f]{24}$/.test(p.toString())) {
+        // No silent overwriting: local unsent edits stay as drawn.
+        if(!dirty) {
+          const bits=[];
+          for(const c of p.toString()) {
+            const v=parseInt(c,16);
+            for(let k=3;k>=0;k--) bits.push(Boolean((v>>k)&1));
+          }
+          draft=bits.reverse();
+          updateUI();
+        }
+      }
+    });
+    client.on('reconnect',()=>status('Reconnecting...'));
+    client.on('offline',()=>{status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
+    client.on('close',()=>{
+      status('Disconnected');$('apply').disabled=true;$('sendMessage').disabled=true;
+      $('disconnect').disabled=true; $('connect').disabled=false; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;
+    });
+    client.on('error',e=>{status('Connection error');feedback('Connection error: '+e.message+'. Verify your AIO username/key and feed access.');});
+  };
+  $('disconnect').onclick=()=>{
+    if(client) client.end(true);
+    client=null;topic='';status('Not connected');
+    $('connect').disabled=false;$('disconnect').disabled=true;$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true; rgbFeedback('Connect to Adafruit IO first.');
+  };
+  // Hue is the angle; saturation is how far out from center you drag.
+  // Brightness is a separate slider to reach dark colors or black.
+  let hue = 275;
+  let saturation = 0.70;
+  let brightness = 1;
+  const wheel = $('wheel');
+  const ctx = wheel.getContext('2d');
+  const center = 140;
+  const radius = 128;
+  let draggingWheel = false;
+
+  function hsvToRgb(h,s,v) {
+    const c=v*s, hp=(h%360)/60, x=c*(1-Math.abs((hp%2)-1));
+    let [r,g,b] = hp<1?[c,x,0]:hp<2?[x,c,0]:hp<3?[0,c,x]:hp<4?[0,x,c]:hp<5?[x,0,c]:[c,0,x];
+    const m=v-c;
+    return [r+m,g+m,b+m].map(z=>Math.round(z*255));
+  }
+  function hexColor() {
+    return '#'+hsvToRgb(hue,saturation,brightness).map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+  function drawWheel() {
+    const diameter=280;
+    const image=ctx.createImageData(diameter,diameter);
+    for(let y=0;y<diameter;y++) for(let x=0;x<diameter;x++) {
+      const dx=x-center,dy=y-center,dist=Math.hypot(dx,dy),index=(y*diameter+x)*4;
+      if(dist>radius) {image.data[index+3]=0;continue;}
+      const h=(Math.atan2(dy,dx)*180/Math.PI+360)%360;
+      const s=Math.min(1,dist/radius);
+      const rgb=hsvToRgb(h,s,1);
+      image.data[index]=rgb[0];image.data[index+1]=rgb[1];image.data[index+2]=rgb[2];image.data[index+3]=255;
+    }
+    ctx.putImageData(image,0,0);
+    const ang=hue*Math.PI/180;
+    const px=center+Math.cos(ang)*saturation*radius;
+    const py=center+Math.sin(ang)*saturation*radius;
+    ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);ctx.lineWidth=3;ctx.strokeStyle='#090a11';ctx.stroke();
+    ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();
+  }
+  function updateColorPreview() {
+    $('colorPreview').style.backgroundColor=hexColor();
+    $('colorHex').textContent=hexColor();
+    $('brightnessPercent').textContent=Math.round(brightness*100)+'%';
+    drawWheel();
+  }
+  function selectColorAt(event) {
+    const box=wheel.getBoundingClientRect();
+    const x=(event.clientX-box.left)*wheel.width/box.width-center;
+    const y=(event.clientY-box.top)*wheel.height/box.height-center;
+    const dist=Math.hypot(x,y);
+    saturation=Math.min(1,dist/radius);
+    if(dist>1) hue=(Math.atan2(y,x)*180/Math.PI+360)%360;
+    updateColorPreview();
+  }
+  wheel.addEventListener('pointerdown',e=>{
+    draggingWheel=true;wheel.setPointerCapture(e.pointerId);selectColorAt(e);
+  });
+  wheel.addEventListener('pointermove',e=>{if(draggingWheel)selectColorAt(e);});
+  wheel.addEventListener('pointerup',()=>draggingWheel=false);
+  wheel.addEventListener('pointercancel',()=>draggingWheel=false);
+  $('brightness').addEventListener('input',e=>{brightness=Number(e.target.value)/100;updateColorPreview();});
+  updateColorPreview();
+
+  function sendRGB(hex) {
+    if (sendingRGB || !client || !client.connected) {
+      rgbFeedback('Connect to Adafruit IO first.');return;
+    }
+    sendingRGB=true;
+    $('sendColor').disabled=true;$('rgbOff').disabled=true;
+    rgbFeedback('Sending color...');
+    client.publish(topic,'RGB:'+hex.replace('#','').toUpperCase(),{qos:1,retain:false},error=>{
+      sendingRGB=false;
+      $('sendColor').disabled=!client || !client.connected;
+      $('rgbOff').disabled=!client || !client.connected;
+      rgbFeedback(error?'Could not send: '+error.message:'Color sent! The physical RGB LED should update shortly.');
+    });
+  }
+  $('sendColor').onclick=()=>sendRGB(hexColor());
+  $('rgbOff').onclick=()=>sendRGB('#000000');
+  // One normal color command also stops any running animation in the Arduino sketch.
+  $('message').addEventListener('input', () => {
+    $('messageCount').textContent = $('message').value.length + ' / 28 characters';
+    $('messageMarquee').textContent = ($('message').value.trim() || 'I MISS YOU').toUpperCase() + '     ';
+  });
+  document.querySelectorAll('[data-message]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      $('message').value=button.dataset.message;
+      $('message').dispatchEvent(new Event('input'));
+    });
+  });
+  $('sendMessage').onclick = () => {
+    if (sendingMessage || !client || !client.connected) {
+      messageFeedback('Connect to Adafruit IO first.');
+      return;
+    }
+    const text = $('message').value.toUpperCase().trim();
+    if (!text) { messageFeedback('Type a message first.'); return; }
+    if (!/^[A-Z0-9 .,!?\'-]{1,28}$/.test(text)) {
+      messageFeedback('Use A-Z, numbers, spaces, . , ! ? apostrophe or hyphen.');
+      return;
+    }
+    sendingMessage=true;
+    $('sendMessage').disabled=true;
+    messageFeedback('Sending message...');
+    client.publish(topic, 'TXT:' + text, {qos:1,retain:false}, error => {
+      sendingMessage=false;
+      $('sendMessage').disabled=!client || !client.connected;
+      if (error) messageFeedback('Could not send: ' + error.message);
+      else messageFeedback('Message sent! Watch the Arduino LED matrix.');
+    });
+  };
+
+  // Quick colors change only the local preview until Send Color is clicked.
+  const palette=['#FF284A','#FF9B28','#FFE94F','#2CF294','#21BEE6','#526AFF','#B44CFF','#FF5BB5','#FFFFFF','#000000'];
+  function hexToHSV(hex) {
+    let r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+    const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+    let h=0;
+    if(d!==0){ if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4; }
+    h=(h*60+360)%360;
+    return [h,max===0?0:d/max,max];
+  }
+  function selectHex(hex) {
+    [hue,saturation,brightness]=hexToHSV(hex);
+    $('brightness').value=Math.round(brightness*100);
+    updateColorPreview();
+  }
+  for (const hex of palette) {
+    const b=document.createElement('button');
+    b.type='button';b.className='swatch';b.style.background=hex;
+    b.title=hex;b.setAttribute('aria-label','Preview color '+hex);
+    b.onclick=()=>selectHex(hex);
+    $('swatches').appendChild(b);
+  }
+  $('randomColor').onclick=()=>selectHex('#'+Array.from({length:3},()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0')).join(''));
+
+  const effects=[
+    {id:'RAINBOW',name:'Rainbow Cycle',desc:'Smoothly travel through all colors'},
+    {id:'PASTEL',name:'Pastel Rainbow',desc:'Soft, gentle rainbow colors'},
+    {id:'BREATH',name:'Breathing',desc:'Your color slowly fades in and out'},
+    {id:'HEART',name:'Heartbeat',desc:'Two soft pulses of your color'},
+    {id:'CANDLE',name:'Candlelight',desc:'Warm amber flicker'},
+    {id:'OCEAN',name:'Ocean Waves',desc:'Flowing blue and turquoise'},
+    {id:'SUNSET',name:'Sunset Glow',desc:'Orange, pink, and purple'},
+    {id:'FADE',name:'Two-color Fade',desc:'Fade between two colors you choose'},
+    {id:'TWINKLE',name:'Twinkle',desc:'Your color sparkles softly'},
+    {id:'PARTY',name:'Party Colors',desc:'Vivid, smooth color transitions'},
+    {id:'AURORA',name:'Northern Lights',desc:'Dreamy teal and violet waves'}
+  ];
+  let chosenEffect='RAINBOW';
+  function effectFeedback(s) { $('effectFeedback').textContent=s; }
+  function chooseEffect(id) {
+    chosenEffect=id;
+    for(const b of $('effectGrid').children){
+      const selected=b.dataset.effect===id;
+      b.classList.toggle('selected',selected);
+      b.setAttribute('aria-pressed',selected?'true':'false');
+    }
+    $('selectedEffect').textContent='Selected: '+effects.find(e=>e.id===id).name;
+  }
+  for(const e of effects){
+    const b=document.createElement('button');
+    b.type='button';b.className='effect-option';b.dataset.effect=e.id;
+    const name=document.createElement('span');name.className='effect-name';name.textContent=e.name;
+    const desc=document.createElement('span');desc.className='effect-description';desc.textContent=e.desc;
+    b.append(name,desc);
+    b.onclick=()=>chooseEffect(e.id);
+    $('effectGrid').appendChild(b);
+  }
+  chooseEffect('RAINBOW');
+  $('fxSpeed').oninput=()=>{$('fxSpeedValue').textContent=$('fxSpeed').value+'%';};
+  $('fxBrightness').oninput=()=>{$('fxBrightnessValue').textContent=$('fxBrightness').value+'%';};
+
+  function publishEffect(command){
+    if(sendingEffect||!client||!client.connected){effectFeedback('Connect to Adafruit IO first.');return;}
+    sendingEffect=true;
+    for(const id of ['startEffect','stopEffect','surpriseEffect'])$(id).disabled=true;
+    effectFeedback('Sending effect...');
+    client.publish(topic,command,{qos:1,retain:false},err=>{
+      sendingEffect=false;
+      const connected=!!client&&client.connected;
+      for(const id of ['startEffect','stopEffect','surpriseEffect'])$(id).disabled=!connected;
+      effectFeedback(err?'Send failed: '+err.message:'Sent! The Arduino should update shortly.');
+    });
+  }
+  function effectCommand(id){
+    return 'FX:'+id+':'+$('fxSpeed').value+':'+$('fxBrightness').value+':'+hexColor().slice(1)+':'+$('accentColor').value.slice(1).toUpperCase();
+  }
+  $('startEffect').onclick=()=>publishEffect(effectCommand(chosenEffect));
+  $('stopEffect').onclick=()=>publishEffect('FX:STOP');
+  $('surpriseEffect').onclick=()=>{
+    const random=effects[Math.floor(Math.random()*effects.length)];
+    chooseEffect(random.id);
+    publishEffect(effectCommand(random.id));
+  };
+
+  // Offline local visualization, independent from the physical Arduino.
+  const preview=$('studioLight');
+  function mixRGB(a,b,m){return a.map((v,i)=>Math.round(v*(1-m)+b[i]*m));}
+  function rgbFromHex(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));}
+  function previewTick(now){
+    const speed=Number($('fxSpeed').value);
+    const brightnessLevel=Number($('fxBrightness').value)/100;
+    const duration=12000-105*speed;
+    const t=(now%duration)/duration;
+    const wave=.5-.5*Math.cos(2*Math.PI*t);
+    const base=rgbFromHex(hexColor());
+    const accent=rgbFromHex($('accentColor').value);
+    const hueAt=h=>hsvToRgb((h+360)%360,1,1);
+    let c=base,level=1;
+    switch(chosenEffect){
+      case 'RAINBOW':c=hueAt(t*360);break;
+      case 'PASTEL':c=hsvToRgb(t*360,.45,1);break;
+      case 'BREATH':level=.06+.94*wave;break;
+      case 'HEART':{
+        const pulse=(p,center,width)=>{const d=Math.abs(p-center)/width;return d<1?(1-d)*(1-d):0;};
+        level=Math.min(1,.05+.94*pulse(t,.19,.15)+.76*pulse(t,.43,.12));break;
+      }
+      case 'CANDLE':c=[255,95,6];level=.72+.18*Math.sin(now/115)+.10*Math.sin(now/34);break;
+      case 'OCEAN':c=mixRGB([3,22,180],[0,210,255],(.5+.5*Math.sin(2*Math.PI*t)));level=.5+.5*wave;break;
+      case 'SUNSET':{
+        c=wave<.5?mixRGB([255,115,13],[255,35,132],wave*2):mixRGB([255,35,132],[105,24,220],(wave-.5)*2);break;
+      }
+      case 'FADE':c=mixRGB(base,accent,wave);break;
+      case 'TWINKLE':level=.55+.32*Math.sin(now/140)+.13*Math.sin(now/67);break;
+      case 'PARTY':{
+        const part=Math.floor(t*6),fraction=t*6-part;
+        c=mixRGB(hueAt(part*60),hueAt((part+1)*60),fraction);break;
+      }
+      case 'AURORA':c=mixRGB([0,235,170],[165,45,255],.5+.5*Math.sin(2*Math.PI*t));level=.64+.36*wave;break;
+    }
+    const result=c.map(v=>Math.max(0,Math.min(255,Math.round(v*level*brightnessLevel))));
+    preview.style.backgroundColor='rgb('+result.join(',')+')';
+    preview.style.boxShadow='0 0 45px rgba('+result.join(',')+',.65)';
+    $('studioPreviewLabel').textContent=effects.find(e=>e.id===chosenEffect).name+' — webpage-only preview';
+    requestAnimationFrame(previewTick);
+  }
+  requestAnimationFrame(previewTick);
+
+  $('apply').onclick=()=>{
+    if(sending||!client||!client.connected) {feedback('Connect first.');return;}
+    sending=true;$('apply').disabled=true;feedback('Sending pattern...');
+    const pattern=encodeRotated();
+    client.publish(topic,pattern,{qos:1,retain:false},error=>{
+      sending=false;
+      $('apply').disabled=!client || !client.connected;
+      if(error) feedback('Send failed: '+error.message);
+      else {dirty=false;updateUI();feedback('Pattern sent to Adafruit IO. The Arduino should display it shortly.');}
+    });
+  };
+})();
+</script>
+</body>
+</html>
