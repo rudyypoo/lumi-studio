@@ -3,7 +3,7 @@
 <!-- Pixel art presets visually revised and verified for 12x8 LED grid. -->
 <!-- Lumi Studio v4 — editorial pink + curated 12x8 presets -->
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#fff7fb"><meta name="description" content="Lumi Studio — cute remote LED studio, RGB lights and shared virtual kitty"><title>Lumi Studio — A little space for two</title>
+<meta name="theme-color" content="#fff7fb"><meta name="description" content="Lumi Studio — cute remote LED studio, RGB lights and shared virtual kitty"><title>Lumi Studio — Animated Kitty Edition</title>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.16.0/dist/mqtt.min.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#0a0e14;--surface:#141b26;--surface2:#1b2634;--stroke:#2c3b4b;--text:#f0f5f8;--muted:#9aaaba;--accent:#76e3d0;--accent2:#b9a0ff;--amber:#ffc590;--red:#f18b9f;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-synthesis:none}
@@ -333,6 +333,85 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 @media(max-width:850px){.kit-top{grid-template-columns:1fr}.kit-top .pet-scene{height:300px}.kit-bond{display:none}.kit-summary{padding:20px}.kit-options{grid-template-columns:repeat(4,minmax(0,1fr))}.kit-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.kit-tabs{margin:12px 0 20px}.kit-tab{font-size:11px;padding:10px 11px}.kit-intro h3{font-size:23px}.kit-summary{padding:19px}.kit-top .pet-scene{height:272px}.kit-top .pet-art{max-height:233px}.kit-care-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.kit-category{min-height:96px;padding:8px 3px}.kit-category .kit-emoji{font-size:25px}.kit-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.kit-game-grid,.kit-quests-grid,.kit-custom-grid,.kit-explore-controls{grid-template-columns:1fr}.kit-game-wide{grid-column:span 1}.kit-custom-grid{gap:12px}.kit-achievements{grid-template-columns:1fr}.kit-totals{grid-template-columns:repeat(2,1fr)}.kit-stats-grid .pet-stat{margin:9px 0}.kit-submit-line{align-items:flex-start;flex-direction:column}.kit-submit-line .small{max-width:100%}.kit-submit-line button{width:100%}.kit-intro p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.kitty-v2 .pet-art,.kitty-v2 .pet-tail,.kitty-v2 .pet-head,.kitty-v2 .pet-floating-heart{animation:none!important}}
+
+/* Lumi Kitty 3.0 — SVG articulated character */
+.kitty-v2 #kitPetArt{animation:none;overflow:visible;max-height:266px;max-width:420px;filter:drop-shadow(0 8px 8px #a8709418)}
+.kitty-v2 .pet-scene{align-items:center}
+#kitPetArt #kitChar,#kitPetArt #kitTail,#kitPetArt #kitLegL,#kitPetArt #kitLegR,#kitPetArt #kitArmL,#kitPetArt #kitArmR,#kitPetArt #kitBody,#kitPetArt #kitHead{transform-box:view-box}
+#kitPetArt #kitChar{transform-origin:230px 230px}
+#kitPetArt #kitTail{transform-origin:285px 231px;animation:kittyTail calc(2.8s / var(--kit-speed,1)) ease-in-out infinite alternate}
+#kitPetArt #kitHead{transform-origin:230px 180px;animation:kittyLook calc(5.5s / var(--kit-speed,1)) ease-in-out infinite alternate}
+#kitPetArt #kitArmL{transform-origin:185px 192px}
+#kitPetArt #kitArmR{transform-origin:275px 192px}
+#kitPetArt #kitLegL{transform-origin:197px 251px}
+#kitPetArt #kitLegR{transform-origin:263px 251px}
+#kitPetArt #kitBlinkMark{opacity:0;animation:kittyBlinkMark 6s infinite}
+#kitPetArt #kitEyes{animation:kittyEyesVisible 6s infinite}
+#kitPetArt[data-expression="happy"] #kitEyes,#kitPetArt[data-expression="excited"] #kitEyes,#kitPetArt[data-expression="sleepy"] #kitEyes,#kitPetArt[data-expression="love"] #kitEyes,#kitPetArt[data-expression="sassy"] #kitEyes{animation:none}
+#kitPetArt[data-expression="happy"] #kitBlinkMark,#kitPetArt[data-expression="excited"] #kitBlinkMark,#kitPetArt[data-expression="sleepy"] #kitBlinkMark,#kitPetArt[data-expression="love"] #kitBlinkMark,#kitPetArt[data-expression="sassy"] #kitBlinkMark{display:none}
+@keyframes kittyTail{0%{transform:rotate(-9deg)}100%{transform:rotate(13deg)}}
+@keyframes kittyLook{0%,78%,100%{transform:rotate(0)}85%{transform:rotate(4deg)}93%{transform:rotate(-3deg)}}
+@keyframes kittyBlinkMark{0%,40%,43%,68%,71%,100%{opacity:0}41%,42%,69%,70%{opacity:1}}
+@keyframes kittyEyesVisible{0%,40%,43%,68%,71%,100%{opacity:1}41%,42%,69%,70%{opacity:0}}
+@keyframes kittyBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes kittyRun{0%,100%{transform:translateY(-4px)}50%{transform:translateY(-17px)}}
+@keyframes kittyJump{0%,100%{transform:translateY(0)}33%,62%{transform:translateY(-29px)}}
+@keyframes kittyWave{0%,100%{transform:rotate(-88deg)}50%{transform:rotate(-112deg)}}
+@keyframes kittyWalkLeft{0%,100%{transform:rotate(-21deg)}50%{transform:rotate(21deg)}}
+@keyframes kittyWalkRight{0%,100%{transform:rotate(21deg)}50%{transform:rotate(-21deg)}}
+@keyframes kittyRunLeft{0%,100%{transform:rotate(-31deg)}50%{transform:rotate(35deg)}}
+@keyframes kittyRunRight{0%,100%{transform:rotate(35deg)}50%{transform:rotate(-31deg)}}
+@keyframes kittySleep{0%,100%{transform:translateY(16px) rotate(-8deg)}50%{transform:translateY(18px) rotate(-10deg)}}
+@keyframes kittySit{0%,100%{transform:translateY(12px)}50%{transform:translateY(14px)}}
+#kitPetArt[data-pose="idle"] #kitChar{animation:kittyBob calc(3.1s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitChar{animation:kittyBob calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitLegL{animation:kittyWalkLeft calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitLegR{animation:kittyWalkRight calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitArmL{animation:kittyWalkRight calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitArmR{animation:kittyWalkLeft calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitChar{animation:kittyRun calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitLegL{animation:kittyRunLeft calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitLegR{animation:kittyRunRight calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitArmL{animation:kittyRunRight calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitArmR{animation:kittyRunLeft calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="jump"] #kitChar{animation:kittyJump calc(.9s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="jump"] #kitArmL{transform:rotate(90deg)}
+#kitPetArt[data-pose="jump"] #kitArmR{transform:rotate(-90deg)}
+#kitPetArt[data-pose="jump"] #kitLegL{transform:rotate(-22deg)}
+#kitPetArt[data-pose="jump"] #kitLegR{transform:rotate(22deg)}
+#kitPetArt[data-pose="wave"] #kitArmR{animation:kittyWave calc(.75s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="wave"] #kitChar{animation:kittyBob calc(2.4s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="point"] #kitArmR{transform:rotate(-100deg)}
+#kitPetArt[data-pose="point"] #kitHead{transform:rotate(7deg);animation:none}
+#kitPetArt[data-pose="sit"] #kitChar{animation:kittySit calc(3s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="sit"] #kitLegL{transform:translate(-12px,-14px) rotate(-70deg)}
+#kitPetArt[data-pose="sit"] #kitLegR{transform:translate(12px,-14px) rotate(70deg)}
+#kitPetArt[data-pose="sit"] #kitArmL{transform:rotate(-12deg)}
+#kitPetArt[data-pose="sit"] #kitArmR{transform:rotate(12deg)}
+#kitPetArt[data-pose="sleep"] #kitChar{animation:kittySleep calc(4s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="sleep"] #kitLegL{transform:translate(-11px,-13px) rotate(-62deg)}
+#kitPetArt[data-pose="sleep"] #kitLegR{transform:translate(11px,-13px) rotate(62deg)}
+#kitPetArt[data-pose="sleep"] #kitHead{animation:none;transform:rotate(-8deg)}
+#kitPetArt[data-pose="explore"] #kitHead{animation:kittyLook calc(2s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="explore"] #kitArmR{transform:rotate(-75deg)}
+#kitPetArt[data-pose="explore"] #kitChar{animation:kittyBob calc(2s / var(--kit-speed,1)) ease-in-out infinite}
+.kit-anim-lab{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:16px}
+.kit-pose-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 18px}
+.kit-pose-btn{border:1px solid #efcfdf;background:#fff9fc;color:#86466b;padding:12px 8px;border-radius:12px;min-height:65px;font-weight:750;font-size:12px;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;cursor:pointer}
+.kit-pose-btn span{font-size:21px}.kit-pose-btn.active{background:#ffe0f0;border-color:#d35092;box-shadow:0 0 0 2px #f9d4e5 inset;color:#a52f70}
+.kit-anim-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kit-anim-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.kit-anim-buttons .action{flex:1;min-width:130px}
+.kit-anim-info{font-size:12px;line-height:1.75;color:#90617c}
+.kit-anim-bubble{padding:13px;border-radius:13px;border:1px solid #f0cee0;background:#fff1f8;color:#914773;font-size:12px}
+@media(max-width:800px){.kit-anim-lab{grid-template-columns:1fr}.kit-pose-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:450px){.kit-pose-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.kit-anim-tools{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#kitPetArt #kitChar,#kitPetArt #kitTail,#kitPetArt #kitHead,#kitPetArt #kitLegL,#kitPetArt #kitLegR,#kitPetArt #kitArmL,#kitPetArt #kitArmR,#kitPetArt #kitEyes,#kitPetArt #kitBlinkMark{animation:none!important}}
+
+/* Leave headwear unobstructed; keep the speech note to one side of the scene. */
+.kitty-v2 .pet-bubble{left:12px;right:auto;top:12px;transform:none;max-width:39%;white-space:normal;font-size:11px;line-height:1.35;padding:8px 10px;text-align:left;border-radius:11px}
+@media(max-width:560px){.kitty-v2 .pet-bubble{max-width:38%;font-size:9px;line-height:1.3;padding:6px 7px}}
+
 </style></head>
 <body data-active-device="connect">
 <div class="shell">
@@ -488,7 +567,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 
  <div class="device-area pet-area" data-device-panel="kitty" hidden>
 <section role="region" id="panel-kitty" class="kitty-v2" data-view="kitty">
-  <div class="device-heading"><div><div class="step-label">YOUR SHARED LITTLE WORLD</div><h2>Our Kitty <span class="heart-charm">♡</span></h2><p>A cozy pet adventure you can both play, personalize, and grow together.</p></div><span class="tag rose" id="kitLevelTag">LEVEL 1</span></div>
+  <div class="device-heading"><div><div class="step-label">YOUR SHARED LITTLE WORLD</div><h2>Our Kitty <span class="heart-charm">♡</span></h2><p>A cozy pet adventure with a fully animated, customizable SVG kitty.</p></div><span class="tag rose" id="kitLevelTag">LEVEL 1</span></div>
   <div class="kit-summary">
     <div class="kit-intro"><span id="kitHello">GOOD TO SEE YOU</span><h3>Make a little magic with <strong id="kitGreetingName">Mochi</strong>.</h3><p id="kitIntroLine">Feed, play and discover a tiny world together. Every little moment counts.</p><div class="kit-pills"><span id="kitCoinPill">✦ 50 stars</span><span id="kitXpPill">Level 1 · 0 XP</span><span id="kitStreakPill">♡ 0 memories</span></div></div>
     <div class="kit-bond"><span class="kit-bond-icon">♡</span><strong>YOUR LITTLE FAMILY</strong><span>One kitty, two favorite humans.</span></div>
@@ -500,28 +579,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
         <div class="kit-room-decor"><span id="kitRoomMark">✿</span><span id="kitRoomLabel">Blush bedroom</span></div><span class="kit-bed-symbol" id="kitBedSymbol" aria-hidden="true">☁</span>
         <div class="pet-floating-heart heart-one">♡</div><div class="pet-floating-heart heart-two">✧</div><div class="pet-floating-heart heart-three">♡</div>
         <div class="pet-bubble" id="petSpeech">Mew! Come play with me ♡</div>
-        <svg class="pet-art" id="kitPetArt" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cute cream-colored animated cartoon kitten">
-          <defs><linearGradient id="petBody" x1="0" y1="0" x2="1" y2="1"><stop id="kitCoatA" stop-color="#fffefa"/><stop id="kitCoatB" offset="1" stop-color="#ffe5ef"/></linearGradient><radialGradient id="petCheek"><stop stop-color="#f5a2bb" stop-opacity=".9"/><stop offset="1" stop-color="#f5a2bb" stop-opacity="0"/></radialGradient></defs>
-          <ellipse cx="230" cy="294" rx="146" ry="19" fill="#b16d9030"/>
-          <g class="pet-tail"><path d="M334 241q82-15 73-83-8-42-37-15" fill="none" stroke="#e8b6ca" stroke-width="34" stroke-linecap="round"/><path d="M334 241q82-15 73-83-8-42-37-15" fill="none" stroke="#fff1f5" stroke-width="22" stroke-linecap="round"/></g>
-          <ellipse cx="230" cy="237" rx="117" ry="76" fill="url(#petBody)" stroke="#cc8fab" stroke-width="4"/>
-          <ellipse cx="230" cy="246" rx="61" ry="41" fill="#fff9fc" opacity=".95"/>
-          <ellipse cx="166" cy="279" rx="34" ry="16" fill="#fff9fc" stroke="#d7a3b9" stroke-width="3"/>
-          <ellipse cx="294" cy="279" rx="34" ry="16" fill="#fff9fc" stroke="#d7a3b9" stroke-width="3"/>
-          <g class="pet-head"><path d="M117 147 124 28 185 78Q225 60 270 78L334 28 343 147q24 70-40 98-66 30-146 0-62-25-40-98Z" fill="url(#petBody)" stroke="#bd829f" stroke-width="5" stroke-linejoin="round"/>
-          <path d="m132 48 5 68 38-27Z" fill="#ffaccb" opacity=".8"/><path d="m325 48-5 68-38-27Z" fill="#ffaccb" opacity=".8"/>
-          <path d="M147 86q14-13 33-14m100 0q19 1 33 14" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".7"/>
-          <g class="pet-eyes-open"><ellipse cx="182" cy="156" rx="14" ry="19" fill="#594055"/><ellipse cx="278" cy="156" rx="14" ry="19" fill="#594055"/><ellipse cx="177" cy="151" rx="4" ry="7" fill="white"/><ellipse cx="273" cy="151" rx="4" ry="7" fill="white"/></g>
-          <g class="pet-eyes-closed"><path d="M166 158q16 17 32 0m64 0q16 17 32 0" stroke="#7d4968" stroke-width="6" stroke-linecap="round" fill="none"/></g>
-          <g class="pet-eyes-sleep"><path d="M166 160q16 12 32-2m64 2q16 12 32-2" stroke="#7d4968" stroke-width="5" stroke-linecap="round" fill="none"/></g>
-          <ellipse cx="153" cy="189" rx="28" ry="22" fill="url(#petCheek)"/><ellipse cx="307" cy="189" rx="28" ry="22" fill="url(#petCheek)"/>
-          <path d="m222 189 8 7 8-7-8-4Z" fill="#d76793"/><path d="M230 196q-5 13-18 5m18-5q5 13 18 5" fill="none" stroke="#8e5672" stroke-width="3" stroke-linecap="round"/>
-          <path d="m152 201-36-6m36 14-33 6m189-14 36-6m-36 14 33 6" fill="none" stroke="#c48da6" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M196 235q35 14 68 0" stroke="#eed2de" stroke-width="4" fill="none" stroke-linecap="round"/>
-          </g>
-          <g class="pet-sleep-mark" font-family="ui-sans-serif,sans-serif" font-weight="800" fill="#d16f9f"><text x="332" y="88" font-size="25">Z</text><text x="361" y="59" font-size="20">z</text></g>
-          <g class="pet-toy" transform="translate(94 264)"><circle r="26" fill="#f6b3d0" stroke="#b95e8b" stroke-width="3"/><path d="M-21 5 20-6M-11-21 11 21" stroke="#fff1f7" stroke-width="5"/><path d="M14 15q38 25 60 3" stroke="#b96494" stroke-width="2.7" fill="none"/></g>
-        <g id="kitWear" pointer-events="none"></g></svg>
+        <svg class="pet-art" id="kitPetArt" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated virtual kitten"></svg>
         <div id="petActionPop" class="pet-action-pop" aria-hidden="true"></div>
       </div>
       <div class="pet-moodline"><span id="petMoodLabel">Happy and curious</span><span id="petLastSeen">Connect to meet your kitten</span></div>
@@ -542,6 +600,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   </div>
   <div class="kit-tabs" role="tablist" aria-label="Our Kitty activities">
     <button type="button" class="kit-tab active" data-ktab="care" role="tab" aria-selected="true">♡ <span>Care</span></button>
+    <button type="button" class="kit-tab" data-ktab="animation" role="tab" aria-selected="false">✧ <span>Animations</span></button>
     <button type="button" class="kit-tab" data-ktab="games" role="tab" aria-selected="false">◈ <span>Play</span></button>
     <button type="button" class="kit-tab" data-ktab="style" role="tab" aria-selected="false">✿ <span>Dress Up</span></button>
     <button type="button" class="kit-tab" data-ktab="home" role="tab" aria-selected="false">⌂ <span>Home</span></button>
@@ -549,7 +608,33 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     <button type="button" class="kit-tab" data-ktab="shop" role="tab" aria-selected="false">♧ <span>Gift Shop</span></button>
     <button type="button" class="kit-tab" data-ktab="memories" role="tab" aria-selected="false">▤ <span>Memories</span></button>
   </div>
-  <div class="kit-swipe-note">Swipe across the tabs for Explore, Gift Shop and Memories →</div>
+  <div class="kit-swipe-note">Swipe across for Animations, Explore, Gift Shop and Memories →</div>
+  <div data-ktab-panel="animation" class="kit-pane" hidden>
+    <div class="kit-section-intro"><h3>Meet the all-new animated kitty.</h3><p>Choose a pose and a facial expression independently. Try as many combinations as you want, then share one moment with each other.</p></div>
+    <div class="kit-anim-lab">
+      <div class="panel">
+        <div class="step-label">POSE LIBRARY</div><h3 class="kit-form-title">How should kitty move?</h3>
+        <div class="kit-pose-grid" id="kitPoseGrid" role="group" aria-label="Character poses"></div>
+        <div class="kit-anim-tools">
+          <div><label class="kit-label" for="kitExpressionSelect">Facial expression</label><select class="kit-select" id="kitExpressionSelect"></select></div>
+          <div><label class="kit-label" for="kitAnimSpeed">Animation speed</label><select class="kit-select" id="kitAnimSpeed"><option value=".55">Slow and cozy</option><option value="1" selected>Normal</option><option value="1.5">Extra playful</option><option value="2">Zoomies!</option></select></div>
+        </div>
+        <div class="kit-anim-buttons">
+          <button type="button" class="action secondary" id="kitPreviewPose">Preview on this screen</button>
+          <button type="button" class="action primary" id="kitSharePose" disabled>Send pose to both of you ♡</button>
+          <button type="button" class="action secondary" id="kitAutoPose">Return to automatic</button>
+        </div>
+        <p class="feedback" id="kitAnimFeedback" role="status">Preview poses without using Adafruit IO updates.</p>
+      </div>
+      <div class="panel">
+        <div class="step-label">LIVE CHARACTER ENGINE</div><h3 class="kit-form-title">A tiny personality, now in motion.</h3>
+        <p class="kit-anim-info">Kitty's head, ears, paws and tail share one coat palette, so every color change affects the whole body. Bows, hats and collars are anchored to the correct places rather than floating over the face.</p>
+        <div class="kit-anim-bubble">✦ The kitty above is your live preview. It reacts when you feed, pet, play, explore, or put it to sleep. You can send a pose to the shared kitty-state feed, or let its latest activity choose automatically.</div>
+        <p class="kit-anim-info" style="margin-top:16px"><strong>Animations:</strong> breathing, blinking, tail wagging, walking, running, jumping, waving, pointing, sitting, sleeping and exploring. Expressions can be mixed with any pose.</p>
+        <div class="kit-anim-bubble" style="margin-top:15px">Current preview: <strong id="kitMotionLabel">Standing · Happy</strong></div>
+      </div>
+    </div>
+  </div>
   <div data-ktab-panel="care" class="kit-pane">
     <div class="kit-section-intro"><h3>Little rituals, big love.</h3><p>Pick an activity, choose how you'd like to do it, then send one sweet moment to your shared kitty.</p></div>
     <div class="kit-care-grid" id="kitCareCats"></div>
@@ -1333,8 +1418,8 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     adventure:{j:16,e:-10,f:-5,l:6}
   };
   const kitActionIcons={gift:'🎁',adopt:'🐱',rename:'🎀',feed:'🥣',pet:'💗',play:'🧶',nap:'🌙',brush:'🪮',treat:'🐟',mini:'🐭',trick:'🎓',surprise:'✨',style:'🎀',home:'🏡',adventure:'🌸',mode:'☁'};
-  const kitActionNames={gift:'A special new treasure',adopt:'A new little family member!',rename:'A new name for kitty',feed:'A delicious meal',pet:'The sweetest cuddle',play:'Time for some fun',nap:'A cozy nap',brush:'Fresh and fluffy',treat:'A special treat',mini:'Caught the sneaky mouse!',trick:'Practiced a trick',surprise:'A little surprise',style:'A new look for kitty',home:'A fresh room makeover',adventure:'Went on an adventure',mode:'Changed cozy mode'};
-  const kitDefault=()=>({v:2,n:'Mochi',f:72,j:78,e:76,l:84,x:0,c:50,k:0,h:0,a:1,r:0,b:0,d:0,p:0,dc:0,act:'adopt',dt:'Welcome home',who:'Our little family',t:Date.now(),ct:[0,0,0,0,0,0,0,0],tr:[0,0,0,0,0,0,0,0],hi:[],qd:Math.floor(Date.now()/86400000),qb:0,u:0});
+  const kitActionNames={pose:'A cute new pose',poseauto:'Back to automatic',gift:'A special new treasure',adopt:'A new little family member!',rename:'A new name for kitty',feed:'A delicious meal',pet:'The sweetest cuddle',play:'Time for some fun',nap:'A cozy nap',brush:'Fresh and fluffy',treat:'A special treat',mini:'Caught the sneaky mouse!',trick:'Practiced a trick',surprise:'A little surprise',style:'A new look for kitty',home:'A fresh room makeover',adventure:'Went on an adventure',mode:'Changed cozy mode'};
+  const kitDefault=()=>({v:2,n:'Mochi',f:72,j:78,e:76,l:84,x:0,c:50,k:0,h:0,a:1,r:0,b:0,d:0,p:0,dc:0,ps:0,ex:0,act:'adopt',dt:'Welcome home',who:'Our little family',t:Date.now(),ct:[0,0,0,0,0,0,0,0],tr:[0,0,0,0,0,0,0,0],hi:[],qd:Math.floor(Date.now()/86400000),qb:0,u:0});
   let petData=null,petReady=false,petLoaded=false,petPending=false,petSubscribed=false;
   let petLastChange=0,kitCareType='feed',kitCareIndex=0,kitActiveTab='care',kitPreviewDirty=false;
   let kitMousePlaying=false,kitMouseCount=0,kitMouseDone=false;
@@ -1353,7 +1438,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(Number(raw.v)===2){
       p.x=kitInt(raw.x,0,1000000,0);p.c=kitInt(raw.c,0,100000,50);
       for(const [key,max] of [['k',9],['h',10],['a',9],['r',9],['b',8],['d',9],['p',7],['dc',1]])p[key]=kitInt(raw[key],0,max,p[key]);
-      p.dt=kitClean(raw.dt,22);p.ct=Array.from({length:8},(_,i)=>kitInt((raw.ct||[])[i],0,9999,0));
+      p.ps=kitInt(raw.ps,0,9,0);p.ex=kitInt(raw.ex,0,10,0);p.dt=kitClean(raw.dt,22);p.ct=Array.from({length:8},(_,i)=>kitInt((raw.ct||[])[i],0,9999,0));
       p.tr=Array.from({length:8},(_,i)=>kitInt((raw.tr||[])[i],0,9,0));
       p.hi=Array.isArray(raw.hi)?raw.hi.slice(-5).filter(h=>Array.isArray(h)&&h.length>=3).map(h=>[kitClean(h[0],12),kitClean(h[1],19),kitClean(h[2],14),kitInt(h[3],0,1e12,0)]):[];
       p.qd=kitInt(raw.qd,0,1e7,kitToday());p.qb=kitInt(raw.qb,0,7,0);p.u=kitInt(raw.u,0,4095,0);
@@ -1403,15 +1488,172 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     '<path d="M183 250q47 20 94 0" fill="none" stroke="#a6cca6" stroke-width="8"/><circle cx="230" cy="266" r="15" fill="#fff" stroke="#e6b6c9" stroke-width="2"/><circle cx="230" cy="266" r="6" fill="#ffca69"/>',
     '<path d="M183 250q47 20 94 0" fill="none" stroke="#a4b9e6" stroke-width="9"/><path d="M230 252a12 12 0 1 0 12 20 13 13 0 1 1-12-20" fill="#ffe2a0"/>'
   ];
-  const kitSpeech={gift:'I love my new present! ♡',adopt:'Mew! I love our little family!',rename:'That name is so cute!',feed:'Nom nom nom!',pet:'Purrrrr… ♡',play:'Catch me if you can!',nap:'Zzz… sweet dreams',brush:'I feel so fluffy!',treat:'BEST SNACK EVER!',mini:'I caught it! 🐭',trick:'Look what I learned!',surprise:'That was so fun!',style:'Feeling so fancy!',home:'Home sweet home!',adventure:'What an adventure!',mode:'Cozy forever!'};
+  const kitSpeech={pose:'Look at me! ♡',poseauto:'Back to my cozy self! ♡',gift:'I love my new present! ♡',adopt:'Mew! I love our little family!',rename:'That name is so cute!',feed:'Nom nom nom!',pet:'Purrrrr… ♡',play:'Catch me if you can!',nap:'Zzz… sweet dreams',brush:'I feel so fluffy!',treat:'BEST SNACK EVER!',mini:'I caught it! 🐭',trick:'Look what I learned!',surprise:'That was so fun!',style:'Feeling so fancy!',home:'Home sweet home!',adventure:'What an adventure!',mode:'Cozy forever!'};
   function kitSetSelect(id,labels){const el=$(id);el.innerHTML='';labels.forEach((label,i)=>{const opt=document.createElement('option');opt.value=i;opt.textContent=Array.isArray(label)?label[0]:label;el.appendChild(opt);});}
   kitSetSelect('kitCoat',kitCoats);kitSetSelect('kitHat',kitHats);kitSetSelect('kitCollar',kitCollars);kitSetSelect('kitPersonality',kitPersonalities);
   kitSetSelect('kitRoom',kitRooms);kitSetSelect('kitBed',kitBeds);kitSetSelect('kitDecor',kitDecorations);
   kitSetSelect('kitPlace',kitPlaces);kitSetSelect('kitQuest',kitQuests);kitSetSelect('kitTrickSel',kitTricks);
+  // Lumi Kitty 3.0 — articulated SVG character, no external graphic assets.
+  const kitPoses = [
+    ['auto','Automatic','Responds to the latest activity'],
+    ['idle','Standing','Breathing and blinking'],
+    ['walk','Walking','Little marching steps'],
+    ['run','Running','Full-speed zoomies'],
+    ['jump','Jumping','A joyful hop'],
+    ['wave','Waving','Saying hello'],
+    ['point','Pointing','Look over there!'],
+    ['sit','Sitting','Getting comfortable'],
+    ['sleep','Sleeping','Dreaming sweetly'],
+    ['explore','Exploring','Looking for discoveries']
+  ];
+  const kitExpressions = [
+    ['auto','Automatic'],['neutral','Calm'],['happy','Happy'],['curious','Curious'],
+    ['excited','Excited'],['sleepy','Sleepy'],['surprised','Surprised'],
+    ['love','In love'],['sad','Sad'],['worried','Worried'],['sassy','Sassy']
+  ];
+  let kitAnimLocalPose = 0;
+  let kitAnimLocalExpression = 0;
+  let kitAnimPreview = false;
+  let kitAnimSpeed = 1;
+  const kitHexRGB = h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  function kitMix(a,b,t){const A=kitHexRGB(a),B=kitHexRGB(b);return '#'+A.map((x,i)=>Math.round(x*(1-t)+B[i]*t).toString(16).padStart(2,'0')).join('');}
+  const kitStroke = '#a96b90';
+  const kitFaceInk = '#5d3656';
+
+  function kitFaceMarkup(expression){
+    const ink=kitFaceInk;
+    const eye=(x,dir=0)=>`<ellipse cx="${x}" cy="125" rx="10.5" ry="15" fill="${ink}"/><ellipse cx="${x-2+dir}" cy="119" rx="3" ry="5" fill="#fff"/>`;
+    const smile='<path d="M224 155 Q230 165 238 155" fill="none" stroke="#945376" stroke-width="2.9" stroke-linecap="round"/>';
+    let eyes=eye(205)+eye(255);
+    let mouth=smile;
+    let brows='';
+    if(expression==='happy'||expression==='excited'){
+      eyes='<path d="M192 125 Q204 113 217 125 M243 125 Q255 113 268 125" fill="none" stroke="'+ink+'" stroke-width="5.4" stroke-linecap="round"/>';
+      mouth='<path d="M217 149 Q230 175 244 149 Z" fill="#8e3d66" stroke="#91476d" stroke-width="2"/><path d="M224 162 Q230 157 238 162" fill="none" stroke="#f5a3c6" stroke-width="3"/>';
+    } else if(expression==='sleepy'){
+      eyes='<path d="M191 129 Q205 137 218 126 M243 126 Q257 137 270 129" fill="none" stroke="'+ink+'" stroke-width="4.6" stroke-linecap="round"/>';
+      mouth='<path d="M225 155 Q230 159 235 155" fill="none" stroke="#985e7a" stroke-width="2.7"/>';
+    } else if(expression==='curious'){
+      eyes=eye(205,4)+eye(255,4);
+      brows='<path d="M191 107 Q204 96 215 106 M245 103 Q255 99 266 99" fill="none" stroke="'+ink+'" stroke-width="2.8" stroke-linecap="round"/>';
+      mouth='<path d="M225 155 Q235 162 242 154" fill="none" stroke="#985e7a" stroke-width="2.5"/>';
+    } else if(expression==='surprised'){
+      eyes='<ellipse cx="205" cy="123" rx="14" ry="17" fill="#fff" stroke="'+ink+'" stroke-width="2"/><circle cx="205" cy="125" r="7" fill="'+ink+'"/><ellipse cx="255" cy="123" rx="14" ry="17" fill="#fff" stroke="'+ink+'" stroke-width="2"/><circle cx="255" cy="125" r="7" fill="'+ink+'"/>';
+      mouth='<ellipse cx="230" cy="158" rx="7" ry="10" fill="#a4567c"/>';
+    } else if(expression==='sad'||expression==='worried'){
+      brows='<path d="M191 109 Q202 104 215 116 M244 115 Q257 104 268 109" fill="none" stroke="'+ink+'" stroke-width="3" stroke-linecap="round"/>';
+      mouth='<path d="M217 160 Q230 149 244 160" fill="none" stroke="#985e7a" stroke-width="2.8" stroke-linecap="round"/>';
+      if(expression==='sad')eyes+='<path d="M214 143 Q221 156 215 158 Q209 155 214 143 Z" fill="#8dc7e7"/>';
+    } else if(expression==='love'){
+      eyes='<path d="M205 132 C185 119 193 106 205 114 C217 106 225 119 205 132Z M255 132 C235 119 243 106 255 114 C267 106 275 119 255 132Z" fill="#ea65a0"/>';
+      mouth='<path d="M221 151 Q230 173 241 151" fill="none" stroke="#985e7a" stroke-width="3" stroke-linecap="round"/>';
+    } else if(expression==='sassy'){
+      eyes='<path d="M191 121 Q203 115 218 121 L218 126 Q205 121 192 125Z M242 120 Q254 115 270 121 L270 126 Q256 121 244 125Z" fill="'+ink+'"/>';
+      mouth='<path d="M221 155 Q238 167 249 150" fill="none" stroke="#985e7a" stroke-width="3" stroke-linecap="round"/>';
+      brows='<path d="M191 109 L218 107 M243 108 L266 101" fill="none" stroke="'+ink+'" stroke-width="3" stroke-linecap="round"/>';
+    }
+    return `<g id="kitExpressionArt">${brows}<g id="kitEyes">${eyes}</g><g id="kitBlinkMark"><path d="M191 125 Q204 133 218 125 M243 125 Q256 133 270 125" stroke="${ink}" stroke-width="4" stroke-linecap="round" fill="none"/></g><path d="M225 143 L235 143 L230 149 Z" fill="#d86c9f"/>${mouth}<path d="M181 151 l-27 -5 M181 157 l-28 3 M278 151 l27 -5 M278 157 l28 3" fill="none" stroke="#af7b99" stroke-width="2" stroke-linecap="round"/><ellipse cx="184" cy="145" rx="12" ry="9" fill="#f49ab7" opacity=".27"/><ellipse cx="276" cy="145" rx="12" ry="9" fill="#f49ab7" opacity=".27"/></g>`;
+  }
+  function kitHeadwear(which){
+    const items=[
+      '',
+      // Bow centered between ears, sits *above* the forehead instead of covering the eyes.
+      '<g transform="translate(232 66)"><path d="M-6 0 C-39-30 -42-4 -8 11 Z M7 0 C39-30 42-4 9 11 Z" fill="#f985b9" stroke="#b74680" stroke-width="2.5"/><circle r="8" fill="#d95597" stroke="#ae3d78" stroke-width="2"/><circle cx="-2" cy="-3" r="2" fill="#ffd2e6"/></g>',
+      '<g transform="translate(230 60)"><path d="M-39 1 L-37-30 L-19-10 L0-41 L21-10 L39-30 L37 1 Z" fill="#ffd77e" stroke="#ba8b4a" stroke-width="2.5"/><circle cx="0" cy="-18" r="5" fill="#ff96c9"/><path d="M-37 1 H37" stroke="#c88b48" stroke-width="5"/></g>',
+      '<g transform="translate(230 55)"><path d="M-30 14 L0-42 L31 14Z" fill="#9273cf" stroke="#684aa9" stroke-width="3"/><ellipse cx="0" cy="13" rx="45" ry="8" fill="#b18ce3" stroke="#684aa9" stroke-width="2"/><path d="M0-26 l5 8 10 2 -10 3 -5 8 -5-8 -10-3 10-2Z" fill="#ffe6a8"/></g>',
+      '<g transform="translate(230 63)"><path d="M-24-3 Q-41-22 -39-44 Q-33-60 -19-43 Q-8-25 -17-4Z M24-3 Q41-22 39-44 Q33-60 19-43 Q8-25 17-4Z" fill="#fff7fc" stroke="#bd809e" stroke-width="3"/><path d="M-29-17 Q-33-33 -32-43 M29-17 Q33-33 32-43" stroke="#f9a3c7" stroke-width="8" stroke-linecap="round"/></g>',
+      '<g transform="translate(230 64)"><path d="M-45 0 Q0-18 45 0" stroke="#ed7aa9" stroke-width="8" fill="none"/><path d="M0 -25 l7 13 15 3 -15 3 -7 13 -7-13 -15-3 15-3Z" fill="#ffe9a2" stroke="#d5a44c" stroke-width="2"/></g>',
+      '<g transform="translate(230 64)"><path d="M-45 0 Q0-16 45 0" fill="none" stroke="#98bb91" stroke-width="8"/>'+[-32,-16,0,16,32].map((x,i)=>`<g transform="translate(${x} ${-8-(i%2)*5})"><circle r="10" fill="${i%2?'#ffcce0':'#fff8fa'}" stroke="#e39dbd" stroke-width="1.5"/><circle r="3.5" fill="#e6b65c"/></g>`).join('')+'</g>',
+      '<g transform="translate(230 66)"><path d="M-42 2 Q-43-35 0-45 Q43-35 42 2Z" fill="#f6abd0" stroke="#b879a3" stroke-width="3"/><ellipse cx="0" cy="4" rx="50" ry="9" fill="#f5a6cd" stroke="#b879a3" stroke-width="2"/></g>',
+      '<g transform="translate(230 66)"><path d="M-39 3 Q-39-39 0-43 Q38-39 39 3Z" fill="#fffdfb" stroke="#bc8d9f" stroke-width="2.5"/><path d="M-39 4 H41" stroke="#fffdfb" stroke-width="13" stroke-linecap="round"/><path d="M-15-26 Q0-41 16-26" fill="none" stroke="#f5b6d1" stroke-width="4"/></g>',
+      '<g transform="translate(230 108)"><path d="M-51 8 Q-53-43 0-45 Q53-43 51 8" fill="none" stroke="#8872c3" stroke-width="11"/><rect x="-60" y="0" width="18" height="35" rx="8" fill="#cf91c4" stroke="#866bb4" stroke-width="2"/><rect x="42" y="0" width="18" height="35" rx="8" fill="#cf91c4" stroke="#866bb4" stroke-width="2"/></g>',
+      '<g transform="translate(230 20)"><ellipse rx="49" ry="12" fill="none" stroke="#ffe7a1" stroke-width="7"/><ellipse rx="40" ry="8" fill="none" stroke="#fff8d5" stroke-width="2"/></g>'
+    ];
+    return items[kitInt(which,0,10,0)];
+  }
+  function kitNeckwear(which){
+    const band='<path d="M194 186 Q230 209 266 186" stroke="#e78db4" stroke-width="8" fill="none" stroke-linecap="round"/>';
+    const bits=[
+      '',
+      band+'<path d="M230 215 C212 203 220 195 230 203 C242 195 250 203 230 215Z" fill="#e9649d" stroke="#b84d85" stroke-width="2"/>',
+      band+'<path d="M230 205 l-24-9 v19 l24-9 24 9 v-19Z" fill="#ffa7d0" stroke="#b85e94" stroke-width="2"/><circle cx="230" cy="205" r="5" fill="#e876a9"/>',
+      '<path d="M194 186 Q230 209 266 186" stroke="#bfa0dd" stroke-width="9" fill="none"/><circle cx="230" cy="211" r="10" fill="#ffe59e" stroke="#bca25f" stroke-width="2"/>',
+      '<path d="M194 186 Q230 209 266 186" stroke="#fff" stroke-width="12" stroke-dasharray="5 3" fill="none"/><circle cx="230" cy="212" r="5" fill="#f5accb"/>',
+      '<path d="M193 185 Q230 210 267 185" stroke="#ad9ad7" stroke-width="15" fill="none"/><path d="M236 198 l25 31 -12 9 -22-31" fill="#c3b5e6"/>',
+      band+'<path d="M230 200 l5 8 9 2 -7 5 2 9 -9-5 -9 5 2-9 -7-5 9-2Z" fill="#ffe29e" stroke="#bb9350" stroke-width="1.8"/>',
+      '<path d="M230 207 l-25-15 v30 l25-13 25 13 v-30Z" fill="#d4b2f0" stroke="#9d79c3" stroke-width="2.5"/><circle cx="230" cy="208" r="6" fill="#fff"/>',
+      band+'<circle cx="230" cy="212" r="12" fill="#fff" stroke="#de9fb9" stroke-width="2"/><circle cx="230" cy="212" r="4" fill="#f4ca6b"/>',
+      band+'<path d="M230 201 a11 11 0 1 0 9 18 a11 11 0 0 1 -9-18" fill="#ffe4aa"/>'
+    ];
+    return `<g id="kitNeckwear">${bits[kitInt(which,0,9,0)]}</g>`;
+  }
+  const kitPoseAction={
+    play:'run',mini:'jump',surprise:'jump',trick:'wave',pet:'sit',brush:'sit',treat:'wave',feed:'sit',
+    nap:'sleep',adventure:'explore',gift:'wave',style:'idle',rename:'wave',adopt:'idle',home:'sit'
+  };
+  const kitExpressionAction={
+    play:'excited',mini:'excited',surprise:'surprised',trick:'happy',pet:'love',brush:'happy',treat:'excited',
+    feed:'happy',nap:'sleepy',adventure:'curious',gift:'love',style:'happy',rename:'happy',adopt:'happy',home:'happy'
+  };
+  function kitChoosePose(p){if(kitAnimPreview)return kitPoses[kitAnimLocalPose]?.[0]||'idle';if(p.ps)return kitPoses[p.ps]?.[0]||'idle';return kitPoseAction[p.act]||'idle';}
+  function kitChooseExpression(p){if(kitAnimPreview)return kitExpressions[kitAnimLocalExpression]?.[0]||'neutral';if(p.ex)return kitExpressions[p.ex]?.[0]||'neutral';return kitExpressionAction[p.act]||(p.e<30?'sleepy':p.j<30?'sad':'happy');}
+  function kitDrawCharacter(v,p){
+    const coat=kitCoats[kitInt(v.k,0,9,0)];
+    const coatA=coat[1],coatB=coat[2],outline=kitMix(coatB,'#754869',.42);
+    const belly=kitMix(coatA,'#ffffff',.58),innerEar=kitMix(coatB,'#f788b4',.48);
+    const pose=kitChoosePose(p),expression=kitChooseExpression(p);
+    const svg=$('kitPetArt');
+    const identifier=[v.k,v.h,v.a,pose,expression].join('/');
+    if(svg.dataset.renderKey===identifier){svg.style.setProperty('--kit-speed',kitAnimSpeed);return;}
+    svg.dataset.renderKey=identifier;
+    svg.setAttribute('aria-label',coat[0]+' cat, '+pose+' pose, '+expression+' expression');
+    svg.dataset.pose=pose;
+    svg.dataset.expression=expression;
+    svg.style.setProperty('--kit-speed',kitAnimSpeed);
+    svg.innerHTML=`
+      <title>Animated ${coat[0]} kitty — ${pose}, ${expression}</title>
+      <defs>
+        <linearGradient id="kitFur" x1=".05" y1="0" x2=".9" y2="1"><stop stop-color="${coatA}"/><stop offset="1" stop-color="${coatB}"/></linearGradient>
+        <linearGradient id="kitPaw" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${coatA}"/><stop offset="1" stop-color="${coatB}"/></linearGradient>
+      </defs>
+      <ellipse id="kitShadow" cx="230" cy="298" rx="87" ry="10" fill="#9b5f7c" opacity=".17"/>
+      <g id="kitChar">
+        <g id="kitTail" transform="translate(0 0)">
+          <path d="M285 231 Q340 235 351 182 Q359 145 377 166 Q391 191 365 196" fill="none" stroke="${outline}" stroke-width="29" stroke-linecap="round"/>
+          <path d="M285 231 Q340 235 351 182 Q359 145 377 166 Q391 191 365 196" fill="none" stroke="url(#kitFur)" stroke-width="23" stroke-linecap="round"/>
+          <path d="M347 205 Q352 191 353 179" fill="none" stroke="${kitMix(coatA,'#fff',.38)}" stroke-width="6" stroke-linecap="round" opacity=".65"/>
+        </g>
+        <g id="kitLegL"><path d="M197 245 Q178 250 176 274 L179 289 Q196 298 211 286 L218 246Z" fill="url(#kitPaw)" stroke="${outline}" stroke-width="3"/><ellipse cx="191" cy="289" rx="24" ry="10" fill="url(#kitFur)" stroke="${outline}" stroke-width="2.7"/></g>
+        <g id="kitLegR"><path d="M243 246 L252 287 Q267 298 282 286 L282 274 Q282 250 264 245Z" fill="url(#kitPaw)" stroke="${outline}" stroke-width="3"/><ellipse cx="269" cy="289" rx="24" ry="10" fill="url(#kitFur)" stroke="${outline}" stroke-width="2.7"/></g>
+        <g id="kitArmL"><path d="M184 185 Q170 180 159 201 L143 231 Q143 241 153 245 Q167 248 173 238 L203 205Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="3"/><ellipse cx="152" cy="238" rx="13" ry="12" fill="url(#kitPaw)" stroke="${outline}" stroke-width="2.5"/></g>
+        <g id="kitArmR"><path d="M276 185 Q291 180 301 201 L317 231 Q317 241 307 245 Q292 248 286 238 L258 205Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="3"/><ellipse cx="308" cy="238" rx="13" ry="12" fill="url(#kitPaw)" stroke="${outline}" stroke-width="2.5"/></g>
+        <g id="kitBody"><path d="M230 174 C179 174 164 202 163 242 Q164 274 188 281 Q230 293 272 281 Q295 273 297 242 C298 202 281 174 230 174Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="3.5"/><ellipse cx="230" cy="244" rx="37" ry="31" fill="${belly}" opacity=".9"/></g>
+        <g id="kitHead">
+          <path d="M149 111 L148 42 Q149 31 161 43 L188 67 Q230 49 272 67 L299 43 Q311 30 312 43 L311 114 Q318 160 282 176 Q260 188 230 188 Q200 188 178 176 Q141 159 149 111Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M158 59 L161 98 L184 77 Z M302 59 L299 98 L276 77 Z" fill="${innerEar}" opacity=".93"/>
+          <path d="M165 75 Q174 69 184 78 M276 78 Q287 69 295 75" fill="none" stroke="${kitMix(coatA,'#fff',.65)}" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="230" cy="146" rx="46" ry="28" fill="${belly}" opacity=".45"/>
+          ${kitFaceMarkup(expression)}
+          ${kitHeadwear(v.h)}
+        </g>
+        ${kitNeckwear(v.a)}
+      </g>
+      <g id="kitPoseFX" aria-hidden="true">
+        ${pose==='sleep'?'<text x="317" y="93" fill="#cb6fa0" font-size="26" font-weight="800">Z</text><text x="343" y="65" fill="#cb6fa0" font-size="18">z</text>':''}
+        ${pose==='explore'?'<path d="m338 99 5 9 11 3 -11 3 -5 9 -5-9 -11-3 11-3Z" fill="#e7a8c8"/>':''}
+        ${pose==='jump'?'<path d="M152 269 l-14 14 M317 267 l14 14" fill="none" stroke="#d887b1" stroke-width="3" stroke-linecap="round"/>':''}
+      </g>`;
+    if(['wave','point','explore','jump'].includes(pose)){
+      const foregroundArm=svg.querySelector('#kitArmR');
+      svg.querySelector('#kitChar').appendChild(foregroundArm);
+      if(pose==='jump')svg.querySelector('#kitChar').appendChild(svg.querySelector('#kitArmL'));
+    }
+    if($('kitMotionLabel'))$('kitMotionLabel').textContent=kitPoses.find(x=>x[0]===pose)?.[1]+' · '+kitExpressions.find(x=>x[0]===expression)?.[1];
+  }
+
   function kitApplyVisuals(v){
     const coat=kitCoats[kitInt(v.k,0,9,0)];
-    $('kitCoatA').setAttribute('stop-color',coat[1]);$('kitCoatB').setAttribute('stop-color',coat[2]);
-    $('kitWear').innerHTML=kitHatSVG[kitInt(v.h,0,10,0)]+kitCollarSVG[kitInt(v.a,0,9,1)];
+    kitDrawCharacter(v,petData?kitEffective(petData):kitDefault());
     const room=kitRooms[kitInt(v.r,0,9,0)];$('petScene').style.background=room[1];
     $('kitRoomMark').textContent=kitDecorEmoji[kitInt(v.d,0,9,0)];$('kitBedSymbol').textContent=kitBedEmoji[kitInt(v.b,0,8,0)];
     $('kitRoomLabel').textContent=room[0];$('kitRoomMark').style.color=room[2];
@@ -1479,7 +1721,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     $('petCloudBadge').textContent=conn?(loaded?'♡ Synced together':'♡ Ready to adopt'):'Preview · not connected';
     $('petLastSeen').textContent=loaded?'Last update: '+new Date(p.t).toLocaleTimeString():'Connect to begin';
     $('petAdoptBox').hidden=!conn||loaded;$('petAdopt').disabled=!conn||petPending||loaded;
-    ['kitDoCare','kitTrain','kitSurprise','kitSaveStyle','kitSaveHome','kitSaveDecay','petRename','kitAdventure'].forEach(id=>$(id).disabled=!conn||!loaded||petPending);
+    ['kitDoCare','kitTrain','kitSurprise','kitSaveStyle','kitSaveHome','kitSaveDecay','petRename','kitAdventure','kitSharePose'].forEach(id=>$(id).disabled=!conn||!loaded||petPending);
     if(!kitPreviewDirty)kitUseDraft(p);else kitApplyVisuals(kitDraft);
     if(loaded&&document.activeElement!==$('kitNameInput'))$('kitNameInput').value=p.n;
     kitRenderQuests(p);kitRenderExplore(p);kitRenderTricks(p);kitRenderMemories(p);kitRenderShop(p);
@@ -1491,6 +1733,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     // Ignore very old messages while a newer local update is already displayed.
     if(petData&&p.t<petData.t-1200)return;
     const changed=!petData||petData.t!==p.t||petData.act!==p.act;
+    if(changed){kitAnimPreview=false;kitAnimLocalPose=0;kitAnimLocalExpression=0;kitRefreshPoseButtons();}
     petData=p;petLoaded=true;showPet();
     petStatus('♡ Kitty synced. Actions and outfits are shared across both browsers.');
     if(changed)burstPet(p.act);
@@ -1505,6 +1748,9 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     p.v=2;p.act=action;p.dt=kitClean(detail,22);p.who=kitClean($('user').value.trim(),14)||'Someone';p.t=Date.now();
     if(action==='adopt')p.n=kitClean($('kittyName').value,16)||'Mochi';
     if(action==='rename')p.n=kitClean(extra.name,16)||p.n;
+    if(action==='pose'){p.ps=kitInt(extra.pose,0,9,0);p.ex=kitInt(extra.expression,0,10,0);}
+    else if(action==='poseauto'){p.ps=0;p.ex=0;}
+    else {p.ps=0;p.ex=0;}
     if(kitActionStats[action]){
       for(const [stat,delta] of Object.entries(kitActionStats[action]))p[stat]=kitClamp(p[stat]+delta);
       p.x=Math.min(1000000,p.x+(action==='mini'?35:action==='adventure'?28:action==='trick'?20:12));
@@ -1578,6 +1824,47 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   function kitRenderPlace(){const p=kitPlaces[Number($('kitPlace').value)||0];$('kitPlaceEmoji').textContent=p[1];$('kitPlaceName').textContent=p[0];$('kitPlaceDesc').textContent=p[2];}
   $('kitPlace').onchange=kitRenderPlace;kitRenderPlace();
   $('kitAdventure').onclick=()=>kitPublish('adventure',kitPlaces[Number($('kitPlace').value)][0]);
+  // Pose lab — preview is local. Share writes one small pose/expression update.
+  const kitPoseEmoji=['♻','🐈','🐾','💨','✨','👋','☝','🧺','🌙','🔎'];
+  const kitPoseGrid=$('kitPoseGrid');
+  kitPoses.forEach(([id,label,description],i)=>{
+    const button=document.createElement('button');button.type='button';button.className='kit-pose-btn';button.dataset.pose=i;
+    const emoji=document.createElement('span');emoji.textContent=kitPoseEmoji[i];
+    const name=document.createElement('strong');name.textContent=label;
+    button.append(emoji,name);button.title=description;
+    button.addEventListener('click',()=>{
+      kitAnimLocalPose=i;kitAnimPreview=true;kitRefreshPoseButtons();
+      kitDrawCharacter(kitPreviewDirty?kitDraft:(petData||kitDefault()), petData||kitDefault());
+      $('kitAnimFeedback').textContent='Previewing '+label.toLowerCase()+'. Send it when you love it!';
+    });kitPoseGrid.append(button);
+  });
+  kitSetSelect('kitExpressionSelect',kitExpressions.map(x=>x[1]));
+  function kitRefreshPoseButtons(){document.querySelectorAll('[data-pose]').forEach(b=>b.classList.toggle('active',Number(b.dataset.pose)===kitAnimLocalPose));}
+  $('kitExpressionSelect').addEventListener('change',()=>{
+    kitAnimLocalExpression=Number($('kitExpressionSelect').value)||0;kitAnimPreview=true;
+    kitDrawCharacter(kitPreviewDirty?kitDraft:(petData||kitDefault()), petData||kitDefault());
+  });
+  $('kitAnimSpeed').addEventListener('change',()=>{
+    kitAnimSpeed=Number($('kitAnimSpeed').value)||1;
+    $('kitPetArt').style.setProperty('--kit-speed',kitAnimSpeed);
+  });
+  $('kitPreviewPose').onclick=()=>{
+    kitAnimPreview=true;kitDrawCharacter(kitPreviewDirty?kitDraft:(petData||kitDefault()),petData||kitDefault());
+    $('kitAnimFeedback').textContent='Preview only — no command sent.';
+  };
+  $('kitSharePose').onclick=()=>{
+    const pose=kitAnimLocalPose,expression=kitAnimLocalExpression;
+    if(kitPublish('pose',kitPoses[pose][1],{pose,expression}))$('kitAnimFeedback').textContent='Sharing your pose!';
+  };
+  $('kitAutoPose').onclick=()=>{
+    kitAnimPreview=false;kitAnimLocalPose=0;kitAnimLocalExpression=0;
+    $('kitExpressionSelect').value='0';kitRefreshPoseButtons();
+    kitDrawCharacter(kitPreviewDirty?kitDraft:(petData||kitDefault()),petData||kitDefault());
+    if(petLoaded&&client&&client.connected&&petReady)kitPublish('poseauto','Automatic');
+    else $('kitAnimFeedback').textContent='Automatic preview restored on this screen.';
+  };
+  kitRefreshPoseButtons();
+
   kitUseDraft(kitDefault());kitShow();
 
 })();
