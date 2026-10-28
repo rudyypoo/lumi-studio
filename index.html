@@ -1,190 +1,90 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b0d18">
-<meta name="description" content="Remote Arduino pixel art, secret messages, RGB color wheel and animations">
-<title>Lumi Studio · Remote Arduino</title>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0e14"><meta name="description" content="Lumi Studio — remote Arduino LED matrix and RGB controls"><title>Lumi Studio · Remote Arduino</title>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.16.0/dist/mqtt.min.js"></script>
 <style>
-  :root {
-    color-scheme: dark;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-    --bg:#0b0d18; --panel:#161b2b; --panel2:#1c2234;
-    --stroke:#343a53; --muted:#9ca8c1; --text:#f1f2fa;
-    --violet:#ac94ff; --pink:#ff8cb6; --success:#55ddb2;
-    font-synthesis:none;
-  }
-  *{box-sizing:border-box}
-  [hidden]{display:none!important}
-  body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(circle at 10% 8%,rgba(120,82,225,.19),transparent 30%),radial-gradient(circle at 100% 50%,rgba(193,81,155,.08),transparent 36%),var(--bg);font-size:15px}
-  button,input{font:inherit}
-  button{cursor:pointer}
-  button:disabled{cursor:not-allowed;opacity:.48;filter:none!important}
-  button:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid #d4c7ff;outline-offset:3px}
-  .shell{max-width:1080px;margin:0 auto;padding:26px 24px 70px}
-  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:27px}
-  .brand{display:flex;gap:12px;align-items:center}
-  .mark{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#a788fa,#f485ae);color:#18102a;box-shadow:0 7px 30px #9a79f222}
-  .mark svg{width:25px;height:25px}
-  .brand-name{font-size:19px;letter-spacing:-.6px;font-weight:800;line-height:1.1}
-  .brand-caption{font-size:12px;color:var(--muted);margin-top:3px}
-  .connection-chip{display:flex;align-items:center;gap:8px;background:#1b2133;border:1px solid var(--stroke);border-radius:100px;color:#b5bdd2;padding:9px 13px;font-size:12px;font-weight:700;max-width:190px}
-  .connection-chip:hover{border-color:#8b79b4}
-  .connection-chip .dot{height:8px;width:8px;flex:none;background:#718099;border-radius:50%}
-  .connection-chip.online .dot{background:var(--success);box-shadow:0 0 0 4px #55ddb21d}
-  .connection-chip.connecting .dot{background:#ffca7a}
-  .intro{display:flex;gap:18px;justify-content:space-between;align-items:center;margin-bottom:25px}
-  .eyebrow{font-size:11px;letter-spacing:2px;color:#d3a8ef;text-transform:uppercase;font-weight:800;margin-bottom:10px}
-  h1{font-weight:800;font-size:clamp(28px,4.5vw,43px);letter-spacing:-1.4px;line-height:1.1;margin:0}
-  h1 em{font-style:normal;background:linear-gradient(90deg,#bea6ff,#ffa2c7);color:transparent;background-clip:text}
-  .subtitle{color:var(--muted);line-height:1.65;font-size:14px;margin:12px 0 0;max-width:620px}
-  .hero-shape{position:relative;width:100px;height:100px;flex:0 0 100px;display:grid;place-items:center}
-  .hero-glow{width:80px;height:80px;border-radius:50%;background:conic-gradient(from 45deg,#f09ac5,#5a69d9,#56d9d1,#ecb875,#f09ac5);filter:blur(2px);box-shadow:0 0 45px #9582f84d}
-  .hero-dot{position:absolute;width:57px;height:57px;background:#0b0d18;border-radius:50%;display:grid;place-items:center;font-size:29px;color:#f3d6fa}
-  .tabs{display:flex;gap:5px;padding:6px;background:#151a29;border:1px solid #30374d;border-radius:16px;overflow-x:auto;scrollbar-width:none;margin-bottom:17px}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:1;white-space:nowrap;text-align:center;color:#a9b3c8;border:1px solid transparent;border-radius:11px;background:transparent;padding:12px 11px;font-size:13px;font-weight:700;transition:background .15s,border-color .15s}
-  .tab:hover{background:#ffffff0a;color:#fff}
-  .tab.active{background:#31324f;color:#f6f1ff;border-color:#645a8a;box-shadow:0 3px 16px #00000023}
-  .tab .tab-icon{margin-right:7px;vertical-align:-2px;opacity:.9}
-  .main{min-height:440px}
-  .section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:19px}
-  h2{font-size:23px;margin:0;letter-spacing:-.55px;line-height:1.2}
-  .section-description{font-size:13px;color:var(--muted);margin:8px 0 0;line-height:1.6}
-  .tag{border:1px solid #48506b;border-radius:100px;color:#c7cbea;font-size:11px;font-weight:750;padding:6px 10px;white-space:nowrap;background:#242a3f}
-  .tag.rose{border-color:#795373;color:#f4acd1;background:#3c263f}
-  .panel{border:1px solid var(--stroke);border-radius:18px;background:linear-gradient(155deg,#1a2032,#151a29 75%);padding:21px;box-shadow:0 10px 35px #00000017}
-  .panel+.panel{margin-top:14px}
-  .panel-title{font-size:14px;font-weight:750;margin:0 0 12px}
-  .split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(270px,1fr);gap:16px;align-items:start}
-  .split.equal{grid-template-columns:1fr 1fr}
-  .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-  .stack{display:grid;gap:12px}
-  .small{font-size:12px;line-height:1.6;color:var(--muted)}
-  .status{font-size:12px;color:#ccaff9}
-  .panel p{color:var(--muted)}
-  .subtle{color:var(--muted)}
-  label{display:block;color:#c1c8d9;font-size:12px;font-weight:650;margin-bottom:7px}
-  input[type=text],input[type=password]{width:100%;color:var(--text);border:1px solid #424962;background:#101626;padding:13px;border-radius:10px;min-width:0;font-size:14px}
-  input::placeholder{color:#69748b}
-  input[type=range]{width:100%;accent-color:#ab88fa;cursor:pointer;margin:11px 0 7px}
-  input[type=color]{width:58px;height:46px;padding:4px;border:1px solid #46516d;border-radius:10px;background:#151b2c;cursor:pointer;flex:none}
-  button.action{border:1px solid #586078;border-radius:10px;padding:11px 15px;background:#303a52;color:#f6f7fb;font-weight:700}
-  button.action:hover{filter:brightness(1.16)}
-  button.primary{background:linear-gradient(105deg,#ad8bf5,#d08bcb);color:#161224;border:1px solid #d2a6ef}
-  button.ghost{background:#222a3d;border-color:#414b64;color:#dce4f8}
-  button.danger{background:#332432;border-color:#714b60;color:#ffc0d3}
-  button.full{width:100%;padding:15px;font-size:15px}
-  button.small-btn{padding:9px 12px;font-size:12px}
-  .feedback{min-height:20px;color:#9ee5cb!important;font-size:12px;line-height:1.6;margin:11px 0 0}
-  .fields{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-  .fields .wide{grid-column:1/-1}
-  .connect-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:17px 0}
-  .security-note{background:#24243b;border:1px solid #434561;padding:14px;border-radius:12px;line-height:1.65;color:#c6c7de;font-size:12px}
-  /* Pixel canvas */
-  .canvas-board{background:#0c111d;border:1px solid #343e57;border-radius:13px;padding:16px;}
-  .matrix{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;width:100%;margin:auto;max-width:610px;touch-action:none;user-select:none}
-  .pixel{width:100%;aspect-ratio:1;min-height:18px;border:1px solid #394458;border-radius:6px;background:#293244;padding:0;transition:background .1s,box-shadow .1s}
-  .pixel:hover{border-color:#9e8cb9}
-  .pixel.on{background:#ff6d93;border-color:#ffacc3;box-shadow:0 0 9px #fa4f854a}
-  .canvas-note{font-size:11px;color:#7e8caa;text-align:center;margin:13px 0 0;letter-spacing:.1px}
-  .canvas-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;font-size:12px;color:#bdc6db}
-  .count-pill{background:#262e43;border:1px solid #3c4860;border-radius:100px;padding:5px 10px}
-  .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
-  .preset-grid button{padding:13px 9px!important;font-size:13px}
-  .step-label{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#a6a9cb;font-weight:800;margin-bottom:11px}
-  .hint{display:flex;gap:10px;align-items:flex-start;border-top:1px solid #343b52;padding-top:15px;margin-top:16px;font-size:12px;color:#a9b5cb;line-height:1.6}
-  .hint strong{color:#dfd5f6}
-  /* Message page */
-  .message-stage{border:1px solid #343e58;min-height:170px;background:radial-gradient(ellipse at center,#212742,#0e1320 78%);border-radius:13px;display:grid;place-items:center;overflow:hidden;padding:25px}
-  .marquee-window{width:100%;max-width:430px;border-radius:9px;background:#0a0f14;border:1px solid #2e3b42;box-shadow:0 6px 25px #0005;overflow:hidden}
-  .marquee-text{padding:17px 0;font-family:ui-monospace,Consolas,monospace;font-size:22px;letter-spacing:3px;font-weight:800;color:#ffad6e;white-space:nowrap;text-shadow:0 0 17px #fbb56b88;animation:marquee 12s linear infinite;width:max-content}
-  @keyframes marquee{from{transform:translateX(430px)}to{transform:translateX(-120%)}}
-  .message-meta{display:flex;justify-content:space-between;gap:12px;color:#aab7cc;font-size:11px;margin:9px 0 20px}
-  .message-ideas{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
-  .message-ideas button{font-size:12px!important;padding:8px 11px!important}
-  /* Color wheel */
-  .wheel-layout{display:grid;grid-template-columns:minmax(240px,1fr) minmax(240px,1fr);gap:28px;align-items:center}
-  .wheel-holder{display:flex;justify-content:center;align-items:center;max-width:310px;margin:0 auto;width:100%}
-  #wheel{display:block;width:100%;height:auto;aspect-ratio:1;touch-action:none;cursor:crosshair;filter:drop-shadow(0 13px 24px #0004)}
-  .preview{height:100px;background:#b44cff;border:1px solid #ffffff2e;border-radius:14px;box-shadow:inset 0 0 18px #0003;}
-  .color-code{font-size:25px;font-weight:800;letter-spacing:.4px;margin:13px 0 17px;text-align:center}
-  .swatches{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
-  .swatch{height:31px;width:31px;background:#fff;border:2px solid #a5acc1;border-radius:100px;padding:0;transition:transform .14s}
-  .swatch:hover{transform:scale(1.12)}
-  /* FX page */
-  .effects-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(290px,.9fr);gap:16px;align-items:start}
-  .effect-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  .effect-option{min-height:79px;text-align:left;border:1px solid #414a64;border-radius:12px;background:#22293d;color:#f3f2fa;padding:12px;transition:background .15s,border-color .15s}
-  .effect-option:hover{background:#2c3350}
-  .effect-option.selected{background:#393051;border-color:#b28bf5;box-shadow:0 0 0 1px #b28bf555}
-  .effect-name{display:block;font-weight:800;font-size:13px}
-  .effect-description{display:block;color:#aab4c9;line-height:1.4;font-size:11px;margin-top:5px}
-  .studio-preview{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:170px;background:radial-gradient(circle,#252244,#0e1421 72%);border:1px solid #394462;border-radius:13px;padding:22px}
-  .studio-light{width:91px;height:91px;border-radius:50%;background:#aa53ff;box-shadow:0 0 43px #aa53ff88;transition:background-color .1s,box-shadow .1s}
-  #studioPreviewLabel{margin-top:15px;text-align:center;color:#b9c3da;font-size:11px}
-  .setting-value{float:right;color:#d2b9fd;font-weight:800}
-  .studio-settings{display:grid;gap:15px;margin:18px 0}
-  .secondary-control{display:flex;gap:11px;align-items:center;margin:13px 0;border:1px solid #41485f;background:#242a40;padding:10px;border-radius:11px}
-  .studio-note{font-size:11px;line-height:1.6;color:#9da9c4;margin:4px 0}
-  .fx-picked{color:#ceb7ff;font-size:12px;font-weight:700;margin:16px 0 12px}
-  .button-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .footer{margin:26px 0 0;text-align:center;color:#77839e;font-size:11px;line-height:1.7}
-  @media(max-width:820px){
-    .split,.split.equal,.effects-layout{grid-template-columns:1fr}
-    .wheel-layout{grid-template-columns:1fr}
-    .hero-shape{display:none}
-    .effect-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .tabs .tab{min-width:max-content;padding:11px 14px}
-  }
-  @media(max-width:560px){
-    .shell{padding:16px 12px 38px}
-    .top{margin-bottom:24px}
-    .mark{width:39px;height:39px}
-    .brand-caption{font-size:11px}
-    .intro{margin-bottom:21px}
-    .tabs{margin:0 -4px 14px;padding:5px}
-    .tab{font-size:12px}
-    .tab .tab-icon{display:none}
-    h2{font-size:21px}
-    .section-head{margin-bottom:14px}
-    .panel{padding:15px;border-radius:15px}
-    .fields,.effect-grid{grid-template-columns:1fr 1fr}
-    .matrix{gap:4px}
-    .canvas-board{padding:10px}
-    .wheel-layout{gap:15px}
-    .wheel-holder{max-width:275px}
-    .message-meta{flex-direction:column;gap:3px}
-  }
-  @media(prefers-reduced-motion:reduce){.marquee-text{animation:none}}
-</style>
-</head>
-<body>
-<div class="shell">
+:root{color-scheme:dark;--bg:#0a0e14;--surface:#141b26;--surface2:#1b2634;--stroke:#2c3b4b;--text:#f0f5f8;--muted:#9aaaba;--accent:#76e3d0;--accent2:#b9a0ff;--amber:#ffc590;--red:#f18b9f;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-synthesis:none}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+body::before{content:'';pointer-events:none;position:fixed;inset:0;background:radial-gradient(ellipse at 75% 0%,#123b3f65,transparent 37%),radial-gradient(ellipse at -15% 85%,#3a29455e,transparent 46%);z-index:-1}
+button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.46;filter:none!important}
+button:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.shell{max-width:1180px;margin:0 auto;padding:28px 27px 54px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid #ffffff17;padding-bottom:20px;margin-bottom:34px}
+.brand{display:flex;align-items:center;gap:12px}.mark{display:grid;place-items:center;width:39px;height:39px;background:var(--accent);color:#0a2325;border-radius:11px}.mark svg{width:21px;height:21px}.brand-name{font-size:20px;font-weight:850;letter-spacing:-1px;line-height:1}.brand-caption{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:.4px}
+.top-right{display:flex;gap:9px;align-items:center}
+.connection-chip{display:inline-flex;align-items:center;gap:8px;color:#c3d1dc;background:#151f29;border:1px solid var(--stroke);padding:9px 13px;border-radius:10px;font-size:12px;font-weight:750;max-width:180px}
+.connection-chip .dot{height:7px;width:7px;border-radius:50%;background:#7b8c9e;flex:none}.connection-chip.online .dot{background:var(--accent);box-shadow:0 0 0 4px #65f0d21f}.connection-chip.connecting .dot{background:#fbc88c}
+.hero{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:25px}.eyebrow{font-size:10px;letter-spacing:2.2px;color:var(--accent);text-transform:uppercase;font-weight:850;margin-bottom:10px}
+h1{font-size:clamp(26px,3.9vw,40px);line-height:1.15;letter-spacing:-1.7px;margin:0 0 10px;font-weight:780}.subtitle{color:#a9b9c7;font-size:14px;max-width:610px;line-height:1.65;margin:0}
+.hero-accent{font-size:11px;white-space:nowrap;color:#95c5bc;background:#0c2c2d;border:1px solid #255053;padding:8px 11px;border-radius:100px}
+/* Device-first primary navigation */
+.device-bar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 24px}
+.device-card{display:flex;align-items:center;gap:15px;padding:17px 18px;min-height:96px;text-align:left;border:1px solid #354454;background:linear-gradient(135deg,#1a2430,#121a25);color:var(--text);border-radius:17px;transition:background .16s,border-color .16s,transform .16s}
+.device-card:hover{background:#222f3e;transform:translateY(-1px)}.device-card.active{border-color:#66dac4;background:linear-gradient(120deg,#14333a,#15262c);box-shadow:inset 0 0 0 1px #51bba651}
+.device-symbol{display:grid;place-items:center;width:56px;height:56px;flex:none;border-radius:14px;background:#0c1821;border:1px solid #364b56;font-size:26px}
+.device-card.rgb.active{border-color:#b7a0fa;background:linear-gradient(120deg,#2b2542,#221b32);box-shadow:inset 0 0 0 1px #7862b351}
+.device-card.rgb .device-symbol{background:conic-gradient(from 20deg,#e57e8e,#efa866,#a5eeb5,#67bde3,#b28bfa,#e57e8e);color:#13151b;border:5px solid #18212c}
+.device-name{font-size:16px;font-weight:830;letter-spacing:-.35px;display:block}.device-sub{display:block;color:#a5b4c4;font-size:12px;margin-top:4px;font-weight:450;line-height:1.4}
+.device-trailing{margin-left:auto;color:#a5bdc5;font-size:20px}
+.device-card.active .device-trailing{color:#bdfbea}
+.device-area{animation:fade .17s ease-out}@keyframes fade{from{opacity:.55;transform:translateY(3px)}to{opacity:1;transform:none}}
+.device-heading{display:flex;justify-content:space-between;align-items:center;gap:13px;margin-bottom:14px}
+.device-heading h2{font-size:21px;letter-spacing:-.6px;margin:0}.device-heading p{color:var(--muted);font-size:12px;margin:4px 0 0}
+.subnav{display:flex;align-items:center;gap:5px;padding:5px;background:#111b26;border:1px solid #2a3b4d;border-radius:12px;margin-bottom:15px;width:max-content;max-width:100%;overflow-x:auto}
+.subtab{border:1px solid transparent;color:#a9b8c8;background:transparent;border-radius:8px;font-size:13px;font-weight:720;padding:10px 16px;white-space:nowrap}
+.subtab:hover{background:#223142;color:#fff}.subtab.active{background:#2b3e4c;color:#e5fff9;border-color:#42635e}
+.rgb-area .subtab.active{background:#373045;border-color:#66567e;color:#f0e2ff}
+/* Main features */
+.main{min-height:400px}.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+h2{font-size:22px;letter-spacing:-.6px;line-height:1.25;margin:0}.section-description{margin:7px 0 0;font-size:13px;color:var(--muted);line-height:1.6}.tag{white-space:nowrap;color:#a8d6d3;border:1px solid #345753;background:#18322f;border-radius:8px;font-size:10px;letter-spacing:.7px;font-weight:800;padding:7px 9px}.tag.rose{color:#dcc8ff;border-color:#5e5277;background:#30283f}
+.panel{border:1px solid var(--stroke);border-radius:16px;padding:23px;background:linear-gradient(140deg,#17212d,#121b27 86%)}.panel+.panel{margin-top:14px}
+.panel-title{font-size:15px;font-weight:800;margin-bottom:14px}.split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(285px,1fr);gap:15px;align-items:start}.split.equal{grid-template-columns:1fr 1fr}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.stack{display:grid;gap:14px}.small{font-size:12px;color:var(--muted);line-height:1.65}.status{font-size:12px;color:#8edcc9}.subtle{color:var(--muted)}label{display:block;font-size:12px;font-weight:720;color:#ccd8e2;margin-bottom:7px}
+input[type=text],input[type=password]{width:100%;background:#0b141e;border:1px solid #344759;color:#f0f5f8;padding:13px 12px;border-radius:10px;font-size:14px;min-width:0}input::placeholder{color:#65798d}
+input[type=range]{width:100%;cursor:pointer;accent-color:#79d7c6;margin:10px 0 8px}input[type=color]{width:54px;height:46px;padding:4px;border:1px solid #344759;border-radius:9px;background:#121e2a;cursor:pointer;flex:none}
+button.action{border:1px solid #475b70;background:#273749;color:#e5f0f6;font-weight:750;padding:11px 15px;border-radius:10px}button.action:hover{filter:brightness(1.14)}button.primary{background:#80decf;border-color:#9aeedc;color:#0b2728}button.ghost{background:#1e2d3b;border-color:#37495b;color:#e1e9f0}button.danger{background:#3a2733;border-color:#6e4856;color:#ffd0d7}button.full{width:100%;padding:14px;font-size:14px}button.small-btn{padding:8px 12px;font-size:12px}
+.feedback{min-height:20px;color:#95e6d3!important;font-size:12px;line-height:1.6;margin:12px 0 0}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:15px}.fields .wide{grid-column:1/-1}.connect-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}
+.security-note{background:#142a2b;border:1px solid #285453;border-radius:12px;padding:15px;color:#b9ded9;font-size:12px;line-height:1.65}
+/* Matrix */
+.canvas-board{background:#0a1119;border:1px solid #263d50;border-radius:12px;padding:18px}.matrix{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;max-width:590px;width:100%;margin:auto;touch-action:none;user-select:none}
+.pixel{width:100%;aspect-ratio:1;min-height:17px;border:1px solid #364757;border-radius:5px;background:#253545;padding:0}.pixel.on{background:#8cead6;border-color:#c4ffee;box-shadow:0 0 12px #6debd277}.pixel:hover{border-color:#b7e5db}
+.canvas-note{font-size:11px;color:#7f99a7;text-align:center;margin:13px 0 0}.canvas-footer{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:13px;color:#afc2d0;font-size:12px}.count-pill{background:#1d3440;border:1px solid #355360;border-radius:100px;padding:5px 11px}
+.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}.preset-grid button{padding:12px 8px!important;font-size:12px}.step-label{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;font-weight:850;color:#8fb7bb;margin-bottom:13px}
+.hint{display:flex;align-items:flex-start;gap:10px;border-top:1px solid #314355;margin-top:18px;padding-top:15px;font-size:12px;color:#b4c5d2;line-height:1.6}.hint strong{color:var(--text)}
+/* Text */
+.message-stage{border:1px solid #2d4657;min-height:165px;background:radial-gradient(ellipse at center,#203340,#0a141f 78%);border-radius:12px;display:grid;place-items:center;overflow:hidden;padding:20px}.marquee-window{width:100%;max-width:430px;border:1px solid #40525a;background:#080f15;border-radius:9px;overflow:hidden}.marquee-text{padding:18px 0;color:#e7c39c;font-family:ui-monospace,Consolas,monospace;font-size:21px;font-weight:800;letter-spacing:3px;white-space:nowrap;width:max-content;text-shadow:0 0 14px #f6ae7b73;animation:marquee 12s linear infinite}@keyframes marquee{from{transform:translateX(430px)}to{transform:translateX(-120%)}}
+.message-meta{display:flex;justify-content:space-between;gap:10px;color:#9aafbd;font-size:11px;margin:9px 0 19px}.message-ideas{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.message-ideas button{font-size:12px!important;padding:8px 11px!important}
+/* RGB wheel */
+.wheel-layout{display:grid;grid-template-columns:minmax(240px,1fr) minmax(240px,1fr);gap:28px;align-items:center}.wheel-holder{display:flex;align-items:center;justify-content:center;width:100%;max-width:310px;margin:auto}#wheel{display:block;width:100%;height:auto;aspect-ratio:1;touch-action:none;cursor:crosshair;filter:drop-shadow(0 12px 26px #0005)}
+.preview{height:100px;border:1px solid #ffffff4a;border-radius:12px;box-shadow:inset 0 0 14px #0003}.color-code{font-size:27px;font-weight:850;text-align:center;letter-spacing:.5px;margin:12px 0 16px}.swatches{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}.swatch{width:32px;height:32px;border:2px solid #aeb9c3;border-radius:50%;padding:0;transition:transform .13s}.swatch:hover{transform:scale(1.14)}
+/* FX */
+.effects-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.9fr);gap:15px;align-items:start}.effect-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.effect-option{min-height:79px;background:#1c2b38;border:1px solid #354b5d;color:#e6eef5;text-align:left;padding:12px;border-radius:11px}.effect-option:hover{background:#2b4050}.effect-option.selected{background:#30354b;border-color:#aa9ae3;box-shadow:inset 0 0 0 1px #7666a5}.effect-name{display:block;font-size:13px;font-weight:800}.effect-description{display:block;color:#a6b7c6;font-size:11px;line-height:1.4;margin-top:5px}
+.studio-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#2b2940,#0c1621 73%);border:1px solid #374a5b;border-radius:12px;min-height:172px;padding:20px}.studio-light{width:89px;height:89px;border-radius:50%;background:#a75cff;box-shadow:0 0 45px #a75cff85}#studioPreviewLabel{font-size:11px;color:#b5c4d2;text-align:center;margin-top:15px}.setting-value{float:right;color:#c7e7de;font-weight:800}.studio-settings{display:grid;gap:15px;margin:18px 0}.secondary-control{display:flex;align-items:center;gap:11px;padding:11px;background:#202f3e;border:1px solid #394e60;border-radius:10px;margin:13px 0}.studio-note{color:#aab9c8;font-size:11px;line-height:1.6;margin:4px 0}.fx-picked{font-weight:750;color:#c4b7f5;margin:15px 0 12px;font-size:12px}.button-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+/* footer */
+.footer{margin:35px 0 0;padding-top:19px;border-top:1px solid #ffffff16;color:#7f94a4;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:820px){.split,.split.equal,.effects-layout,.wheel-layout{grid-template-columns:1fr}.effect-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero-accent{display:none}}
+@media(max-width:570px){.shell{padding:17px 13px 38px}.top{margin-bottom:26px}.device-bar{gap:9px}.device-card{min-height:93px;padding:11px;gap:9px;border-radius:13px}.device-symbol{width:40px;height:40px;font-size:19px;border-radius:10px}.device-name{font-size:14px}.device-sub{font-size:10px}.device-trailing{display:none}.hero{margin-bottom:23px}.subnav{width:100%}.subtab{flex:1;padding:10px 8px}.panel{padding:16px}.section-head{margin-bottom:14px}.effect-grid,.fields{grid-template-columns:1fr 1fr}.matrix{gap:4px}.canvas-board{padding:10px}.wheel-holder{max-width:278px}.message-meta{flex-direction:column;gap:4px}.panel-title{font-size:14px}}
+@media(max-width:385px){.device-symbol{display:none}.effect-grid{grid-template-columns:1fr 1fr}.connection-chip{padding:7px 9px;max-width:142px}}
+@media(prefers-reduced-motion:reduce){.marquee-text{animation:none}.device-area{animation:none}}
+</style></head>
+<body><div class="shell">
 <header class="top">
-  <div class="brand">
-    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 9 10l-7 2 7 2 3 8 3-8 7-2-7-2-3-8Z"/><path d="M19 2v4M17 4h4"/></svg></div>
-    <div><div class="brand-name">lumi<span style="color:#c6a4ff">.</span></div><div class="brand-caption">Remote Arduino Studio</div></div>
-  </div>
-  <button class="connection-chip" id="connectionChip" data-goto="connect" type="button" title="Open connection settings"><span class="dot"></span><span id="connectionChipText">Not connected</span></button>
+  <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/></svg></span><div><div class="brand-name">lumi<span style="color:var(--accent)">.</span></div><div class="brand-caption">REMOTE DEVICE STUDIO</div></div></div>
+  <div class="top-right"><button class="connection-chip" id="connectionChip" data-goto="connect" type="button" title="Manage connection"><span class="dot"></span><span id="connectionChipText">Not connected</span> <span aria-hidden="true" style="opacity:.6">⚙</span></button></div>
 </header>
-<div class="intro">
-  <div><div class="eyebrow">MAKE SOMETHING GLOW</div><h1>A little light, <em>from anywhere.</em></h1><p class="subtitle">Draw tiny masterpieces, send sweet messages, and paint with color — all from the other side of the world.</p></div>
-  <div class="hero-shape" aria-hidden="true"><div class="hero-glow"></div><div class="hero-dot">✧</div></div>
-</div>
-<nav class="tabs" role="tablist" aria-label="Studio features">
-  <button class="tab" role="tab" id="tab-draw" data-tab="draw" aria-controls="panel-draw" aria-selected="false"><span class="tab-icon">▦</span>Pixel Art</button>
-  <button class="tab" role="tab" id="tab-message" data-tab="message" aria-controls="panel-message" aria-selected="false"><span class="tab-icon">✉</span>Messages</button>
-  <button class="tab" role="tab" id="tab-color" data-tab="color" aria-controls="panel-color" aria-selected="false"><span class="tab-icon">◉</span>Color Wheel</button>
-  <button class="tab" role="tab" id="tab-effects" data-tab="effects" aria-controls="panel-effects" aria-selected="false"><span class="tab-icon">✦</span>Animations</button>
-  <button class="tab" role="tab" id="tab-connect" data-tab="connect" aria-controls="panel-connect" aria-selected="true"><span class="tab-icon">⌁</span>Connection</button>
+<div class="hero"><div><div class="eyebrow">YOUR REMOTE CONTROL ROOM</div><h1>Make something happen.</h1><p class="subtitle">Choose a device, then pick what you want to do. Every action goes from your browser to the Arduino, wherever you are.</p></div><div class="hero-accent">UNO R4 WiFi &nbsp; · &nbsp; Adafruit IO</div></div>
+<nav class="device-bar" aria-label="Choose a device">
+  <button type="button" class="device-card" data-device="matrix" aria-selected="false"><span class="device-symbol" aria-hidden="true">▦</span><span><span class="device-name">LED Matrix</span><span class="device-sub">96 pixels · Drawings &amp; messages</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
+  <button type="button" class="device-card rgb" data-device="rgb" aria-selected="false"><span class="device-symbol" aria-hidden="true">◉</span><span><span class="device-name">RGB Light</span><span class="device-sub">Full color · Static &amp; animated</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
 </nav>
 <main class="main">
-<!-- Connection starts visible because no credentials are saved -->
-<section role="tabpanel" id="panel-connect" data-panel="connect" aria-labelledby="tab-connect">
-  <div class="section-head"><div><h2>Connect your studio</h2><p class="section-description">Use your own Adafruit IO account to send updates securely to the shared Arduino.</p></div><span class="tag">STEP 01</span></div>
+ <div class="device-area" data-device-panel="connect">
+<section role="region" id="panel-connect" data-view="connect">
+  <div class="section-head"><div><h2>Connect your studio</h2><p class="section-description">Use your own Adafruit IO account to send updates securely to the shared Arduino.</p></div><span class="tag">SETUP</span></div>
   <div class="split equal">
     <div class="panel">
       <div class="panel-title">Adafruit IO credentials</div>
@@ -197,14 +97,17 @@
       <div class="small" role="status">Connection: <strong id="status" style="color:#dcc8ff">Not connected</strong></div>
     </div>
     <div class="panel stack">
-      <div><div class="step-label">HOW IT WORKS</div><div class="panel-title">One connection, four ways to create.</div><p class="small">Once connected, choose a tab to send pixel drawings, messages, a solid RGB color, or animated light effects.</p></div>
+      <div><div class="step-label">HOW IT WORKS</div><div class="panel-title">One connection. Two devices.</div><p class="small">Once connected, open LED Matrix for drawings and messages, or RGB Light for colors and animations.</p></div>
       <div class="security-note"><strong>Private by design.</strong> Your Active Key is only used for the Adafruit IO connection. It is not saved in this file. Each person uses their own account and key; the feed owner shares the feed with Read + Write access.</div>
       <div class="small">No Arduino upload is needed to switch between these features. Your existing sketch handles all four.</div>
     </div>
   </div>
 </section>
-<!-- Pixel art -->
-<section role="tabpanel" id="panel-draw" data-panel="draw" aria-labelledby="tab-draw" hidden>
+ </div>
+ <div class="device-area matrix-area" data-device-panel="matrix" hidden>
+   <header class="device-heading"><div><h2>LED Matrix</h2><p>96 individual LEDs. One little canvas for whatever you imagine.</p></div><span class="tag">12 × 8 DISPLAY</span></header>
+   <nav class="subnav" role="tablist" aria-label="LED Matrix tools"><button class="subtab active" type="button" data-view-tab="draw" role="tab" aria-selected="true">Pixel art</button><button class="subtab" type="button" data-view-tab="message" role="tab" aria-selected="false">Scrolling messages</button></nav>
+<section role="region" id="panel-draw" data-view="draw" hidden>
   <div class="section-head"><div><h2>Pixel art canvas</h2><p class="section-description">Light up any of the 96 pixels. Tap or drag to draw, then send your design in one update.</p></div><span class="tag rose">12 × 8</span></div>
   <div class="split">
     <div class="panel">
@@ -220,8 +123,7 @@
     </div>
   </div>
 </section>
-<!-- Messages -->
-<section role="tabpanel" id="panel-message" data-panel="message" aria-labelledby="tab-message" hidden>
+<section role="region" id="panel-message" data-view="message" hidden>
   <div class="section-head"><div><h2>Notes in lights</h2><p class="section-description">Send something sweet, silly, or secret. Your words scroll across the Arduino's LED matrix.</p></div><span class="tag">28 CHARS</span></div>
   <div class="split equal">
     <div class="panel">
@@ -242,8 +144,11 @@
     </div>
   </div>
 </section>
-<!-- Colors -->
-<section role="tabpanel" id="panel-color" data-panel="color" aria-labelledby="tab-color" hidden>
+ </div>
+ <div class="device-area rgb-area" data-device-panel="rgb" hidden>
+   <header class="device-heading"><div><h2>RGB Light</h2><p>Pick a color or start an effect — both control the same RGB LED.</p></div><span class="tag rose">FULL COLOR</span></header>
+   <nav class="subnav" role="tablist" aria-label="RGB Light tools"><button class="subtab active" type="button" data-view-tab="color" role="tab" aria-selected="true">Color wheel</button><button class="subtab" type="button" data-view-tab="effects" role="tab" aria-selected="false">Animations</button></nav>
+<section role="region" id="panel-color" data-view="color" hidden>
   <div class="section-head"><div><h2>Find your color</h2><p class="section-description">Drag around the wheel to explore shades. Send the one you love to the physical RGB LED.</p></div><span class="tag rose">FULL SPECTRUM</span></div>
   <div class="panel">
     <div class="wheel-layout">
@@ -266,8 +171,7 @@
     </div>
   </div>
 </section>
-<!-- Animation studio -->
-<section role="tabpanel" id="panel-effects" data-panel="effects" aria-labelledby="tab-effects" hidden>
+<section role="region" id="panel-effects" data-view="effects" hidden>
   <div class="section-head"><div><h2>Light show studio</h2><p class="section-description">Choose an animation and set the mood. A single Send starts an effect on the Arduino.</p></div><span class="tag rose">11 EFFECTS</span></div>
   <div class="effects-layout">
     <div class="panel"><div class="step-label">CHOOSE YOUR EFFECT</div><div id="effectGrid" class="effect-grid" role="group" aria-label="Choose RGB animation"></div></div>
@@ -286,40 +190,72 @@
     </div>
   </div>
 </section>
+ </div>
 </main>
-<footer class="footer">Made for little moments across long distances. · Powered by Arduino UNO R4 WiFi + Adafruit IO.</footer>
+<footer class="footer"><span>Lumi Studio · Built for long-distance little moments</span><span>Powered by UNO R4 WiFi &amp; Adafruit IO</span></footer>
 </div>
 <script>
 (() => {
-
   const $ = id => document.getElementById(id);
+  // Primary navigation: one main control per physical device.
+  const deviceButtons = Array.from(document.querySelectorAll('[data-device]'));
+  const deviceSections = Array.from(document.querySelectorAll('[data-device-panel]'));
+  const viewButtons = Array.from(document.querySelectorAll('[data-view-tab]'));
+  const views = Array.from(document.querySelectorAll('[data-view]'));
+  const activeViews = { matrix:'draw', rgb:'color' };
 
-  // Show one tool at a time. Switching tabs never discards an unsent design.
-  const tabs = Array.from(document.querySelectorAll('[role=tab]'));
-  const panels = Array.from(document.querySelectorAll('[role=tabpanel]'));
-  function switchTab(name, focus=false) {
-    for (const tab of tabs) {
-      const active=tab.dataset.tab===name;
-      tab.setAttribute('aria-selected', active ? 'true' : 'false');
-      tab.tabIndex=active ? 0 : -1;
-      tab.classList.toggle('active', active);
-      if(active && focus) tab.focus();
+  function switchView(name, focus=false) {
+    const targetDevice = (name === 'draw' || name === 'message') ? 'matrix' : 'rgb';
+    activeViews[targetDevice] = name;
+    for (const b of viewButtons) {
+      const selected = b.dataset.viewTab === name;
+      b.classList.toggle('active', selected);
+      b.setAttribute('aria-selected', selected ? 'true' : 'false');
+      b.tabIndex = selected ? 0 : -1;
+      if (selected && focus) b.focus();
     }
-    for (const panel of panels) panel.hidden=panel.dataset.panel!==name;
-    document.title='Lumi Studio · '+({draw:'Pixel art',message:'Messages',color:'Color wheel',effects:'Animations',connect:'Connection'}[name]||'Remote Arduino');
-    if(name==='color') requestAnimationFrame(drawWheel);
+    for (const v of views) v.hidden = v.dataset.view !== name;
+    if (name === 'color') requestAnimationFrame(drawWheel);
   }
-  tabs.forEach((tab,i) => {
-    tab.addEventListener('click', ()=>switchTab(tab.dataset.tab));
-    tab.addEventListener('keydown', e => {
-      if(!['ArrowRight','ArrowLeft','Home','End'].includes(e.key))return;
+  function switchDevice(name, focus=false) {
+    for (const b of deviceButtons) {
+      const selected = b.dataset.device === name;
+      b.classList.toggle('active', selected);
+      b.setAttribute('aria-selected', selected ? 'true' : 'false');
+      if (selected && focus) b.focus();
+    }
+    for (const s of deviceSections) s.hidden = s.dataset.devicePanel !== name;
+    if (name !== 'connect') switchView(activeViews[name]);
+    const labels = {matrix:'LED Matrix',rgb:'RGB Light',connect:'Connection'};
+    document.title = 'Lumi Studio · ' + (labels[name] || 'Arduino');
+  }
+  deviceButtons.forEach((b,i) => {
+    b.addEventListener('click', () => switchDevice(b.dataset.device));
+    b.addEventListener('keydown', e => {
+      if (!['ArrowRight','ArrowLeft','Home','End'].includes(e.key)) return;
       e.preventDefault();
-      const n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
-      switchTab(tabs[n].dataset.tab,true);
+      const n = e.key === 'Home' ? 0 : e.key === 'End' ? deviceButtons.length-1 : (i+(e.key==='ArrowRight'?1:-1)+deviceButtons.length)%deviceButtons.length;
+      switchDevice(deviceButtons[n].dataset.device,true);
     });
   });
-  document.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>switchTab(el.dataset.goto)));
-  switchTab('connect');
+  viewButtons.forEach((b,i) => {
+    b.addEventListener('click', () => switchView(b.dataset.viewTab));
+    b.addEventListener('keydown', e => {
+      if (!['ArrowRight','ArrowLeft','Home','End'].includes(e.key)) return;
+      const siblings = viewButtons.filter(x => x.closest('[data-device-panel]') === b.closest('[data-device-panel]'));
+      const local = siblings.indexOf(b);
+      e.preventDefault();
+      const n = e.key==='Home' ? 0 : e.key==='End' ? siblings.length-1 : (local+(e.key==='ArrowRight'?1:-1)+siblings.length)%siblings.length;
+      switchView(siblings[n].dataset.viewTab,true);
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => {
+    const to=el.dataset.goto;
+    if (to==='draw'||to==='message') {switchDevice('matrix'); switchView(to);}
+    else if (to==='color'||to==='effects') {switchDevice('rgb'); switchView(to);}
+    else switchDevice(to);
+  }));
+  switchDevice('connect');
   let firstConnect=true;
 
   let draft = Array(96).fill(false);
@@ -434,7 +370,7 @@
     });
     client.on('connect',()=>{
       status('Connected');
-      if(firstConnect) { firstConnect=false; switchTab('draw'); }
+      if(firstConnect) { firstConnect=false; switchDevice('matrix'); }
       $('connect').disabled=true;
       $('disconnect').disabled=false;
       $('apply').disabled=false;
@@ -725,6 +661,4 @@
     });
   };
 })();
-</script>
-</body>
-</html>
+</script></body></html>
