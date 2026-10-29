@@ -334,67 +334,48 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 @media(max-width:620px){.kit-tabs{margin:12px 0 20px}.kit-tab{font-size:11px;padding:10px 11px}.kit-intro h3{font-size:23px}.kit-summary{padding:19px}.kit-top .pet-scene{height:272px}.kit-top .pet-art{max-height:233px}.kit-care-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.kit-category{min-height:96px;padding:8px 3px}.kit-category .kit-emoji{font-size:25px}.kit-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.kit-game-grid,.kit-quests-grid,.kit-custom-grid,.kit-explore-controls{grid-template-columns:1fr}.kit-game-wide{grid-column:span 1}.kit-custom-grid{gap:12px}.kit-achievements{grid-template-columns:1fr}.kit-totals{grid-template-columns:repeat(2,1fr)}.kit-stats-grid .pet-stat{margin:9px 0}.kit-submit-line{align-items:flex-start;flex-direction:column}.kit-submit-line .small{max-width:100%}.kit-submit-line button{width:100%}.kit-intro p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.kitty-v2 .pet-art,.kitty-v2 .pet-tail,.kitty-v2 .pet-head,.kitty-v2 .pet-floating-heart{animation:none!important}}
 
-/* Lumi Kitty 3.0 — SVG articulated character */
-.kitty-v2 #kitPetArt{animation:none;overflow:visible;max-height:266px;max-width:420px;filter:drop-shadow(0 8px 8px #a8709418)}
+/* Lumi 4.0 — reference-approved rounded minimalist kitty */
+.kitty-v2 #kitPetArt{animation:none;overflow:visible;max-height:268px;max-width:420px;filter:drop-shadow(0 7px 7px #b5779320)}
 .kitty-v2 .pet-scene{align-items:center}
-#kitPetArt #kitChar,#kitPetArt #kitTail,#kitPetArt #kitLegL,#kitPetArt #kitLegR,#kitPetArt #kitArmL,#kitPetArt #kitArmR,#kitPetArt #kitBody,#kitPetArt #kitHead{transform-box:view-box}
-#kitPetArt #kitChar{transform-origin:230px 230px}
-#kitPetArt #kitTail{transform-origin:285px 231px;animation:kittyTail calc(2.8s / var(--kit-speed,1)) ease-in-out infinite alternate}
-#kitPetArt #kitHead{transform-origin:230px 180px;animation:kittyLook calc(5.5s / var(--kit-speed,1)) ease-in-out infinite alternate}
-#kitPetArt #kitArmL{transform-origin:185px 192px}
-#kitPetArt #kitArmR{transform-origin:275px 192px}
-#kitPetArt #kitLegL{transform-origin:197px 251px}
-#kitPetArt #kitLegR{transform-origin:263px 251px}
-#kitPetArt #kitBlinkMark{opacity:0;animation:kittyBlinkMark 6s infinite}
-#kitPetArt #kitEyes{animation:kittyEyesVisible 6s infinite}
-#kitPetArt[data-expression="happy"] #kitEyes,#kitPetArt[data-expression="excited"] #kitEyes,#kitPetArt[data-expression="sleepy"] #kitEyes,#kitPetArt[data-expression="love"] #kitEyes,#kitPetArt[data-expression="sassy"] #kitEyes{animation:none}
-#kitPetArt[data-expression="happy"] #kitBlinkMark,#kitPetArt[data-expression="excited"] #kitBlinkMark,#kitPetArt[data-expression="sleepy"] #kitBlinkMark,#kitPetArt[data-expression="love"] #kitBlinkMark,#kitPetArt[data-expression="sassy"] #kitBlinkMark{display:none}
-@keyframes kittyTail{0%{transform:rotate(-9deg)}100%{transform:rotate(13deg)}}
-@keyframes kittyLook{0%,78%,100%{transform:rotate(0)}85%{transform:rotate(4deg)}93%{transform:rotate(-3deg)}}
-@keyframes kittyBlinkMark{0%,40%,43%,68%,71%,100%{opacity:0}41%,42%,69%,70%{opacity:1}}
-@keyframes kittyEyesVisible{0%,40%,43%,68%,71%,100%{opacity:1}41%,42%,69%,70%{opacity:0}}
-@keyframes kittyBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes kittyRun{0%,100%{transform:translateY(-4px)}50%{transform:translateY(-17px)}}
-@keyframes kittyJump{0%,100%{transform:translateY(0)}33%,62%{transform:translateY(-29px)}}
-@keyframes kittyWave{0%,100%{transform:rotate(-88deg)}50%{transform:rotate(-112deg)}}
-@keyframes kittyWalkLeft{0%,100%{transform:rotate(-21deg)}50%{transform:rotate(21deg)}}
-@keyframes kittyWalkRight{0%,100%{transform:rotate(21deg)}50%{transform:rotate(-21deg)}}
-@keyframes kittyRunLeft{0%,100%{transform:rotate(-31deg)}50%{transform:rotate(35deg)}}
-@keyframes kittyRunRight{0%,100%{transform:rotate(35deg)}50%{transform:rotate(-31deg)}}
-@keyframes kittySleep{0%,100%{transform:translateY(16px) rotate(-8deg)}50%{transform:translateY(18px) rotate(-10deg)}}
-@keyframes kittySit{0%,100%{transform:translateY(12px)}50%{transform:translateY(14px)}}
-#kitPetArt[data-pose="idle"] #kitChar{animation:kittyBob calc(3.1s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="walk"] #kitChar{animation:kittyBob calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="walk"] #kitLegL{animation:kittyWalkLeft calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="walk"] #kitLegR{animation:kittyWalkRight calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="walk"] #kitArmL{animation:kittyWalkRight calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="walk"] #kitArmR{animation:kittyWalkLeft calc(.6s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="run"] #kitChar{animation:kittyRun calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="run"] #kitLegL{animation:kittyRunLeft calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="run"] #kitLegR{animation:kittyRunRight calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="run"] #kitArmL{animation:kittyRunRight calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="run"] #kitArmR{animation:kittyRunLeft calc(.37s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="jump"] #kitChar{animation:kittyJump calc(.9s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="jump"] #kitArmL{transform:rotate(90deg)}
-#kitPetArt[data-pose="jump"] #kitArmR{transform:rotate(-90deg)}
-#kitPetArt[data-pose="jump"] #kitLegL{transform:rotate(-22deg)}
-#kitPetArt[data-pose="jump"] #kitLegR{transform:rotate(22deg)}
-#kitPetArt[data-pose="wave"] #kitArmR{animation:kittyWave calc(.75s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="wave"] #kitChar{animation:kittyBob calc(2.4s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="point"] #kitArmR{transform:rotate(-100deg)}
-#kitPetArt[data-pose="point"] #kitHead{transform:rotate(7deg);animation:none}
-#kitPetArt[data-pose="sit"] #kitChar{animation:kittySit calc(3s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="sit"] #kitLegL{transform:translate(-12px,-14px) rotate(-70deg)}
-#kitPetArt[data-pose="sit"] #kitLegR{transform:translate(12px,-14px) rotate(70deg)}
-#kitPetArt[data-pose="sit"] #kitArmL{transform:rotate(-12deg)}
-#kitPetArt[data-pose="sit"] #kitArmR{transform:rotate(12deg)}
-#kitPetArt[data-pose="sleep"] #kitChar{animation:kittySleep calc(4s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="sleep"] #kitLegL{transform:translate(-11px,-13px) rotate(-62deg)}
-#kitPetArt[data-pose="sleep"] #kitLegR{transform:translate(11px,-13px) rotate(62deg)}
-#kitPetArt[data-pose="sleep"] #kitHead{animation:none;transform:rotate(-8deg)}
-#kitPetArt[data-pose="explore"] #kitHead{animation:kittyLook calc(2s / var(--kit-speed,1)) ease-in-out infinite}
-#kitPetArt[data-pose="explore"] #kitArmR{transform:rotate(-75deg)}
-#kitPetArt[data-pose="explore"] #kitChar{animation:kittyBob calc(2s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt #kitChar,#kitPetArt #kitTail,#kitPetArt #kitBody,#kitPetArt #kitHead,#kitPetArt #kitLegL,#kitPetArt #kitLegR,#kitPetArt #kitArmL,#kitPetArt #kitArmR{transform-box:view-box}
+#kitPetArt #kitChar{transform-origin:230px 250px}
+#kitPetArt #kitHead{transform-origin:230px 192px;animation:lumiLook calc(5s / var(--kit-speed,1)) ease-in-out infinite alternate}
+#kitPetArt #kitTail{transform-origin:285px 260px;animation:lumiTail calc(2.5s / var(--kit-speed,1)) ease-in-out infinite alternate}
+#kitPetArt #kitLegL{transform-origin:202px 275px}#kitPetArt #kitLegR{transform-origin:258px 275px}
+#kitPetArt #kitArmL{transform-origin:191px 218px}#kitPetArt #kitArmR{transform-origin:269px 218px}
+#kitPetArt #kitBlinkMark{opacity:0;animation:lumiBlink 6s infinite}
+#kitPetArt #kitEyes{animation:lumiEyes 6s infinite}
+#kitPetArt[data-expression="excited"] #kitEyes,#kitPetArt[data-expression="sleepy"] #kitEyes,#kitPetArt[data-expression="love"] #kitEyes,#kitPetArt[data-expression="sassy"] #kitEyes{animation:none}
+#kitPetArt[data-expression="excited"] #kitBlinkMark,#kitPetArt[data-expression="sleepy"] #kitBlinkMark,#kitPetArt[data-expression="love"] #kitBlinkMark,#kitPetArt[data-expression="sassy"] #kitBlinkMark{display:none}
+@keyframes lumiBlink{0%,40%,43%,68%,71%,100%{opacity:0}41%,42%,69%,70%{opacity:1}}
+@keyframes lumiEyes{0%,40%,43%,68%,71%,100%{opacity:1}41%,42%,69%,70%{opacity:0}}
+@keyframes lumiTail{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(10deg)}}
+@keyframes lumiLook{0%,78%,100%{transform:rotate(0)}86%{transform:rotate(5deg)}94%{transform:rotate(-4deg)}}
+@keyframes lumiBreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes lumiWalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes lumiRun{0%,100%{transform:translateY(-2px)}50%{transform:translateY(-14px)}}
+@keyframes lumiJump{0%,100%{transform:translateY(0)}40%,55%{transform:translateY(-29px)}}
+@keyframes lumiPawLeft{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(18deg)}}
+@keyframes lumiPawRight{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-15deg)}}
+@keyframes lumiWave{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(13deg)}}
+@keyframes lumiSleep{0%,100%{transform:translateY(8px)}50%{transform:translateY(11px)}}
+#kitPetArt[data-pose="idle"] #kitChar,#kitPetArt[data-pose="wave"] #kitChar,#kitPetArt[data-pose="explore"] #kitChar{animation:lumiBreathe calc(3s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitChar{animation:lumiWalk calc(.7s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitLegL,#kitPetArt[data-pose="walk"] #kitArmR{animation:lumiPawLeft calc(.7s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="walk"] #kitLegR,#kitPetArt[data-pose="walk"] #kitArmL{animation:lumiPawRight calc(.7s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitChar{animation:lumiRun calc(.4s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitLegL,#kitPetArt[data-pose="run"] #kitArmR{animation:lumiPawLeft calc(.4s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="run"] #kitLegR,#kitPetArt[data-pose="run"] #kitArmL{animation:lumiPawRight calc(.4s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="jump"] #kitChar{animation:lumiJump calc(1s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="jump"] #kitArmL{transform:rotate(-25deg)}#kitPetArt[data-pose="jump"] #kitArmR{transform:rotate(25deg)}
+#kitPetArt[data-pose="wave"] #kitArmR{animation:lumiWave calc(.7s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="point"] #kitHead{transform:rotate(8deg);animation:none}
+#kitPetArt[data-pose="sit"] #kitChar{animation:lumiBreathe calc(3.2s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="sit"] #kitLegL{transform:translate(5px,-4px) rotate(-12deg)}#kitPetArt[data-pose="sit"] #kitLegR{transform:translate(-5px,-4px) rotate(12deg)}
+#kitPetArt[data-pose="sleep"] #kitChar{animation:lumiSleep calc(3.7s / var(--kit-speed,1)) ease-in-out infinite}
+#kitPetArt[data-pose="sleep"] #kitHead{transform:translateY(5px) rotate(-7deg);animation:none}
+#kitPetArt[data-pose="explore"] #kitHead{animation:lumiLook calc(1.6s / var(--kit-speed,1)) ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){#kitPetArt #kitChar,#kitPetArt #kitTail,#kitPetArt #kitHead,#kitPetArt #kitLegL,#kitPetArt #kitLegR,#kitPetArt #kitArmL,#kitPetArt #kitArmR,#kitPetArt #kitEyes,#kitPetArt #kitBlinkMark{animation:none!important}}
 .kit-anim-lab{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:16px}
 .kit-pose-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 18px}
 .kit-pose-btn{border:1px solid #efcfdf;background:#fff9fc;color:#86466b;padding:12px 8px;border-radius:12px;min-height:65px;font-weight:750;font-size:12px;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;cursor:pointer}
@@ -412,6 +393,21 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 .kitty-v2 .pet-bubble{left:12px;right:auto;top:12px;transform:none;max-width:39%;white-space:normal;font-size:11px;line-height:1.35;padding:8px 10px;text-align:left;border-radius:11px}
 @media(max-width:560px){.kitty-v2 .pet-bubble{max-width:38%;font-size:9px;line-height:1.3;padding:6px 7px}}
 
+
+/* Shared live Water Tamagotchi (Adafruit IO relay) */
+.tama-layout{max-width:790px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,0.8fr);gap:18px;align-items:center}
+.tama-shell{border-radius:42px 42px 57px 57px;border:3px solid #73c7da;background:linear-gradient(155deg,#aff0f1,#59b7d6 55%,#3583c4);box-shadow:0 15px 30px #4c87ac33,inset 0 4px #ffffff9c;padding:22px 19px 25px;max-width:420px;margin:auto;width:100%}
+.tama-bezel{background:#1d3445;border:7px solid #3c6476;border-radius:17px;padding:11px 8px;box-shadow:inset 0 4px 10px #10202bb0}
+#tamaScreen{width:100%;aspect-ratio:2;display:block;background:#101a1d;image-rendering:pixelated;image-rendering:crisp-edges;border:1px solid #708b93;}
+.tama-controls{display:flex;justify-content:center;gap:15px;margin-top:20px}
+.tama-btn{width:64px;height:64px;border:3px solid #fffc;border-bottom:7px solid #0004;border-radius:50%;color:white;font-size:24px;font-weight:900;cursor:pointer;touch-action:manipulation;user-select:none}
+.tama-btn:active{transform:translateY(3px);border-bottom-width:4px}.tama-btn.a{background:#ee6674}.tama-btn.b{background:#43aa7c}.tama-btn.c{background:#648dea}
+.tama-btn:disabled{opacity:.5;cursor:not-allowed}.tama-names{display:flex;justify-content:center;gap:15px;margin-top:7px;color:#285877;font-size:11px;font-weight:800}.tama-names span{width:64px;text-align:center}
+.tama-info{padding:22px;border:1px solid #d5e6ec;background:#f4fcff;border-radius:19px;color:#47617a}
+.tama-info h3{margin:0 0 10px;color:#246484}.tama-info p{font-size:13px;line-height:1.65}
+#tamaStatus{font-weight:750;color:#436f8b}.tama-live-dot{width:10px;height:10px;border-radius:50%;background:#e9a14b;display:inline-block;margin-right:7px}.tama-live-dot.ok{background:#30a978}.tama-live-dot.err{background:#de5d6b}
+@media(max-width:720px){.tama-layout{grid-template-columns:1fr}.tama-info{order:-1;padding:14px}.tama-shell{max-width:360px}.tama-btn{width:58px;height:58px}.tama-names span{width:58px}}
+
 </style></head>
 <body data-active-device="connect">
 <div class="shell">
@@ -423,6 +419,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   <button type="button" class="device-card" data-device="matrix" aria-selected="false"><span class="device-symbol" aria-hidden="true">▦<span class="device-mini-paw">✿</span></span><span><span class="device-name">LED Matrix</span><span class="device-sub">Pixel art &amp; secret little notes</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
   <button type="button" class="device-card rgb" data-device="rgb" aria-selected="false"><span class="device-symbol" aria-hidden="true">◉<span class="device-mini-paw">♡</span></span><span><span class="device-name">RGB Light</span><span class="device-sub">A rainbow of colors &amp; effects</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
   <button type="button" class="device-card pet" data-device="kitty" aria-selected="false"><span class="device-symbol" aria-hidden="true"><svg class="pet-nav-icon" viewBox="0 0 48 48" fill="none"><path d="M9 22 11 7 20 14q4-2 8 0L37 7l2 15q5 7 0 14-5 7-15 7S14 42 9 36q-5-8 0-14Z" fill="#fff9fc" stroke="#ad5483" stroke-width="2.3" stroke-linejoin="round"/><path d="m13 11 1 11 7-7m14-4-1 11-7-7" fill="#ffc2dc"/><path d="M15 28q3-4 6 0m6 0q3-4 6 0" stroke="#9e577d" stroke-width="2.3" stroke-linecap="round"/><path d="m22 32 2 2 2-2-2-1Z" fill="#d85898"/><path d="M24 34q-1 3-4 2m4-2q1 3 4 2" stroke="#9e577d" stroke-width="1.4" stroke-linecap="round"/></svg></span><span><span class="device-name">Our Kitty</span><span class="device-sub">Feed, cuddle &amp; play together</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
+  <button type="button" class="device-card" data-device="tama" aria-selected="false"><span class="device-symbol" aria-hidden="true">◈</span><span><span class="device-name">Water Tamagotchi</span><span class="device-sub">Play on the real Arduino</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
 </nav>
   <div class="sidebar-divider"></div>
   <div class="side-section-label sidebar-help-label">MADE FOR TWO</div>
@@ -567,7 +564,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 
  <div class="device-area pet-area" data-device-panel="kitty" hidden>
 <section role="region" id="panel-kitty" class="kitty-v2" data-view="kitty">
-  <div class="device-heading"><div><div class="step-label">YOUR SHARED LITTLE WORLD</div><h2>Our Kitty <span class="heart-charm">♡</span></h2><p>A cozy pet adventure with a fully animated, customizable SVG kitty.</p></div><span class="tag rose" id="kitLevelTag">LEVEL 1</span></div>
+  <div class="device-heading"><div><div class="step-label">YOUR SHARED LITTLE WORLD</div><h2>Our Kitty <span class="heart-charm">♡</span></h2><p>A cozy pet adventure with a tiny, hand-drawn, customizable cat.</p></div><span class="tag rose" id="kitLevelTag">LEVEL 1</span></div>
   <div class="kit-summary">
     <div class="kit-intro"><span id="kitHello">GOOD TO SEE YOU</span><h3>Make a little magic with <strong id="kitGreetingName">Mochi</strong>.</h3><p id="kitIntroLine">Feed, play and discover a tiny world together. Every little moment counts.</p><div class="kit-pills"><span id="kitCoinPill">✦ 50 stars</span><span id="kitXpPill">Level 1 · 0 XP</span><span id="kitStreakPill">♡ 0 memories</span></div></div>
     <div class="kit-bond"><span class="kit-bond-icon">♡</span><strong>YOUR LITTLE FAMILY</strong><span>One kitty, two favorite humans.</span></div>
@@ -610,7 +607,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   </div>
   <div class="kit-swipe-note">Swipe across for Animations, Explore, Gift Shop and Memories →</div>
   <div data-ktab-panel="animation" class="kit-pane" hidden>
-    <div class="kit-section-intro"><h3>Meet the all-new animated kitty.</h3><p>Choose a pose and a facial expression independently. Try as many combinations as you want, then share one moment with each other.</p></div>
+    <div class="kit-section-intro"><h3>Meet your new little doodle kitty.</h3><p>Choose a pose and a facial expression independently. Try as many combinations as you want, then share one moment with each other.</p></div>
     <div class="kit-anim-lab">
       <div class="panel">
         <div class="step-label">POSE LIBRARY</div><h3 class="kit-form-title">How should kitty move?</h3>
@@ -628,7 +625,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       </div>
       <div class="panel">
         <div class="step-label">LIVE CHARACTER ENGINE</div><h3 class="kit-form-title">A tiny personality, now in motion.</h3>
-        <p class="kit-anim-info">Kitty's head, ears, paws and tail share one coat palette, so every color change affects the whole body. Bows, hats and collars are anchored to the correct places rather than floating over the face.</p>
+        <p class="kit-anim-info">Kitty's ears, head, paws and tail all follow the selected coat color. Accessories attach to the new character's head and neck, with independent blinking and tail animations.</p>
         <div class="kit-anim-bubble">✦ The kitty above is your live preview. It reacts when you feed, pet, play, explore, or put it to sleep. You can send a pose to the shared kitty-state feed, or let its latest activity choose automatically.</div>
         <p class="kit-anim-info" style="margin-top:16px"><strong>Animations:</strong> breathing, blinking, tail wagging, walking, running, jumping, waving, pointing, sitting, sleeping and exploring. Expressions can be mixed with any pose.</p>
         <div class="kit-anim-bubble" style="margin-top:15px">Current preview: <strong id="kitMotionLabel">Standing · Happy</strong></div>
@@ -682,6 +679,27 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   </div>
 </section>
  </div>
+<div class="device-area" data-device-panel="tama" hidden>
+<section id="panel-tama" data-view="tama" role="region">
+  <div class="section-head"><div><h2>Our Water Tamagotchi</h2><p class="section-description">The same virtual pet living on the real Arduino. Play together from anywhere.</p></div><span class="tag">LIVE FROM ARDUINO</span></div>
+  <div class="tama-layout">
+    <div class="tama-shell" aria-label="Remote virtual pet console">
+      <div class="tama-bezel"><canvas id="tamaScreen" width="128" height="64" aria-label="Live copy of the Tamagotchi OLED display"></canvas></div>
+      <div class="tama-controls">
+        <button class="tama-btn a" data-tama-button="A" disabled aria-label="Tamagotchi red A button">A</button>
+        <button class="tama-btn b" data-tama-button="B" disabled aria-label="Tamagotchi green B button">B</button>
+        <button class="tama-btn c" data-tama-button="C" disabled aria-label="Tamagotchi blue C button">C</button>
+      </div>
+      <div class="tama-names"><span>NEXT</span><span>SELECT</span><span>BACK</span></div>
+    </div>
+    <div class="tama-info"><h3>Play our little pet together</h3>
+      <p><span id="tamaDot" class="tama-live-dot"></span><span id="tamaStatus" role="status">Connect to Adafruit IO on the Overview page.</span></p>
+      <p>Both the real OLED and this screen show the same Tamagotchi. The buttons control the physical game, including its saved progress.</p>
+      <p>Connect using your own Adafruit IO account and the feed owner's username. The Arduino connects directly to Adafruit IO over Wi-Fi. No PC or bridge is needed.</p>
+      <p style="font-size:12px">The screen may update a few seconds after a button press. Only the Arduino needs to be powered on. It does not create a separate pet.</p>
+    </div>
+  </div>
+</section></div>
 </main>
   </div>
   <footer class="footer"><span>© Lumi Studio · Made for the little moments ♡</span><span>A tiny space, just for two.</span></footer>
@@ -695,10 +713,10 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   const deviceSections = Array.from(document.querySelectorAll('[data-device-panel]'));
   const viewButtons = Array.from(document.querySelectorAll('[data-view-tab]'));
   const views = Array.from(document.querySelectorAll('[data-view]'));
-  const activeViews = { matrix:'draw', rgb:'color', kitty:'kitty' };
+  const activeViews = { matrix:'draw', rgb:'color', kitty:'kitty', tama:'tama' };
 
   function switchView(name, focus=false) {
-    const targetDevice = (name === 'draw' || name === 'message') ? 'matrix' : (name === 'kitty' ? 'kitty' : 'rgb');
+    const targetDevice = (name === 'draw' || name === 'message') ? 'matrix' : (name === 'kitty' ? 'kitty' : (name === 'tama' ? 'tama' : 'rgb'));
     activeViews[targetDevice] = name;
     for (const b of viewButtons) {
       const selected = b.dataset.viewTab === name;
@@ -712,7 +730,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   }
   function switchDevice(name, focus=false) {
     document.body.dataset.activeDevice = name;
-    const workspaceNames = {connect:['Overview','Everything, in one little place'],matrix:['LED Matrix','Draw and send little notes'],rgb:['RGB Light','Make a little magic with color'],kitty:['Our Kitty','Your shared companion']};
+    const workspaceNames = {connect:['Overview','Everything, in one little place'],matrix:['LED Matrix','Draw and send little notes'],rgb:['RGB Light','Make a little magic with color'],kitty:['Our Kitty','Your shared companion'],tama:['Water Tamagotchi','Your real pet, anywhere']};
     const nextPage = workspaceNames[name] || workspaceNames.connect;
     const title = document.getElementById('workspaceTitle');
     const caption = document.getElementById('workspaceCaption');
@@ -733,7 +751,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     } else {
       switchView(activeViews[name]);
     }
-    const labels = {matrix:'LED Matrix',rgb:'RGB Light',kitty:'Our Kitty',connect:'Connection'};
+    const labels = {matrix:'LED Matrix',rgb:'RGB Light',kitty:'Our Kitty',tama:'Water Tamagotchi',connect:'Connection'};
     document.title = 'Lumi Studio · ' + (labels[name] || 'Arduino');
   }
   deviceButtons.forEach((b,i) => {
@@ -769,6 +787,9 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   let client = null;
   let topic = '';
   let kittyTopic = '';
+  let tamaFrameTopic = '';
+  let tamaButtonTopic = '';
+  let tamaLastFrame = 0;
   let dirty = true;
   let sending = false;
   let sendingMessage = false;
@@ -1043,6 +1064,9 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(!window.mqtt) {feedback('MQTT.js did not load. Check your internet connection and reload the page.');return;}
     topic=owner+'/feeds/remote-control';
     kittyTopic=owner+'/feeds/kitty-state';
+    tamaFrameTopic=owner+'/feeds/tama-live';
+    tamaButtonTopic=owner+'/feeds/tama-buttons';
+    tamaSetStatus('Waiting for Arduino...', false);
     petReady=false; petLoaded=false; petData=null; petPending=false; petSubscribed=false;
     showPet();
     petStatus('Connecting to shared kitty feed...');
@@ -1068,6 +1092,15 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
         if(err) feedback('Connected, but feed subscription failed. Check shared feed permission.');
         else feedback('Connected. Select LEDs and press Send Design to Arduino.');
       });
+      client.subscribe(tamaFrameTopic, {qos:0}, (err,grants)=>{
+        if(err || (grants && grants.some(g=>g.qos===128))) {
+          tamaSetStatus('Feed unavailable. Share tama-live with Read permission.', false);
+          return;
+        }
+        // Read the most recently saved screen without updating the feed.
+        client.publish(tamaFrameTopic+'/get','\0',{qos:0});
+        tamaSetStatus('Connected; checking Arduino...', false);
+      });
       client.subscribe(kittyTopic, {qos:0}, (err,grants)=>{
         if(err || (grants && grants.some(g=>g.qos===128))) {
           petStatus('Kitty feed unavailable. Create kitty-state and share it with Read + Write access.');
@@ -1086,6 +1119,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     });
     client.on('message',(t,p)=>{
       if (t === kittyTopic) { receivePet(p.toString()); return; }
+      if (t === tamaFrameTopic) { tamaReceive(p.toString()); return; }
       if (t === topic && /^RGB:[0-9a-f]{6}$/i.test(p.toString())) rgbFeedback('RGB command received: #' + p.toString().slice(4).toUpperCase());
       if (t === topic && p.toString().startsWith('FX:')) effectFeedback('Effect command received: ' + p.toString().slice(3, 70));
       if(t===topic && /^[0-9A-Fa-f]{24}$/.test(p.toString())) {
@@ -1102,17 +1136,17 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       }
     });
     client.on('reconnect',()=>status('Reconnecting...'));
-    client.on('offline',()=>{petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
+    client.on('offline',()=>{petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');tamaSetStatus('Adafruit IO disconnected.',false);$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
     client.on('close',()=>{
       petReady=false;showPet();petStatus('Disconnected from Adafruit IO.');
-      status('Disconnected');$('apply').disabled=true;$('sendMessage').disabled=true;
+      status('Disconnected');tamaSetStatus('Adafruit IO disconnected.',false);$('apply').disabled=true;$('sendMessage').disabled=true;
       $('disconnect').disabled=true; $('connect').disabled=false; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;
     });
     client.on('error',e=>{status('Connection error');feedback('Connection error: '+e.message+'. Verify your AIO username/key and feed access.');});
   };
   $('disconnect').onclick=()=>{
     if(client) client.end(true);
-    client=null;topic='';kittyTopic='';petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
+    client=null;topic='';kittyTopic='';tamaFrameTopic='';tamaButtonTopic='';tamaSetStatus('Connect to Adafruit IO on Overview.',false);petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
     $('connect').disabled=false;$('disconnect').disabled=true;$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true; rgbFeedback('Connect to Adafruit IO first.');
   };
   // Hue is the angle; saturation is how far out from center you drag.
@@ -1493,7 +1527,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   kitSetSelect('kitCoat',kitCoats);kitSetSelect('kitHat',kitHats);kitSetSelect('kitCollar',kitCollars);kitSetSelect('kitPersonality',kitPersonalities);
   kitSetSelect('kitRoom',kitRooms);kitSetSelect('kitBed',kitBeds);kitSetSelect('kitDecor',kitDecorations);
   kitSetSelect('kitPlace',kitPlaces);kitSetSelect('kitQuest',kitQuests);kitSetSelect('kitTrickSel',kitTricks);
-  // Lumi Kitty 3.0 — articulated SVG character, no external graphic assets.
+  // Lumi Kitty — approved minimalist doodle character, built from separate SVG shapes.
   const kitPoses = [
     ['auto','Automatic','Responds to the latest activity'],
     ['idle','Standing','Breathing and blinking'],
@@ -1520,72 +1554,60 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   const kitStroke = '#a96b90';
   const kitFaceInk = '#5d3656';
 
+  // LUMI MASCOT ENGINE — fresh original kawaii SVG based on the approved
+  // minimalist cat-and-bunny reference style. Preserves all saved kitty data.
+  // Uses existing face color constant.
   function kitFaceMarkup(expression){
     const ink=kitFaceInk;
-    const eye=(x,dir=0)=>`<ellipse cx="${x}" cy="125" rx="10.5" ry="15" fill="${ink}"/><ellipse cx="${x-2+dir}" cy="119" rx="3" ry="5" fill="#fff"/>`;
-    const smile='<path d="M224 155 Q230 165 238 155" fill="none" stroke="#945376" stroke-width="2.9" stroke-linecap="round"/>';
-    let eyes=eye(205)+eye(255);
-    let mouth=smile;
-    let brows='';
-    if(expression==='happy'||expression==='excited'){
-      eyes='<path d="M192 125 Q204 113 217 125 M243 125 Q255 113 268 125" fill="none" stroke="'+ink+'" stroke-width="5.4" stroke-linecap="round"/>';
-      mouth='<path d="M217 149 Q230 175 244 149 Z" fill="#8e3d66" stroke="#91476d" stroke-width="2"/><path d="M224 162 Q230 157 238 162" fill="none" stroke="#f5a3c6" stroke-width="3"/>';
-    } else if(expression==='sleepy'){
-      eyes='<path d="M191 129 Q205 137 218 126 M243 126 Q257 137 270 129" fill="none" stroke="'+ink+'" stroke-width="4.6" stroke-linecap="round"/>';
-      mouth='<path d="M225 155 Q230 159 235 155" fill="none" stroke="#985e7a" stroke-width="2.7"/>';
-    } else if(expression==='curious'){
-      eyes=eye(205,4)+eye(255,4);
-      brows='<path d="M191 107 Q204 96 215 106 M245 103 Q255 99 266 99" fill="none" stroke="'+ink+'" stroke-width="2.8" stroke-linecap="round"/>';
-      mouth='<path d="M225 155 Q235 162 242 154" fill="none" stroke="#985e7a" stroke-width="2.5"/>';
-    } else if(expression==='surprised'){
-      eyes='<ellipse cx="205" cy="123" rx="14" ry="17" fill="#fff" stroke="'+ink+'" stroke-width="2"/><circle cx="205" cy="125" r="7" fill="'+ink+'"/><ellipse cx="255" cy="123" rx="14" ry="17" fill="#fff" stroke="'+ink+'" stroke-width="2"/><circle cx="255" cy="125" r="7" fill="'+ink+'"/>';
-      mouth='<ellipse cx="230" cy="158" rx="7" ry="10" fill="#a4567c"/>';
-    } else if(expression==='sad'||expression==='worried'){
-      brows='<path d="M191 109 Q202 104 215 116 M244 115 Q257 104 268 109" fill="none" stroke="'+ink+'" stroke-width="3" stroke-linecap="round"/>';
-      mouth='<path d="M217 160 Q230 149 244 160" fill="none" stroke="#985e7a" stroke-width="2.8" stroke-linecap="round"/>';
-      if(expression==='sad')eyes+='<path d="M214 143 Q221 156 215 158 Q209 155 214 143 Z" fill="#8dc7e7"/>';
-    } else if(expression==='love'){
-      eyes='<path d="M205 132 C185 119 193 106 205 114 C217 106 225 119 205 132Z M255 132 C235 119 243 106 255 114 C267 106 275 119 255 132Z" fill="#ea65a0"/>';
-      mouth='<path d="M221 151 Q230 173 241 151" fill="none" stroke="#985e7a" stroke-width="3" stroke-linecap="round"/>';
-    } else if(expression==='sassy'){
-      eyes='<path d="M191 121 Q203 115 218 121 L218 126 Q205 121 192 125Z M242 120 Q254 115 270 121 L270 126 Q256 121 244 125Z" fill="'+ink+'"/>';
-      mouth='<path d="M221 155 Q238 167 249 150" fill="none" stroke="#985e7a" stroke-width="3" stroke-linecap="round"/>';
-      brows='<path d="M191 109 L218 107 M243 108 L266 101" fill="none" stroke="'+ink+'" stroke-width="3" stroke-linecap="round"/>';
-    }
-    return `<g id="kitExpressionArt">${brows}<g id="kitEyes">${eyes}</g><g id="kitBlinkMark"><path d="M191 125 Q204 133 218 125 M243 125 Q256 133 270 125" stroke="${ink}" stroke-width="4" stroke-linecap="round" fill="none"/></g><path d="M225 143 L235 143 L230 149 Z" fill="#d86c9f"/>${mouth}<path d="M181 151 l-27 -5 M181 157 l-28 3 M278 151 l27 -5 M278 157 l28 3" fill="none" stroke="#af7b99" stroke-width="2" stroke-linecap="round"/><ellipse cx="184" cy="145" rx="12" ry="9" fill="#f49ab7" opacity=".27"/><ellipse cx="276" cy="145" rx="12" ry="9" fill="#f49ab7" opacity=".27"/></g>`;
+    const open=`<circle cx="207" cy="143" r="4.6" fill="${ink}"/><circle cx="253" cy="143" r="4.6" fill="${ink}"/>`;
+    const closed=`<path d="M198 143 Q207 151 216 143 M244 143 Q253 151 262 143" fill="none" stroke="${ink}" stroke-width="3.4" stroke-linecap="round"/>`;
+    const smile=`<path d="M230 157 Q224 166 218 160 M230 157 Q236 166 242 160" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
+    let eyes=open,mouth=smile,brow='',extra='';
+    if(expression==='happy'){eyes=open; mouth=`<path d="M221 156 Q230 175 239 156" fill="none" stroke="${ink}" stroke-width="2.8" stroke-linecap="round"/>`;}
+    if(expression==='excited'){eyes=closed;mouth='<path d="M223 156 Q230 178 237 156 Z" fill="#d57e97" stroke="#4a3845" stroke-width="2"/><path d="M227 169 Q230 165 233 169" stroke="#fff1f6" stroke-width="2" fill="none"/>';}
+    if(expression==='sleepy'){eyes=closed; mouth=`<path d="M227 159 Q230 161 233 159" fill="none" stroke="${ink}" stroke-width="2.4"/>`;}
+    if(expression==='curious'){brow=`<path d="M201 132 Q207 128 214 130 M248 130 Q255 128 261 132" stroke="${ink}" stroke-width="1.9" stroke-linecap="round" fill="none"/>`;mouth=`<circle cx="230" cy="161" r="3" fill="${ink}"/>`;}
+    if(expression==='surprised'){eyes=`<circle cx="207" cy="143" r="6" fill="${ink}"/><circle cx="253" cy="143" r="6" fill="${ink}"/>`;mouth=`<ellipse cx="230" cy="162" rx="5" ry="6.5" fill="${ink}"/>`;}
+    if(expression==='love'){eyes='<path d="M207 153 C192 144 198 135 207 141 C216 135 222 144 207 153Z M253 153 C238 144 244 135 253 141 C262 135 268 144 253 153Z" fill="#ee8eac"/>';extra='<path d="M290 92 C279 84 286 77 291 81 C296 77 304 84 290 92Z" fill="#f29bbb"/>';}
+    if(expression==='sad'||expression==='worried'){mouth=`<path d="M222 166 Q230 159 238 166" fill="none" stroke="${ink}" stroke-width="2.5" stroke-linecap="round"/>`;brow=`<path d="M199 131 L216 136 M244 136 L261 131" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`;if(expression==='sad')extra='<path d="M263 153 Q257 164 264 167 Q273 164 263 153Z" fill="#9ad0e7"/>';}
+    if(expression==='sassy'){eyes=`<path d="M198 144 H216 M244 144 H262" stroke="${ink}" stroke-width="3.5" stroke-linecap="round"/>`;mouth=`<path d="M228 162 Q237 168 241 159" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;}
+    return `<g id="kitExpressionArt">${brow}<g id="kitEyes">${eyes}</g><g id="kitBlinkMark">${closed}</g><path d="M226 154 Q230 158 234 154 Q230 151 226 154Z" fill="#d486a2"/>${mouth}<ellipse cx="186" cy="158" rx="10" ry="5.5" fill="#ffb7c8" opacity=".53"/><ellipse cx="274" cy="158" rx="10" ry="5.5" fill="#ffb7c8" opacity=".53"/>${extra}</g>`;
   }
   function kitHeadwear(which){
+    const o='#9a627a',p='#f78bb8';
     const items=[
       '',
-      // Bow centered between ears, sits *above* the forehead instead of covering the eyes.
-      '<g transform="translate(232 66)"><path d="M-6 0 C-39-30 -42-4 -8 11 Z M7 0 C39-30 42-4 9 11 Z" fill="#f985b9" stroke="#b74680" stroke-width="2.5"/><circle r="8" fill="#d95597" stroke="#ae3d78" stroke-width="2"/><circle cx="-2" cy="-3" r="2" fill="#ffd2e6"/></g>',
-      '<g transform="translate(230 60)"><path d="M-39 1 L-37-30 L-19-10 L0-41 L21-10 L39-30 L37 1 Z" fill="#ffd77e" stroke="#ba8b4a" stroke-width="2.5"/><circle cx="0" cy="-18" r="5" fill="#ff96c9"/><path d="M-37 1 H37" stroke="#c88b48" stroke-width="5"/></g>',
-      '<g transform="translate(230 55)"><path d="M-30 14 L0-42 L31 14Z" fill="#9273cf" stroke="#684aa9" stroke-width="3"/><ellipse cx="0" cy="13" rx="45" ry="8" fill="#b18ce3" stroke="#684aa9" stroke-width="2"/><path d="M0-26 l5 8 10 2 -10 3 -5 8 -5-8 -10-3 10-2Z" fill="#ffe6a8"/></g>',
-      '<g transform="translate(230 63)"><path d="M-24-3 Q-41-22 -39-44 Q-33-60 -19-43 Q-8-25 -17-4Z M24-3 Q41-22 39-44 Q33-60 19-43 Q8-25 17-4Z" fill="#fff7fc" stroke="#bd809e" stroke-width="3"/><path d="M-29-17 Q-33-33 -32-43 M29-17 Q33-33 32-43" stroke="#f9a3c7" stroke-width="8" stroke-linecap="round"/></g>',
-      '<g transform="translate(230 64)"><path d="M-45 0 Q0-18 45 0" stroke="#ed7aa9" stroke-width="8" fill="none"/><path d="M0 -25 l7 13 15 3 -15 3 -7 13 -7-13 -15-3 15-3Z" fill="#ffe9a2" stroke="#d5a44c" stroke-width="2"/></g>',
-      '<g transform="translate(230 64)"><path d="M-45 0 Q0-16 45 0" fill="none" stroke="#98bb91" stroke-width="8"/>'+[-32,-16,0,16,32].map((x,i)=>`<g transform="translate(${x} ${-8-(i%2)*5})"><circle r="10" fill="${i%2?'#ffcce0':'#fff8fa'}" stroke="#e39dbd" stroke-width="1.5"/><circle r="3.5" fill="#e6b65c"/></g>`).join('')+'</g>',
-      '<g transform="translate(230 66)"><path d="M-42 2 Q-43-35 0-45 Q43-35 42 2Z" fill="#f6abd0" stroke="#b879a3" stroke-width="3"/><ellipse cx="0" cy="4" rx="50" ry="9" fill="#f5a6cd" stroke="#b879a3" stroke-width="2"/></g>',
-      '<g transform="translate(230 66)"><path d="M-39 3 Q-39-39 0-43 Q38-39 39 3Z" fill="#fffdfb" stroke="#bc8d9f" stroke-width="2.5"/><path d="M-39 4 H41" stroke="#fffdfb" stroke-width="13" stroke-linecap="round"/><path d="M-15-26 Q0-41 16-26" fill="none" stroke="#f5b6d1" stroke-width="4"/></g>',
-      '<g transform="translate(230 108)"><path d="M-51 8 Q-53-43 0-45 Q53-43 51 8" fill="none" stroke="#8872c3" stroke-width="11"/><rect x="-60" y="0" width="18" height="35" rx="8" fill="#cf91c4" stroke="#866bb4" stroke-width="2"/><rect x="42" y="0" width="18" height="35" rx="8" fill="#cf91c4" stroke="#866bb4" stroke-width="2"/></g>',
-      '<g transform="translate(230 20)"><ellipse rx="49" ry="12" fill="none" stroke="#ffe7a1" stroke-width="7"/><ellipse rx="40" ry="8" fill="none" stroke="#fff8d5" stroke-width="2"/></g>'
+      // Ear bow, not floating on the forehead.
+      `<g transform="translate(294 98) rotate(18)"><path d="M-5 0 Q-30-22 -28 1 Q-25 12 -5 7Z M5 0 Q30-22 28 1 Q25 12 5 7Z" fill="${p}" stroke="${o}" stroke-width="2.6" stroke-linejoin="round"/><circle r="6" fill="#e75e9e" stroke="${o}" stroke-width="2"/></g>`,
+      '<g transform="translate(230 85)"><path d="M-28 -6 L-28 -27 L-15 -15 L0 -34 L15 -15 L28 -27 L28 -6Z" fill="#ffe39a" stroke="#9d795b" stroke-width="2.5" stroke-linejoin="round"/><circle cy="-18" r="4" fill="#f586b2"/></g>',
+      '<g transform="translate(230 84)"><path d="M-20 0 L0 -45 L23 0Z" fill="#c3a3e8" stroke="#9174b2" stroke-width="2.5"/><ellipse cy="0" rx="35" ry="6" fill="#d8c1f2" stroke="#9174b2" stroke-width="2"/></g>',
+      '<g fill="#fffdfc" stroke="#bd8da1" stroke-width="2.5"><path d="M202 94 C191 69 185 30 197 29 Q214 23 218 91Z"/><path d="M242 90 C246 29 260 23 266 33 Q274 55 255 96Z"/><path d="M207 83 L200 43 M254 82 L261 43" stroke="#f6b9d0" stroke-width="6"/></g>',
+      '<g transform="translate(230 85)"><path d="M-36 1 Q0-16 36 1" fill="none" stroke="#9cb18e" stroke-width="6"/><path d="M0 -29 L5 -17 L18 -16 L8 -7 L12 6 L0 -1 L-12 6 L-8 -7 L-18 -16 L-5 -17Z" fill="#ffe1a0" stroke="#bb9355" stroke-width="2"/></g>',
+      '<g transform="translate(230 91)"><path d="M-38 -5 Q0-29 38 -5" fill="none" stroke="#8daa8b" stroke-width="5"/>'+[-24,-12,0,12,24].map((x,i)=>`<circle cx="${x}" cy="${-14-Math.abs(x)/9}" r="${i===2?8:6.7}" fill="${i%2?'#fff':'#f9b6d3'}" stroke="#d88aac" stroke-width="1.6"/>`).join('')+'</g>',
+      '<g transform="translate(230 82)"><path d="M-31 8 Q-37-30 8-34 Q43-29 31 8Z" fill="#edabd3" stroke="#a9749d" stroke-width="2.8"/><ellipse cx="0" cy="9" rx="43" ry="7" fill="#f3badd" stroke="#a9749d" stroke-width="2"/></g>',
+      '<g transform="translate(230 78)"><path d="M-27 14 Q-37 0 -26-15 Q-36-41 -14-38 Q0-54 14-38 Q39-40 27-15 Q39 0 27 14Z" fill="#fffdfb" stroke="#bca2b0" stroke-width="2.5"/><path d="M-31 14 H31" stroke="#f1bbd2" stroke-width="4"/></g>',
+      '<g transform="translate(230 130)"><path d="M-57 -9 Q-55-57 0-57 Q55-57 57-9" stroke="#a48aba" stroke-width="8" fill="none"/><rect x="-63" y="-17" width="15" height="29" rx="6" fill="#d7b8ec" stroke="#a48aba" stroke-width="2"/><rect x="48" y="-17" width="15" height="29" rx="6" fill="#d7b8ec" stroke="#a48aba" stroke-width="2"/></g>',
+      '<ellipse cx="230" cy="48" rx="34" ry="8" fill="none" stroke="#f5d993" stroke-width="6"/>'
     ];
-    return items[kitInt(which,0,10,0)];
+    return `<g id="kitHeadwear">${items[kitInt(which,0,10,0)]}</g>`;
   }
   function kitNeckwear(which){
-    const band='<path d="M194 186 Q230 209 266 186" stroke="#e78db4" stroke-width="8" fill="none" stroke-linecap="round"/>';
-    const bits=[
+    const i=kitInt(which,0,9,0);
+    if(!i)return '<g id="kitNeckwear"></g>';
+    const band='<path d="M208 195 Q230 207 252 195" stroke="#d88db0" stroke-width="6" fill="none" stroke-linecap="round"/>';
+    const charms=[
       '',
-      band+'<path d="M230 215 C212 203 220 195 230 203 C242 195 250 203 230 215Z" fill="#e9649d" stroke="#b84d85" stroke-width="2"/>',
-      band+'<path d="M230 205 l-24-9 v19 l24-9 24 9 v-19Z" fill="#ffa7d0" stroke="#b85e94" stroke-width="2"/><circle cx="230" cy="205" r="5" fill="#e876a9"/>',
-      '<path d="M194 186 Q230 209 266 186" stroke="#bfa0dd" stroke-width="9" fill="none"/><circle cx="230" cy="211" r="10" fill="#ffe59e" stroke="#bca25f" stroke-width="2"/>',
-      '<path d="M194 186 Q230 209 266 186" stroke="#fff" stroke-width="12" stroke-dasharray="5 3" fill="none"/><circle cx="230" cy="212" r="5" fill="#f5accb"/>',
-      '<path d="M193 185 Q230 210 267 185" stroke="#ad9ad7" stroke-width="15" fill="none"/><path d="M236 198 l25 31 -12 9 -22-31" fill="#c3b5e6"/>',
-      band+'<path d="M230 200 l5 8 9 2 -7 5 2 9 -9-5 -9 5 2-9 -7-5 9-2Z" fill="#ffe29e" stroke="#bb9350" stroke-width="1.8"/>',
-      '<path d="M230 207 l-25-15 v30 l25-13 25 13 v-30Z" fill="#d4b2f0" stroke="#9d79c3" stroke-width="2.5"/><circle cx="230" cy="208" r="6" fill="#fff"/>',
-      band+'<circle cx="230" cy="212" r="12" fill="#fff" stroke="#de9fb9" stroke-width="2"/><circle cx="230" cy="212" r="4" fill="#f4ca6b"/>',
-      band+'<path d="M230 201 a11 11 0 1 0 9 18 a11 11 0 0 1 -9-18" fill="#ffe4aa"/>'
+      '<path d="M230 215 C215 205 222 200 230 205 C238 200 245 205 230 215Z" fill="#f18ab4" stroke="#b36e91" stroke-width="1.5"/>',
+      '<path d="M230 204 L219 198 L219 211Z M230 204 L241 198 L241 211Z" fill="#f4a0c5" stroke="#af6c90" stroke-width="1.7"/><circle cx="230" cy="204" r="4" fill="#ec6ea0"/>',
+      '<circle cx="230" cy="210" r="7.5" fill="#ffe0a3" stroke="#b89954" stroke-width="2"/>',
+      '<circle cx="230" cy="209" r="6" fill="white" stroke="#daa9c3" stroke-width="1.5"/>',
+      '<path d="M211 196 Q230 213 249 196 M233 204 L244 222" stroke="#bba3de" stroke-width="8" fill="none" stroke-linecap="round"/>',
+      '<path d="M230 201 l3 7 8 0 -6 5 2 7 -7-4 -7 4 2-7 -6-5 8 0Z" fill="#ffdfa2" stroke="#c5a36e" stroke-width="1.5"/>',
+      '<path d="M230 207 l-12-8 v17Z M230 207 l12-8 v17Z" fill="#d6b5ec" stroke="#9a78b4" stroke-width="2"/><circle cx="230" cy="207" r="4" fill="white"/>',
+      '<circle cx="230" cy="212" r="7" fill="white" stroke="#d99cba" stroke-width="2"/><circle cx="230" cy="212" r="2.5" fill="#f4cb72"/>',
+      '<path d="M230 205 a9 9 0 1 0 6 15 a9 9 0 0 1 -6-15" fill="#ffe8bb"/>'
     ];
-    return `<g id="kitNeckwear">${bits[kitInt(which,0,9,0)]}</g>`;
+    return `<g id="kitNeckwear">${band}${charms[i]}</g>`;
   }
   const kitPoseAction={
     play:'run',mini:'jump',surprise:'jump',trick:'wave',pet:'sit',brush:'sit',treat:'wave',feed:'sit',
@@ -1597,58 +1619,49 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   };
   function kitChoosePose(p){if(kitAnimPreview)return kitPoses[kitAnimLocalPose]?.[0]||'idle';if(p.ps)return kitPoses[p.ps]?.[0]||'idle';return kitPoseAction[p.act]||'idle';}
   function kitChooseExpression(p){if(kitAnimPreview)return kitExpressions[kitAnimLocalExpression]?.[0]||'neutral';if(p.ex)return kitExpressions[p.ex]?.[0]||'neutral';return kitExpressionAction[p.act]||(p.e<30?'sleepy':p.j<30?'sad':'happy');}
+  // Fresh mascot: one continuous rounded silhouette, tiny dot eyes,
+  // calm minimal strokes, with separate tail and paws and anchored wearables.
+  // Recoloring is derived exclusively from the stored coat palette.
   function kitDrawCharacter(v,p){
     const coat=kitCoats[kitInt(v.k,0,9,0)];
-    const coatA=coat[1],coatB=coat[2],outline=kitMix(coatB,'#754869',.42);
-    const belly=kitMix(coatA,'#ffffff',.58),innerEar=kitMix(coatB,'#f788b4',.48);
+    const fur=coat[1],shade=coat[2],outline=kitMix('#3d3038',fur,.09);
+    const earColor=kitMix('#f3aac2',fur,.24);
     const pose=kitChoosePose(p),expression=kitChooseExpression(p);
     const svg=$('kitPetArt');
     const identifier=[v.k,v.h,v.a,pose,expression].join('/');
     if(svg.dataset.renderKey===identifier){svg.style.setProperty('--kit-speed',kitAnimSpeed);return;}
     svg.dataset.renderKey=identifier;
-    svg.setAttribute('aria-label',coat[0]+' cat, '+pose+' pose, '+expression+' expression');
     svg.dataset.pose=pose;
     svg.dataset.expression=expression;
     svg.style.setProperty('--kit-speed',kitAnimSpeed);
-    svg.innerHTML=`
-      <title>Animated ${coat[0]} kitty — ${pose}, ${expression}</title>
-      <defs>
-        <linearGradient id="kitFur" x1=".05" y1="0" x2=".9" y2="1"><stop stop-color="${coatA}"/><stop offset="1" stop-color="${coatB}"/></linearGradient>
-        <linearGradient id="kitPaw" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${coatA}"/><stop offset="1" stop-color="${coatB}"/></linearGradient>
-      </defs>
-      <ellipse id="kitShadow" cx="230" cy="298" rx="87" ry="10" fill="#9b5f7c" opacity=".17"/>
-      <g id="kitChar">
-        <g id="kitTail" transform="translate(0 0)">
-          <path d="M285 231 Q340 235 351 182 Q359 145 377 166 Q391 191 365 196" fill="none" stroke="${outline}" stroke-width="29" stroke-linecap="round"/>
-          <path d="M285 231 Q340 235 351 182 Q359 145 377 166 Q391 191 365 196" fill="none" stroke="url(#kitFur)" stroke-width="23" stroke-linecap="round"/>
-          <path d="M347 205 Q352 191 353 179" fill="none" stroke="${kitMix(coatA,'#fff',.38)}" stroke-width="6" stroke-linecap="round" opacity=".65"/>
-        </g>
-        <g id="kitLegL"><path d="M197 245 Q178 250 176 274 L179 289 Q196 298 211 286 L218 246Z" fill="url(#kitPaw)" stroke="${outline}" stroke-width="3"/><ellipse cx="191" cy="289" rx="24" ry="10" fill="url(#kitFur)" stroke="${outline}" stroke-width="2.7"/></g>
-        <g id="kitLegR"><path d="M243 246 L252 287 Q267 298 282 286 L282 274 Q282 250 264 245Z" fill="url(#kitPaw)" stroke="${outline}" stroke-width="3"/><ellipse cx="269" cy="289" rx="24" ry="10" fill="url(#kitFur)" stroke="${outline}" stroke-width="2.7"/></g>
-        <g id="kitArmL"><path d="M184 185 Q170 180 159 201 L143 231 Q143 241 153 245 Q167 248 173 238 L203 205Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="3"/><ellipse cx="152" cy="238" rx="13" ry="12" fill="url(#kitPaw)" stroke="${outline}" stroke-width="2.5"/></g>
-        <g id="kitArmR"><path d="M276 185 Q291 180 301 201 L317 231 Q317 241 307 245 Q292 248 286 238 L258 205Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="3"/><ellipse cx="308" cy="238" rx="13" ry="12" fill="url(#kitPaw)" stroke="${outline}" stroke-width="2.5"/></g>
-        <g id="kitBody"><path d="M230 174 C179 174 164 202 163 242 Q164 274 188 281 Q230 293 272 281 Q295 273 297 242 C298 202 281 174 230 174Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="3.5"/><ellipse cx="230" cy="244" rx="37" ry="31" fill="${belly}" opacity=".9"/></g>
-        <g id="kitHead">
-          <path d="M149 111 L148 42 Q149 31 161 43 L188 67 Q230 49 272 67 L299 43 Q311 30 312 43 L311 114 Q318 160 282 176 Q260 188 230 188 Q200 188 178 176 Q141 159 149 111Z" fill="url(#kitFur)" stroke="${outline}" stroke-width="4" stroke-linejoin="round"/>
-          <path d="M158 59 L161 98 L184 77 Z M302 59 L299 98 L276 77 Z" fill="${innerEar}" opacity=".93"/>
-          <path d="M165 75 Q174 69 184 78 M276 78 Q287 69 295 75" fill="none" stroke="${kitMix(coatA,'#fff',.65)}" stroke-width="4" stroke-linecap="round"/>
-          <ellipse cx="230" cy="146" rx="46" ry="28" fill="${belly}" opacity=".45"/>
-          ${kitFaceMarkup(expression)}
-          ${kitHeadwear(v.h)}
-        </g>
-        ${kitNeckwear(v.a)}
-      </g>
-      <g id="kitPoseFX" aria-hidden="true">
-        ${pose==='sleep'?'<text x="317" y="93" fill="#cb6fa0" font-size="26" font-weight="800">Z</text><text x="343" y="65" fill="#cb6fa0" font-size="18">z</text>':''}
-        ${pose==='explore'?'<path d="m338 99 5 9 11 3 -11 3 -5 9 -5-9 -11-3 11-3Z" fill="#e7a8c8"/>':''}
-        ${pose==='jump'?'<path d="M152 269 l-14 14 M317 267 l14 14" fill="none" stroke="#d887b1" stroke-width="3" stroke-linecap="round"/>':''}
-      </g>`;
-    if(['wave','point','explore','jump'].includes(pose)){
-      const foregroundArm=svg.querySelector('#kitArmR');
-      svg.querySelector('#kitChar').appendChild(foregroundArm);
-      if(pose==='jump')svg.querySelector('#kitChar').appendChild(svg.querySelector('#kitArmL'));
-    }
-    if($('kitMotionLabel'))$('kitMotionLabel').textContent=kitPoses.find(x=>x[0]===pose)?.[1]+' · '+kitExpressions.find(x=>x[0]===expression)?.[1];
+    svg.setAttribute('aria-label',`${coat[0]} minimalist kitty, ${pose}, ${expression}`);
+    const line=`stroke="${outline}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"`;
+    const fill=`fill="${fur}" ${line}`;
+    const paw=`fill="${fur}" ${line}`;
+    const shadow='<ellipse id="kitShadow" cx="230" cy="296" rx="87" ry="9" fill="#ac7391" opacity=".13"/>';
+    const tail=`<g id="kitTail"><path d="M278 258 Q336 277 349 236 Q355 217 343 209 Q331 204 326 220" fill="none" stroke="${outline}" stroke-width="18" stroke-linecap="round"/><path d="M278 258 Q336 277 349 236 Q355 217 343 209 Q331 204 326 220" fill="none" stroke="${fur}" stroke-width="12" stroke-linecap="round"/></g>`;
+    const body=pose==='sleep'
+       ? `<g id="kitBody"><path d="M166 247 Q169 204 229 208 Q298 209 309 253 Q312 283 283 289 L188 289 Q162 286 166 247Z" ${fill}/><path d="M195 272 Q213 282 232 271" fill="none" stroke="${outline}" stroke-width="2.4" stroke-linecap="round"/></g>`
+       : `<g id="kitBody"><path d="M230 184 C188 180 173 205 173 253 Q172 281 191 286 Q230 296 269 286 Q288 281 287 253 C287 205 272 180 230 184Z" ${fill}/><path d="M210 251 Q213 266 222 273 M250 251 Q247 266 238 273" fill="none" stroke="${outline}" opacity=".36" stroke-width="2.1" stroke-linecap="round"/></g>`;
+    const feet=pose==='sleep'
+      ? `<g id="kitLegL"><ellipse cx="202" cy="281" rx="20" ry="8" ${paw}/></g><g id="kitLegR"><ellipse cx="258" cy="281" rx="20" ry="8" ${paw}/></g>`
+      : `<g id="kitLegL"><path d="M191 269 Q183 284 196 291 Q213 295 218 281 L218 267" ${paw}/></g><g id="kitLegR"><path d="M269 269 Q277 284 264 291 Q247 295 242 281 L242 267" ${paw}/></g>`;
+    const wavePose=pose==='wave'||pose==='point'||pose==='explore';
+    const arms=pose==='sleep'?'':
+      `<g id="kitArmL"><path d="M187 210 Q174 237 182 256 Q190 268 201 255 L205 236" ${paw}/></g>
+       <g id="kitArmR">${wavePose
+          ? `<path d="M267 218 Q291 199 302 179 Q315 165 323 178 Q329 189 319 198 Q302 228 276 239Z" ${paw}/><path d="M311 181 l-4-7 M318 185 l5-7" stroke="${outline}" stroke-width="2" fill="none"/>`
+          : `<path d="M273 210 Q286 237 278 256 Q270 268 259 255 L255 236" ${paw}/>`}</g>`;
+    // Head is independent so posing and blinking never detach hats from the ears.
+    const head=`<g id="kitHead">
+      <path d="M161 124 L157 86 Q154 67 168 77 L194 99 Q230 90 266 99 L292 77 Q306 67 303 86 L299 124 C321 165 300 200 230 201 C160 200 139 165 161 124Z" ${fill}/>
+      <path d="M168 90 L171 115 L191 103 Z M292 90 L289 115 L269 103 Z" fill="${earColor}"/>
+      <path d="M171 98 L176 110 M289 98 L284 110" stroke="#fff2f8" stroke-width="3" stroke-linecap="round"/>
+      ${kitFaceMarkup(expression)}${kitHeadwear(v.h)}
+    </g>`;
+    svg.innerHTML=`<title>Lumi doodle — ${pose}, ${expression}</title>${shadow}<g id="kitChar">${tail}${feet}${body}${arms}${head}${kitNeckwear(v.a)}</g>
+      <g aria-hidden="true" id="kitPoseFX">${pose==='sleep'?'<text x="320" y="111" font-size="19" fill="#bc709b">z z</text>':''}${pose==='explore'?'<path d="M331 116 l4 8 8 4 -8 4 -4 8 -4-8 -8-4 8-4Z" fill="#efa9ce"/>':''}</g>`;
+    if($('kitMotionLabel'))$('kitMotionLabel').textContent=(kitPoses.find(x=>x[0]===pose)?.[1]||'Standing')+' · '+(kitExpressions.find(x=>x[0]===expression)?.[1]||'Calm');
   }
 
   function kitApplyVisuals(v){
@@ -1864,6 +1877,80 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     else $('kitAnimFeedback').textContent='Automatic preview restored on this screen.';
   };
   kitRefreshPoseButtons();
+
+
+  // The same 128x64 buffer displayed on the hardware OLED, compressed by
+  // the UNO R4 WiFi directly and delivered through private Adafruit IO feeds.
+  const tamaCanvas=$('tamaScreen');
+  const tamaCtx=tamaCanvas.getContext('2d',{alpha:false});
+  const tamaImage=tamaCtx.createImageData(128,64);
+  tamaCtx.fillStyle='#101a1d';tamaCtx.fillRect(0,0,128,64);
+  function tamaSetStatus(message,ok){
+    $('tamaStatus').textContent=message;
+    $('tamaDot').className='tama-live-dot '+(ok?'ok':'err');
+    for(const b of document.querySelectorAll('[data-tama-button]'))b.disabled=!ok;
+  }
+  let tamaDecodeSeq=0;
+  async function tamaReceive(raw){
+    const parts=raw.split('|');
+    if(parts.length!==3 || (parts[0]!=='v1' && parts[0]!=='v2'))return;
+    const current=++tamaDecodeSeq;
+    try{
+      const binary=atob(parts[2]);
+      const packed=Uint8Array.from(binary,c=>c.charCodeAt(0));
+      let bytes;
+      if(parts[0]==='v1'){
+        if(!('DecompressionStream' in window))throw Error('Update your browser.');
+        const unzipped=new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'));
+        bytes=new Uint8Array(await new Response(unzipped).arrayBuffer());
+      }else{
+        // v2 is PackBits-like RLE, compressed on the physical UNO R4.
+        bytes=new Uint8Array(1024);
+        let i=0,j=0;
+        while(i<packed.length){
+          const token=packed[i++];
+          const count=(token&127)+1;
+          if(j+count>1024)throw Error('Frame decode overflow');
+          if(token&128){
+            if(i>=packed.length)throw Error('Truncated RLE frame');
+            bytes.fill(packed[i++],j,j+count);
+          }else{
+            if(i+count>packed.length)throw Error('Truncated literal frame');
+            bytes.set(packed.subarray(i,i+count),j);
+            i+=count;
+          }
+          j+=count;
+        }
+        if(j!==1024)throw Error('Incomplete RLE frame');
+      }
+      if(bytes.length!==1024)throw Error('Wrong display frame size');
+      if(current!==tamaDecodeSeq)return;
+      const pixels=tamaImage.data;
+      for(let y=0;y<64;y++)for(let x=0;x<128;x++){
+        const lit=!!(bytes[(y>>3)*128+x] & (1<<(y&7)));
+        const k=(y*128+x)*4;
+        pixels[k]=lit?227:13; pixels[k+1]=lit?252:25;
+        pixels[k+2]=lit?255:28; pixels[k+3]=255;
+      }
+      tamaCtx.putImageData(tamaImage,0,0);
+      tamaLastFrame=Date.now();
+      tamaSetStatus('Live connection to the real Arduino',true);
+    }catch(err){tamaSetStatus('Screen decode failed: '+err.message,false);}
+  }
+  function tamaPress(key){
+    if(!client?.connected||!tamaButtonTopic||Date.now()-tamaLastFrame>45000){
+      tamaSetStatus('Not connected to Arduino.',false);return;
+    }
+    // Unique command ID prevents duplicate presses when a broker re-delivers.
+    const command=key+'|'+Date.now()+'|'+Math.floor(Math.random()*1000000000);
+    client.publish(tamaButtonTopic,command,{qos:0},err=>{
+      if(err)tamaSetStatus('Button not sent. Check Read + Write feed sharing.',false);
+    });
+  }
+  document.querySelectorAll('[data-tama-button]').forEach(b=>b.addEventListener('click',()=>tamaPress(b.dataset.tamaButton)));
+  setInterval(()=>{
+    if(tamaLastFrame && Date.now()-tamaLastFrame>45000)tamaSetStatus('Arduino appears offline.',false);
+  },5000);
 
   kitUseDraft(kitDefault());kitShow();
 
