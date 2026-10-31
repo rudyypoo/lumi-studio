@@ -395,12 +395,18 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 
 
 /* Tamagotchi Connection · embedded remote, separate from shared kitty */
+.tama-realtime-settings{display:grid;gap:8px;margin:12px 0 15px}
+.tama-realtime-settings label{font-size:12px;font-weight:750;color:#854468}
+.tama-realtime-settings input{width:100%;border:1px solid #e1b7cc;border-radius:10px;background:#fffafd;color:#744260;padding:12px;font-size:13px}
+.tama-rt-actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.tama-rt-actions button{font-size:12px;padding:10px 12px}
+
 .tama-layout{display:grid;grid-template-columns:minmax(250px,420px) minmax(250px,1fr);gap:18px;align-items:start}
 .tama-outer{background:radial-gradient(circle at 35% 18%,#ffe8f1,#f2b7cf 75%,#e8a1c4);border:2px solid #d881a9;border-radius:42% 42% 46% 46% / 30% 30% 39% 39%;padding:36px 34px 43px;box-shadow:inset 2px 5px 10px #ffffffa3,inset -4px -8px 13px #b75f8f33,0 12px 25px #8e4b7330;text-align:center;max-width:420px;margin:auto}
 .tama-header{color:#a94578;font-size:20px;font-weight:900;letter-spacing:-.6px;margin-bottom:16px}
 .tama-header span{font-size:clamp(16px,2vw,19px)}
 .tama-screen-shell{background:#fff6f7;border:9px solid #faeff3;outline:1px solid #de93b5;border-radius:18px;padding:8px;box-shadow:0 0 0 2px #d7a8c0,inset 0 2px 10px #8a5b7866}
-#tamaScreen{width:100%;display:block;aspect-ratio:1;image-rendering:pixelated;image-rendering:crisp-edges;background:#d9d5c3;border:2px solid #a6a397;border-radius:2px}
+#tamaScreen{width:100%;display:block;aspect-ratio:1;image-rendering:pixelated;image-rendering:crisp-edges;background:#c4beb8;border:2px solid #a6a397;border-radius:2px}
 .tama-controls,.tama-btn-desc{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;justify-items:center}
 .tama-controls{margin:25px auto 4px}
 .tama-button{width:65px;height:65px;border-radius:50%;background:radial-gradient(circle at 36% 27%,#fffbce,#ffeb96 65%,#deae68);border:3px solid #ce7e9c;color:#86526a;font-size:18px;font-weight:850;box-shadow:0 4px 1px #bd678d,inset 0 3px 3px #ffffffb5;cursor:pointer;touch-action:manipulation}
@@ -408,6 +414,8 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 .tama-button:disabled{opacity:.5;cursor:not-allowed}
 .tama-btn-desc span{font-size:10px;color:#8b416e;font-weight:850;letter-spacing:1px}
 .tama-instructions{padding:25px}.tama-instructions h3{color:#7b3a65;font-size:20px;margin:0 0 10px}.tama-instructions p{color:#8d657e;line-height:1.65}.tama-state{border:1px solid #e9bbd0;background:#fff4f9;padding:14px 15px;display:flex;align-items:center;gap:10px;border-radius:13px;color:#8d4a75;font-size:12px;margin:20px 0}.tama-dot{width:10px;height:10px;border-radius:50%;background:#dc8f9c;flex:none}.tama-dot.online{background:#59b47e}.tama-separator{border-top:1px solid #ecd2df;margin:23px 0}
+.tama-tone-control{display:flex;flex-wrap:wrap;align-items:center;gap:12px;color:#874b70;font-size:13px;font-weight:700;margin:0 0 8px}
+.tama-tone-control select{font:inherit;font-weight:600;border:1px solid #e8bfd2;background:#fffaff;color:#784066;border-radius:9px;padding:9px 12px;max-width:100%}
 @media(max-width:920px){.tama-layout{grid-template-columns:1fr}.tama-instructions{max-width:550px;margin:auto}}
 @media(max-width:420px){.tama-outer{padding:25px 20px 37px}.tama-button{width:55px;height:55px}.tama-header{font-size:16px}}
 </style></head>
@@ -699,11 +707,35 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
      <h3>Same little pet, wherever you are</h3>
      <p>Your Arduino runs the game and keeps the saved progress. This page mirrors the real 10-icon screen, with the actual character and menus from your sketch.</p>
      <div class="tama-state"><span id="tamaDot" class="tama-dot"></span><strong id="tamaStatus" role="status">Connect to Adafruit IO to see the pet.</strong></div>
-     <p class="small">Connect using the main <b>Overview</b> page. This remote requires the Arduino to be on and the PC relay to be running. It does not make a second pet or overwrite the separate <b>Our Kitty</b> game.</p>
+     <p class="small">For instant mode, enter your private tunnel details below; Adafruit IO login is not required for the Tamagotchi. Your Arduino and PC must be on. It does not make a second pet or overwrite the separate <b>Our Kitty</b> game.</p>
      <p class="small">Keyboard: A, B, C, or ←, Enter, Esc while this tab is open. The real buttons on your Arduino continue to work.</p>
      <div class="tama-separator"></div>
-     <h3>Remote connection</h3>
-     <p>Uses your existing Adafruit IO login with the additional feeds <code>tama-live</code> and <code>tama-buttons</code>.</p>
+     <h3>Instant connection</h3>
+     <p>Stream your real Arduino screen live without Adafruit IO screen delays. Start <b>START_INSTANT_BRIDGE.bat</b> on your PC, then paste the tunnel address and access code printed there. Your girlfriend can connect with an invite link.</p>
+     <div class="tama-realtime-settings">
+       <label for="tamaRtURL">Cloudflare tunnel address</label>
+       <input id="tamaRtURL" type="url" placeholder="https://example.trycloudflare.com" spellcheck="false" autocomplete="off">
+       <label for="tamaRtCode">Private access code</label>
+       <input id="tamaRtCode" type="text" placeholder="Code displayed in the instant bridge window" spellcheck="false" autocomplete="off">
+       <div class="tama-rt-actions">
+         <button type="button" class="action" id="tamaRtConnect">Connect instantly</button>
+         <button type="button" class="action ghost" id="tamaRtShare">Copy girlfriend invite link</button>
+         <button type="button" class="action ghost" id="tamaRtDisconnect">Disconnect live</button>
+       </div>
+       <p class="small" id="tamaRtInfo">Only share your invite link or access code with someone you trust. The tunnel address changes after the bridge restarts.</p>
+     </div>
+     <div class="tama-separator"></div>
+     <h3>Older connection (fallback)</h3>
+     <p>You can still use your existing Adafruit IO connection for the pet at its slower update rate. The other Lumi Studio devices and kitty continue using Adafruit IO as before.</p>
+     <div class="tama-tone-control">
+       <label for="tamaTone">Screen colors</label>
+       <select id="tamaTone" aria-label="Match the Arduino screen colors">
+         <option value="1" selected>Soft pastels (default)</option>
+         <option value="0">Bright</option>
+         <option value="2">Dark</option>
+       </select>
+     </div>
+     <p class="small">Choose the same color setting as your Arduino. This changes the webpage preview only.</p>
      <button type="button" class="action ghost" id="tamaReload">Request latest screen</button>
    </div>
  </div>
@@ -811,11 +843,143 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   const tamaCanvas=$('tamaScreen');
   const tamaCtx=tamaCanvas.getContext('2d',{alpha:false});
   let tamaFrameBusy=false;
-  tamaCtx.fillStyle='#d6d2bc';tamaCtx.fillRect(0,0,120,120);
+  let tamaLastDecoded=null;
+  let tamaTone=1;
+  // Exactly the color settings and decorative background geometry used by
+  // Connection2024_Complete_Update.ino drawBackground()/uiBackground().
+  // The Arduino /frame endpoint transmits monochrome bits, not its TFT RGB565
+  // output; we reproduce those colors locally without any extra feed traffic.
+  const tamaPalettes=[
+    {cream:[255,251,242],pink:[248,220,229],yellow:[255,242,192],lavender:[238,215,230],ink:[37,35,42]},
+    {cream:[196,190,184],pink:[201,166,179],yellow:[203,191,150],lavender:[183,163,184],ink:[21,19,26]},
+    {cream:[122,120,116],pink:[137,109,122],yellow:[138,129,99],lavender:[120,103,128],ink:[9,8,12]}
+  ];
+  function tamaBackgroundColor(x,y,p){
+    if(y<22||y>=100)return p.pink;
+    let dx=x-36,dy=y-40;
+    if(dx*dx+dy*dy<100)return p.yellow;
+    dx=x-82;dy=y-68;
+    if(dx*dx+dy*dy<196)return p.lavender;
+    dx=x-83;dy=y-35;
+    if(dx*dx+dy*dy<64)return p.yellow;
+    return p.cream;
+  }
+  function tamaRenderPixels(w,h,packed){
+    const stride=Math.ceil(w/8),img=tamaCtx.createImageData(w,h),p=tamaPalettes[tamaTone];
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const on=Boolean(packed[y*stride+(x>>3)]&(0x80>>(x&7)));
+      const rgb=on?p.ink:tamaBackgroundColor(Math.floor(x*120/w),Math.floor(y*120/h),p);
+      const i=(y*w+x)*4;
+      img.data[i]=rgb[0];img.data[i+1]=rgb[1];img.data[i+2]=rgb[2];img.data[i+3]=255;
+    }
+    const staging=document.createElement('canvas');staging.width=w;staging.height=h;
+    staging.getContext('2d',{alpha:false}).putImageData(img,0,0);
+    tamaCtx.imageSmoothingEnabled=false;
+    tamaCtx.drawImage(staging,0,0,120,120);
+  }
+  tamaCtx.fillStyle='rgb(196,190,184)';tamaCtx.fillRect(0,0,120,120);
+  $('tamaTone').addEventListener('change',()=>{
+    tamaTone=Number($('tamaTone').value);
+    if(tamaLastDecoded)tamaRenderPixels(tamaLastDecoded.w,tamaLastDecoded.h,tamaLastDecoded.packed);
+  });
   function tamaSetStatus(message,online){
     $('tamaStatus').textContent=message;
     $('tamaDot').classList.toggle('online',Boolean(online));
   }
+  // Direct real-time WebSocket through the user's temporary Cloudflare tunnel.
+  // The private access code is never included in the public GitHub source.
+  let tamaRtSocket=null;
+  let tamaRtReady=false;
+  let tamaRtWanted=false;
+  let tamaRtReconnect=null;
+  let tamaRtAddr='';
+  let tamaRtAccess='';
+  function tamaRtValidate(raw){
+    const u=new URL(raw.trim());
+    const local=(u.hostname==='localhost'||u.hostname==='127.0.0.1');
+    if(u.username||u.password||u.search||u.hash||u.pathname!=='/' && u.pathname!=='')throw new Error('Enter only the tunnel address, without a path or password.');
+    if(u.protocol!=='https:'&&!(local&&u.protocol==='http:'))throw new Error('Use https:// for your Cloudflare tunnel address.');
+    if(!local && !u.hostname.endsWith('.trycloudflare.com'))throw new Error('Use the trycloudflare.com URL printed by the bridge.');
+    return u;
+  }
+  function tamaRtStop(){
+    tamaRtWanted=false;tamaRtReady=false;
+    if(tamaRtReconnect){clearTimeout(tamaRtReconnect);tamaRtReconnect=null;}
+    if(tamaRtSocket){const old=tamaRtSocket;tamaRtSocket=null;old.onclose=null;old.close();}
+  }
+  function tamaRtOpen(){
+    if(!tamaRtWanted)return;
+    const u=tamaRtValidate(tamaRtAddr);
+    const wsPath=(u.protocol==='https:'?'wss:':'ws:')+'//'+u.host+'/ws';
+    tamaRtReady=false;
+    tamaSetStatus('Connecting to instant live screen…',false);
+    const ws=new WebSocket(wsPath);
+    tamaRtSocket=ws;
+    ws.onopen=()=>{if(ws===tamaRtSocket)ws.send(JSON.stringify({type:'auth',token:tamaRtAccess}));};
+    ws.onmessage=e=>{
+      if(ws!==tamaRtSocket)return;
+      let msg;try{msg=JSON.parse(e.data);}catch{return;}
+      if(msg.type==='auth_ok'){
+        tamaRtReady=true;tamaStopHttpFallback();
+        $('tamaRtInfo').textContent='Instant connection active. Your girlfriend can use the copied invite link.';
+        tamaSetStatus('Instant live connection active · waiting for screen',true);
+        return;
+      }
+      if(msg.type==='error'){
+        tamaSetStatus('Live bridge: '+String(msg.message).slice(0,150),false);
+        if(String(msg.message).includes('access code')){tamaRtWanted=false;}
+        return;
+      }
+      if(msg.type==='button_ok')return;
+      if(msg.v===1)tamaReceive(e.data);
+    };
+    ws.onerror=()=>{if(ws===tamaRtSocket&&!tamaRtReady)tamaSetStatus('Live tunnel unreachable. Verify URL, bridge window and access code.',false);};
+    ws.onclose=()=>{
+      if(ws!==tamaRtSocket)return;
+      tamaRtReady=false;
+      if(tamaRtWanted){
+        tamaSetStatus('Instant connection interrupted. Reconnecting…',false);
+        tamaRtReconnect=setTimeout(()=>{if(tamaRtWanted)tamaRtOpen();},2000);
+      }
+    };
+  }
+  function tamaRtConnect(){
+    try{
+      tamaRtAddr=$('tamaRtURL').value.trim();
+      tamaRtAccess=$('tamaRtCode').value.trim();
+      tamaRtValidate(tamaRtAddr);
+      if(tamaRtAccess.length<12)throw new Error('Enter the private access code from the bridge window.');
+      tamaRtStop();tamaRtWanted=true;tamaRtOpen();
+    }catch(err){tamaSetStatus('Instant setup: '+err.message,false);}
+  }
+  $('tamaRtConnect').onclick=tamaRtConnect;
+  $('tamaRtDisconnect').onclick=()=>{tamaRtStop();tamaSetStatus('Instant connection disconnected. Enter tunnel details to reconnect.',false);};
+  $('tamaRtShare').onclick=async()=>{
+    try{
+      const addr=$('tamaRtURL').value.trim();const code=$('tamaRtCode').value.trim();
+      tamaRtValidate(addr);
+      if(code.length<12)throw new Error('Enter your private access code first.');
+      const url=location.href.split('#')[0]+'#'+new URLSearchParams({tama:addr,code}).toString();
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(url);
+        $('tamaRtInfo').textContent='Private invite link copied. Send it only to your girlfriend.';
+      }else{
+        window.prompt('Copy this private invite link:',url);
+      }
+    }catch(err){$('tamaRtInfo').textContent='Cannot copy link: '+err.message;}
+  };
+  // A private invite URL contains the token only after # (never sent to GitHub by HTTP).
+  try{
+    const hash=new URLSearchParams(location.hash.slice(1));
+    const addr=hash.get('tama'), code=hash.get('code');
+    if(addr&&code){
+      $('tamaRtURL').value=addr;$('tamaRtCode').value=code;
+      history.replaceState(null,'',location.pathname+location.search);
+      switchDevice('tamagotchi');
+      tamaRtConnect();
+    }
+  }catch(err){console.warn('Invalid instant invite',err);}
+
   // Page-major 1-bit bitmap is decoded by the Python relay before publication.
   function tamaBase64Bytes(encoded){
     const s=atob(encoded), out=new Uint8Array(s.length);
@@ -836,19 +1000,8 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       }else if(msg.codec!=='raw')return;
       const w=msg.w,h=msg.h,stride=Math.ceil(w/8);
       if(packed.length!==stride*h)throw new Error('Incomplete frame');
-      const img=tamaCtx.createImageData(w,h);
-      for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-        const on=Boolean(packed[y*stride+(x>>3)]&(0x80>>(x&7)));
-        const i=(y*w+x)*4;
-        img.data[i]=on?27:214;
-        img.data[i+1]=on?26:210;
-        img.data[i+2]=on?29:188;
-        img.data[i+3]=255;
-      }
-      const staging=document.createElement('canvas');staging.width=w;staging.height=h;
-      staging.getContext('2d',{alpha:false}).putImageData(img,0,0);
-      tamaCtx.imageSmoothingEnabled=false;
-      tamaCtx.drawImage(staging,0,0,120,120);
+      tamaLastDecoded={w,h,packed};
+      tamaRenderPixels(w,h,packed);
       tamaLastSeen=Date.now();
       tamaSetStatus('Live screen · updated '+new Date().toLocaleTimeString(),true);
     }catch(error){tamaSetStatus('Frame decoding error: '+error.message,false);}
@@ -859,7 +1012,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   // last-value endpoint as a read-only fallback, using this browser session's
   // own key. Never put the key in the URL or the public HTML file.
   async function tamaReadScreenHttp(){
-    if(tamaRestInFlight || !client || !client.connected || !tamaTopic)return;
+    if(tamaRtReady || tamaRestInFlight || !client || !client.connected || !tamaTopic)return;
     const owner=$('owner').value.trim();
     const userKey=$('key').value.trim();
     if(!owner||!userKey)return;
@@ -892,7 +1045,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     }finally{tamaRestInFlight=false;}
   }
   function tamaStartHttpFallback(){
-    if(tamaRestTimer)return;
+    if(tamaRtReady||tamaRestTimer)return;
     tamaSetStatus('Live subscription unavailable; trying secure HTTPS screen access…',false);
     tamaReadScreenHttp();
     tamaRestTimer=setInterval(tamaReadScreenHttp,1600);
@@ -902,11 +1055,19 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(tamaScreenTimeout){clearTimeout(tamaScreenTimeout);tamaScreenTimeout=null;}
   }
   function tamaRequestLatest(){
+    if(tamaRtReady&&tamaRtSocket&&tamaRtSocket.readyState===WebSocket.OPEN){
+      tamaRtSocket.send(JSON.stringify({type:'sync'}));return;
+    }
     if(!client||!client.connected||!tamaTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
     tamaRestLastId=null;
     tamaReadScreenHttp();
   }
   function tamaPress(key){
+    if(tamaRtReady&&tamaRtSocket&&tamaRtSocket.readyState===WebSocket.OPEN){
+      if(Date.now()-tamaLastButtonAt<85)return;
+      tamaLastButtonAt=Date.now();
+      tamaRtSocket.send(JSON.stringify({type:'press',key}));return;
+    }
     if(!client||!client.connected||!tamaButtonTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
     if(Date.now()-tamaLastButtonAt<250)return;
     tamaLastButtonAt=Date.now();
@@ -930,7 +1091,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(key){e.preventDefault();tamaPress(key);}
   });
   setInterval(()=>{
-    if(tamaLastSeen && Date.now()-tamaLastSeen>18000){
+    if(tamaLastSeen && Date.now()-tamaLastSeen>18000 && !tamaRtReady){
       tamaSetStatus('Last screen update over 18 seconds ago. Check the PC relay.',false);
     }
   },4000);
@@ -1250,7 +1411,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
           return;
         }
         tamaLiveSubscribed=true;
-        tamaSetStatus('Subscribed; waiting for your Arduino screen…',false);
+        if(!tamaRtReady)tamaSetStatus('Subscribed; waiting for your Arduino screen…',false);
         // Load the last frame immediately, even if live MQTT events from a
         // cross-account shared feed are unavailable. This read is read-only.
         tamaReadScreenHttp();
@@ -1278,12 +1439,12 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     client.on('message',(t,p)=>{
       if(t===username+'/errors'){
         const detail=p.toString();
-        if(detail.includes('tama-live') && (!tamaLastSeen || Date.now()-tamaLastSeen>18000)){
+        if(!tamaRtReady && detail.includes('tama-live') && (!tamaLastSeen || Date.now()-tamaLastSeen>18000)){
           tamaSetStatus('Adafruit IO screen error: '+detail.slice(0,200),false);
         }
         return;
       }
-      if (t === tamaTopic) { tamaStopHttpFallback(); tamaReceive(p.toString()); return; }
+      if (t === tamaTopic) { if(!tamaRtReady){tamaStopHttpFallback();tamaReceive(p.toString());} return; }
       if (t === kittyTopic) { receivePet(p.toString()); return; }
       if (t === topic && /^RGB:[0-9a-f]{6}$/i.test(p.toString())) rgbFeedback('RGB command received: #' + p.toString().slice(4).toUpperCase());
       if (t === topic && p.toString().startsWith('FX:')) effectFeedback('Effect command received: ' + p.toString().slice(3, 70));
@@ -1301,10 +1462,10 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       }
     });
     client.on('reconnect',()=>status('Reconnecting...'));
-    client.on('offline',()=>{tamaStopHttpFallback();tamaSetStatus('Adafruit IO offline.',false);petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
+    client.on('offline',()=>{tamaStopHttpFallback();if(!tamaRtReady)tamaSetStatus('Adafruit IO offline.',false);petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
     client.on('close',()=>{
       tamaStopHttpFallback();
-      tamaSetStatus('Disconnected from Adafruit IO.',false);
+      if(!tamaRtReady)tamaSetStatus('Disconnected from Adafruit IO.',false);
       petReady=false;showPet();petStatus('Disconnected from Adafruit IO.');
       status('Disconnected');$('apply').disabled=true;$('sendMessage').disabled=true;
       $('disconnect').disabled=true; $('connect').disabled=false; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;
@@ -1314,7 +1475,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   $('disconnect').onclick=()=>{
     tamaStopHttpFallback();
     if(client) client.end(true);
-    client=null;topic='';kittyTopic='';tamaTopic='';tamaButtonTopic='';tamaSetStatus('Connect to Adafruit IO first.',false);petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
+    client=null;topic='';kittyTopic='';tamaTopic='';tamaButtonTopic='';if(!tamaRtReady)tamaSetStatus('Connect to Adafruit IO first.',false);petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
     $('connect').disabled=false;$('disconnect').disabled=true;$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true; rgbFeedback('Connect to Adafruit IO first.');
   };
   // Hue is the angle; saturation is how far out from center you drag.
