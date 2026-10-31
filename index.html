@@ -818,6 +818,15 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   switchDevice('connect');
   let firstConnect=true;
 
+  // LED matrix and remote-control state. Required by the grid and command handlers.
+  let dirty = true;
+  let sending = false;
+  let sendingMessage = false;
+  let sendingRGB = false;
+  let sendingEffect = false;
+  let dragValue = null;
+  const buttons = [];
+
   let draft = Array(96).fill(false);
   let client = null;
   let topic = '';
