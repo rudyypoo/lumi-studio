@@ -895,7 +895,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(tamaRestTimer)return;
     tamaSetStatus('Live subscription unavailable; trying secure HTTPS screen access…',false);
     tamaReadScreenHttp();
-    tamaRestTimer=setInterval(tamaReadScreenHttp,8000);
+    tamaRestTimer=setInterval(tamaReadScreenHttp,1600);
   }
   function tamaStopHttpFallback(){
     if(tamaRestTimer){clearInterval(tamaRestTimer);tamaRestTimer=null;}
@@ -913,7 +913,12 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     const id=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
     client.publish(tamaButtonTopic,JSON.stringify({key,id}),{qos:0,retain:false},err=>{
       if(err)tamaSetStatus('Could not send '+key+': '+err.message,false);
-      else tamaSetStatus('Sent '+key+' · '+(tamaLastSeen&&Date.now()-tamaLastSeen<18000?'waiting for next screen':'screen connection still unavailable'),Boolean(tamaLastSeen&&Date.now()-tamaLastSeen<18000));
+      else {
+        tamaSetStatus('Sent '+key+' · '+(tamaLastSeen&&Date.now()-tamaLastSeen<18000?'waiting for next screen':'screen connection still unavailable'),Boolean(tamaLastSeen&&Date.now()-tamaLastSeen<18000));
+        // If the shared feed cannot stream via MQTT, request the freshest
+        // saved frame shortly after the button reaches the PC bridge.
+        setTimeout(tamaReadScreenHttp,900);
+      }
     });
   }
   document.querySelectorAll('[data-tama-key]').forEach(b=>b.addEventListener('click',()=>tamaPress(b.dataset.tamaKey)));
@@ -1246,7 +1251,9 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
         }
         tamaLiveSubscribed=true;
         tamaSetStatus('Subscribed; waiting for your Arduino screen…',false);
-        // The PC bridge publishes automatically every four seconds.
+        // Load the last frame immediately, even if live MQTT events from a
+        // cross-account shared feed are unavailable. This read is read-only.
+        tamaReadScreenHttp();
         // Don't publish to /get on a shared feed: it can be unauthorized.
         tamaScreenTimeout=setTimeout(()=>{
           if(client&&client.connected&&!tamaLastSeen)tamaStartHttpFallback();
