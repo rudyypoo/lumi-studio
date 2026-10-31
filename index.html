@@ -394,20 +394,22 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 @media(max-width:560px){.kitty-v2 .pet-bubble{max-width:38%;font-size:9px;line-height:1.3;padding:6px 7px}}
 
 
-/* Shared live Water Tamagotchi (Adafruit IO relay) */
-.tama-layout{max-width:790px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,0.8fr);gap:18px;align-items:center}
-.tama-shell{border-radius:42px 42px 57px 57px;border:3px solid #73c7da;background:linear-gradient(155deg,#aff0f1,#59b7d6 55%,#3583c4);box-shadow:0 15px 30px #4c87ac33,inset 0 4px #ffffff9c;padding:22px 19px 25px;max-width:420px;margin:auto;width:100%}
-.tama-bezel{background:#1d3445;border:7px solid #3c6476;border-radius:17px;padding:11px 8px;box-shadow:inset 0 4px 10px #10202bb0}
-#tamaScreen{width:100%;aspect-ratio:2;display:block;background:#101a1d;image-rendering:pixelated;image-rendering:crisp-edges;border:1px solid #708b93;}
-.tama-controls{display:flex;justify-content:center;gap:15px;margin-top:20px}
-.tama-btn{width:64px;height:64px;border:3px solid #fffc;border-bottom:7px solid #0004;border-radius:50%;color:white;font-size:24px;font-weight:900;cursor:pointer;touch-action:manipulation;user-select:none}
-.tama-btn:active{transform:translateY(3px);border-bottom-width:4px}.tama-btn.a{background:#ee6674}.tama-btn.b{background:#43aa7c}.tama-btn.c{background:#648dea}
-.tama-btn:disabled{opacity:.5;cursor:not-allowed}.tama-names{display:flex;justify-content:center;gap:15px;margin-top:7px;color:#285877;font-size:11px;font-weight:800}.tama-names span{width:64px;text-align:center}
-.tama-info{padding:22px;border:1px solid #d5e6ec;background:#f4fcff;border-radius:19px;color:#47617a}
-.tama-info h3{margin:0 0 10px;color:#246484}.tama-info p{font-size:13px;line-height:1.65}
-#tamaStatus{font-weight:750;color:#436f8b}.tama-live-dot{width:10px;height:10px;border-radius:50%;background:#e9a14b;display:inline-block;margin-right:7px}.tama-live-dot.ok{background:#30a978}.tama-live-dot.err{background:#de5d6b}
-@media(max-width:720px){.tama-layout{grid-template-columns:1fr}.tama-info{order:-1;padding:14px}.tama-shell{max-width:360px}.tama-btn{width:58px;height:58px}.tama-names span{width:58px}}
-
+/* Tamagotchi Connection · embedded remote, separate from shared kitty */
+.tama-layout{display:grid;grid-template-columns:minmax(250px,420px) minmax(250px,1fr);gap:18px;align-items:start}
+.tama-outer{background:radial-gradient(circle at 35% 18%,#ffe8f1,#f2b7cf 75%,#e8a1c4);border:2px solid #d881a9;border-radius:42% 42% 46% 46% / 30% 30% 39% 39%;padding:36px 34px 43px;box-shadow:inset 2px 5px 10px #ffffffa3,inset -4px -8px 13px #b75f8f33,0 12px 25px #8e4b7330;text-align:center;max-width:420px;margin:auto}
+.tama-header{color:#a94578;font-size:20px;font-weight:900;letter-spacing:-.6px;margin-bottom:16px}
+.tama-header span{font-size:clamp(16px,2vw,19px)}
+.tama-screen-shell{background:#fff6f7;border:9px solid #faeff3;outline:1px solid #de93b5;border-radius:18px;padding:8px;box-shadow:0 0 0 2px #d7a8c0,inset 0 2px 10px #8a5b7866}
+#tamaScreen{width:100%;display:block;aspect-ratio:1;image-rendering:pixelated;image-rendering:crisp-edges;background:#d9d5c3;border:2px solid #a6a397;border-radius:2px}
+.tama-controls,.tama-btn-desc{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;justify-items:center}
+.tama-controls{margin:25px auto 4px}
+.tama-button{width:65px;height:65px;border-radius:50%;background:radial-gradient(circle at 36% 27%,#fffbce,#ffeb96 65%,#deae68);border:3px solid #ce7e9c;color:#86526a;font-size:18px;font-weight:850;box-shadow:0 4px 1px #bd678d,inset 0 3px 3px #ffffffb5;cursor:pointer;touch-action:manipulation}
+.tama-button:active{transform:translateY(3px);box-shadow:0 1px 1px #bd678d}
+.tama-button:disabled{opacity:.5;cursor:not-allowed}
+.tama-btn-desc span{font-size:10px;color:#8b416e;font-weight:850;letter-spacing:1px}
+.tama-instructions{padding:25px}.tama-instructions h3{color:#7b3a65;font-size:20px;margin:0 0 10px}.tama-instructions p{color:#8d657e;line-height:1.65}.tama-state{border:1px solid #e9bbd0;background:#fff4f9;padding:14px 15px;display:flex;align-items:center;gap:10px;border-radius:13px;color:#8d4a75;font-size:12px;margin:20px 0}.tama-dot{width:10px;height:10px;border-radius:50%;background:#dc8f9c;flex:none}.tama-dot.online{background:#59b47e}.tama-separator{border-top:1px solid #ecd2df;margin:23px 0}
+@media(max-width:920px){.tama-layout{grid-template-columns:1fr}.tama-instructions{max-width:550px;margin:auto}}
+@media(max-width:420px){.tama-outer{padding:25px 20px 37px}.tama-button{width:55px;height:55px}.tama-header{font-size:16px}}
 </style></head>
 <body data-active-device="connect">
 <div class="shell">
@@ -419,7 +421,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   <button type="button" class="device-card" data-device="matrix" aria-selected="false"><span class="device-symbol" aria-hidden="true">▦<span class="device-mini-paw">✿</span></span><span><span class="device-name">LED Matrix</span><span class="device-sub">Pixel art &amp; secret little notes</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
   <button type="button" class="device-card rgb" data-device="rgb" aria-selected="false"><span class="device-symbol" aria-hidden="true">◉<span class="device-mini-paw">♡</span></span><span><span class="device-name">RGB Light</span><span class="device-sub">A rainbow of colors &amp; effects</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
   <button type="button" class="device-card pet" data-device="kitty" aria-selected="false"><span class="device-symbol" aria-hidden="true"><svg class="pet-nav-icon" viewBox="0 0 48 48" fill="none"><path d="M9 22 11 7 20 14q4-2 8 0L37 7l2 15q5 7 0 14-5 7-15 7S14 42 9 36q-5-8 0-14Z" fill="#fff9fc" stroke="#ad5483" stroke-width="2.3" stroke-linejoin="round"/><path d="m13 11 1 11 7-7m14-4-1 11-7-7" fill="#ffc2dc"/><path d="M15 28q3-4 6 0m6 0q3-4 6 0" stroke="#9e577d" stroke-width="2.3" stroke-linecap="round"/><path d="m22 32 2 2 2-2-2-1Z" fill="#d85898"/><path d="M24 34q-1 3-4 2m4-2q1 3 4 2" stroke="#9e577d" stroke-width="1.4" stroke-linecap="round"/></svg></span><span><span class="device-name">Our Kitty</span><span class="device-sub">Feed, cuddle &amp; play together</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
-  <button type="button" class="device-card" data-device="tama" aria-selected="false"><span class="device-symbol" aria-hidden="true">◈</span><span><span class="device-name">Water Tamagotchi</span><span class="device-sub">Play on the real Arduino</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
+  <button type="button" class="device-card" data-device="tamagotchi" aria-selected="false"><span class="device-symbol" aria-hidden="true" style="font-size:27px;color:#b34784;background:#ffeaf3">▣</span><span><span class="device-name">Tamagotchi</span><span class="device-sub">Your real Connection pet, live</span></span><span class="device-trailing" aria-hidden="true">↗</span></button>
 </nav>
   <div class="sidebar-divider"></div>
   <div class="side-section-label sidebar-help-label">MADE FOR TWO</div>
@@ -679,27 +681,34 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   </div>
 </section>
  </div>
-<div class="device-area" data-device-panel="tama" hidden>
-<section id="panel-tama" data-view="tama" role="region">
-  <div class="section-head"><div><h2>Our Water Tamagotchi</h2><p class="section-description">The same virtual pet living on the real Arduino. Play together from anywhere.</p></div><span class="tag">LIVE FROM ARDUINO</span></div>
-  <div class="tama-layout">
-    <div class="tama-shell" aria-label="Remote virtual pet console">
-      <div class="tama-bezel"><canvas id="tamaScreen" width="128" height="64" aria-label="Live copy of the Tamagotchi OLED display"></canvas></div>
-      <div class="tama-controls">
-        <button class="tama-btn a" data-tama-button="A" disabled aria-label="Tamagotchi red A button">A</button>
-        <button class="tama-btn b" data-tama-button="B" disabled aria-label="Tamagotchi green B button">B</button>
-        <button class="tama-btn c" data-tama-button="C" disabled aria-label="Tamagotchi blue C button">C</button>
-      </div>
-      <div class="tama-names"><span>NEXT</span><span>SELECT</span><span>BACK</span></div>
-    </div>
-    <div class="tama-info"><h3>Play our little pet together</h3>
-      <p><span id="tamaDot" class="tama-live-dot"></span><span id="tamaStatus" role="status">Connect to Adafruit IO on the Overview page.</span></p>
-      <p>Both the real OLED and this screen show the same Tamagotchi. The buttons control the physical game, including its saved progress.</p>
-      <p>Connect using your own Adafruit IO account and the feed owner's username. The Arduino connects directly to Adafruit IO over Wi-Fi. No PC or bridge is needed.</p>
-      <p style="font-size:12px">The screen may update a few seconds after a button press. Only the Arduino needs to be powered on. It does not create a separate pet.</p>
-    </div>
-  </div>
-</section></div>
+<div class="device-area tama-area" data-device-panel="tamagotchi" hidden>
+<section role="region" id="panel-tamagotchi" aria-labelledby="tamaTitle">
+ <div class="device-heading"><div><h2 id="tamaTitle">Tamagotchi Connection</h2><p>Same pet, same save, same controls as your Arduino — view and play together.</p></div><span class="tag rose">LIVE PET</span></div>
+ <div class="tama-layout">
+   <div class="panel tama-outer">
+     <div class="tama-header">♥ <span>Connection 2024</span> ♥</div>
+     <div class="tama-screen-shell"><canvas id="tamaScreen" width="120" height="120" aria-label="Live 120 by 120 Tamagotchi display"></canvas></div>
+     <div class="tama-controls" aria-label="Remote buttons">
+       <button type="button" class="tama-button" data-tama-key="A" title="Next icon">A</button>
+       <button type="button" class="tama-button" data-tama-key="B" title="Select">B</button>
+       <button type="button" class="tama-button" data-tama-key="C" title="Back">C</button>
+     </div>
+     <div class="tama-btn-desc"><span>NEXT</span><span>SELECT</span><span>BACK</span></div>
+   </div>
+   <div class="panel tama-instructions">
+     <h3>Same little pet, wherever you are</h3>
+     <p>Your Arduino runs the game and keeps the saved progress. This page mirrors the real 10-icon screen, with the actual character and menus from your sketch.</p>
+     <div class="tama-state"><span id="tamaDot" class="tama-dot"></span><strong id="tamaStatus" role="status">Connect to Adafruit IO to see the pet.</strong></div>
+     <p class="small">Connect using the main <b>Overview</b> page. This remote requires the Arduino to be on and the PC relay to be running. It does not make a second pet or overwrite the separate <b>Our Kitty</b> game.</p>
+     <p class="small">Keyboard: A, B, C, or ←, Enter, Esc while this tab is open. The real buttons on your Arduino continue to work.</p>
+     <div class="tama-separator"></div>
+     <h3>Remote connection</h3>
+     <p>Uses your existing Adafruit IO login with the additional feeds <code>tama-live</code> and <code>tama-buttons</code>.</p>
+     <button type="button" class="action ghost" id="tamaReload">Request latest screen</button>
+   </div>
+ </div>
+</section>
+</div>
 </main>
   </div>
   <footer class="footer"><span>© Lumi Studio · Made for the little moments ♡</span><span>A tiny space, just for two.</span></footer>
@@ -713,10 +722,10 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   const deviceSections = Array.from(document.querySelectorAll('[data-device-panel]'));
   const viewButtons = Array.from(document.querySelectorAll('[data-view-tab]'));
   const views = Array.from(document.querySelectorAll('[data-view]'));
-  const activeViews = { matrix:'draw', rgb:'color', kitty:'kitty', tama:'tama' };
+  const activeViews = { matrix:'draw', rgb:'color', kitty:'kitty' };
 
   function switchView(name, focus=false) {
-    const targetDevice = (name === 'draw' || name === 'message') ? 'matrix' : (name === 'kitty' ? 'kitty' : (name === 'tama' ? 'tama' : 'rgb'));
+    const targetDevice = (name === 'draw' || name === 'message') ? 'matrix' : (name === 'kitty' ? 'kitty' : 'rgb');
     activeViews[targetDevice] = name;
     for (const b of viewButtons) {
       const selected = b.dataset.viewTab === name;
@@ -730,7 +739,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   }
   function switchDevice(name, focus=false) {
     document.body.dataset.activeDevice = name;
-    const workspaceNames = {connect:['Overview','Everything, in one little place'],matrix:['LED Matrix','Draw and send little notes'],rgb:['RGB Light','Make a little magic with color'],kitty:['Our Kitty','Your shared companion'],tama:['Water Tamagotchi','Your real pet, anywhere']};
+    const workspaceNames = {connect:['Overview','Everything, in one little place'],matrix:['LED Matrix','Draw and send little notes'],rgb:['RGB Light','Make a little magic with color'],kitty:['Our Kitty','Your shared companion'],tamagotchi:['Tamagotchi','Your Connection pet, live']};
     const nextPage = workspaceNames[name] || workspaceNames.connect;
     const title = document.getElementById('workspaceTitle');
     const caption = document.getElementById('workspaceCaption');
@@ -748,10 +757,10 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       // Switching away hid all other regions, including the connection form.
       // Always restore it when the status chip or Connection link is clicked.
       for (const v of views) v.hidden = v.dataset.view !== 'connect';
-    } else {
+    } else if (name !== 'tamagotchi') {
       switchView(activeViews[name]);
     }
-    const labels = {matrix:'LED Matrix',rgb:'RGB Light',kitty:'Our Kitty',tama:'Water Tamagotchi',connect:'Connection'};
+    const labels = {matrix:'LED Matrix',rgb:'RGB Light',kitty:'Our Kitty',tamagotchi:'Tamagotchi',connect:'Connection'};
     document.title = 'Lumi Studio · ' + (labels[name] || 'Arduino');
   }
   deviceButtons.forEach((b,i) => {
@@ -787,9 +796,87 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   let client = null;
   let topic = '';
   let kittyTopic = '';
-  let tamaFrameTopic = '';
+  let tamaTopic = '';
   let tamaButtonTopic = '';
-  let tamaLastFrame = 0;
+  let tamaLastSeen = 0;
+  let tamaLastButtonAt = 0;
+
+  // Tamagotchi viewer: mirrors the Arduino's existing /frame and /press endpoints
+  // through Adafruit IO. This website never stores a separate pet state.
+  const tamaCanvas=$('tamaScreen');
+  const tamaCtx=tamaCanvas.getContext('2d',{alpha:false});
+  let tamaFrameBusy=false;
+  tamaCtx.fillStyle='#d6d2bc';tamaCtx.fillRect(0,0,120,120);
+  function tamaSetStatus(message,online){
+    $('tamaStatus').textContent=message;
+    $('tamaDot').classList.toggle('online',Boolean(online));
+  }
+  // Page-major 1-bit bitmap is decoded by the Python relay before publication.
+  function tamaBase64Bytes(encoded){
+    const s=atob(encoded), out=new Uint8Array(s.length);
+    for(let i=0;i<s.length;i++)out[i]=s.charCodeAt(i);
+    return out;
+  }
+  async function tamaReceive(raw){
+    if(tamaFrameBusy)return;
+    tamaFrameBusy=true;
+    try{
+      const msg=JSON.parse(raw);
+      if(msg.v!==1 || ![60,120].includes(msg.w) || msg.h!==msg.w || typeof msg.data!=='string')return;
+      let packed=tamaBase64Bytes(msg.data);
+      if(msg.codec==='deflate'){
+        if(typeof DecompressionStream==='undefined')throw new Error('Browser does not support decompression');
+        const decompressed=new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'));
+        packed=new Uint8Array(await new Response(decompressed).arrayBuffer());
+      }else if(msg.codec!=='raw')return;
+      const w=msg.w,h=msg.h,stride=Math.ceil(w/8);
+      if(packed.length!==stride*h)throw new Error('Incomplete frame');
+      const img=tamaCtx.createImageData(w,h);
+      for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+        const on=Boolean(packed[y*stride+(x>>3)]&(0x80>>(x&7)));
+        const i=(y*w+x)*4;
+        img.data[i]=on?27:214;
+        img.data[i+1]=on?26:210;
+        img.data[i+2]=on?29:188;
+        img.data[i+3]=255;
+      }
+      const staging=document.createElement('canvas');staging.width=w;staging.height=h;
+      staging.getContext('2d',{alpha:false}).putImageData(img,0,0);
+      tamaCtx.imageSmoothingEnabled=false;
+      tamaCtx.drawImage(staging,0,0,120,120);
+      tamaLastSeen=Date.now();
+      tamaSetStatus('Live screen · updated '+new Date().toLocaleTimeString(),true);
+    }catch(error){tamaSetStatus('Frame decoding error: '+error.message,false);}
+    finally{tamaFrameBusy=false;}
+  }
+  function tamaRequestLatest(){
+    if(!client||!client.connected||!tamaTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
+    client.publish(tamaTopic+'/get','\0',{qos:0,retain:false});
+  }
+  function tamaPress(key){
+    if(!client||!client.connected||!tamaButtonTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
+    if(Date.now()-tamaLastButtonAt<250)return;
+    tamaLastButtonAt=Date.now();
+    const id=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
+    client.publish(tamaButtonTopic,JSON.stringify({key,id}),{qos:0,retain:false},err=>{
+      if(err)tamaSetStatus('Could not send '+key+': '+err.message,false);
+      else tamaSetStatus('Sent '+key+' · waiting for screen update',true);
+    });
+  }
+  document.querySelectorAll('[data-tama-key]').forEach(b=>b.addEventListener('click',()=>tamaPress(b.dataset.tamaKey)));
+  $('tamaReload').addEventListener('click',tamaRequestLatest);
+  document.addEventListener('keydown',e=>{
+    if(document.body.dataset.activeDevice!=='tamagotchi'||e.repeat)return;
+    if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;
+    const key={a:'A',b:'B',c:'C',ArrowLeft:'A',Enter:'B',Escape:'C'}[e.key];
+    if(key){e.preventDefault();tamaPress(key);}
+  });
+  setInterval(()=>{
+    if(tamaLastSeen && Date.now()-tamaLastSeen>18000){
+      tamaSetStatus('Last screen update over 18 seconds ago. Check the PC relay.',false);
+    }
+  },4000);
+
   let dirty = true;
   let sending = false;
   let sendingMessage = false;
@@ -1064,9 +1151,8 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(!window.mqtt) {feedback('MQTT.js did not load. Check your internet connection and reload the page.');return;}
     topic=owner+'/feeds/remote-control';
     kittyTopic=owner+'/feeds/kitty-state';
-    tamaFrameTopic=owner+'/feeds/tama-live';
+    tamaTopic=owner+'/feeds/tama-live';
     tamaButtonTopic=owner+'/feeds/tama-buttons';
-    tamaSetStatus('Waiting for Arduino...', false);
     petReady=false; petLoaded=false; petData=null; petPending=false; petSubscribed=false;
     showPet();
     petStatus('Connecting to shared kitty feed...');
@@ -1092,14 +1178,12 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
         if(err) feedback('Connected, but feed subscription failed. Check shared feed permission.');
         else feedback('Connected. Select LEDs and press Send Design to Arduino.');
       });
-      client.subscribe(tamaFrameTopic, {qos:0}, (err,grants)=>{
-        if(err || (grants && grants.some(g=>g.qos===128))) {
-          tamaSetStatus('Feed unavailable. Share tama-live with Read permission.', false);
-          return;
+      client.subscribe(tamaTopic,{qos:0},(err,grants)=>{
+        if(err || (grants && grants.some(g=>g.qos===128))){
+          tamaSetStatus('Cannot read tama-live. Check feed permissions.',false);return;
         }
-        // Read the most recently saved screen without updating the feed.
-        client.publish(tamaFrameTopic+'/get','\0',{qos:0});
-        tamaSetStatus('Connected; checking Arduino...', false);
+        tamaSetStatus('Connected; waiting for your Arduino screen…',false);
+        tamaRequestLatest();
       });
       client.subscribe(kittyTopic, {qos:0}, (err,grants)=>{
         if(err || (grants && grants.some(g=>g.qos===128))) {
@@ -1118,8 +1202,8 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       });
     });
     client.on('message',(t,p)=>{
+      if (t === tamaTopic) { tamaReceive(p.toString()); return; }
       if (t === kittyTopic) { receivePet(p.toString()); return; }
-      if (t === tamaFrameTopic) { tamaReceive(p.toString()); return; }
       if (t === topic && /^RGB:[0-9a-f]{6}$/i.test(p.toString())) rgbFeedback('RGB command received: #' + p.toString().slice(4).toUpperCase());
       if (t === topic && p.toString().startsWith('FX:')) effectFeedback('Effect command received: ' + p.toString().slice(3, 70));
       if(t===topic && /^[0-9A-Fa-f]{24}$/.test(p.toString())) {
@@ -1136,17 +1220,18 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       }
     });
     client.on('reconnect',()=>status('Reconnecting...'));
-    client.on('offline',()=>{petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');tamaSetStatus('Adafruit IO disconnected.',false);$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
+    client.on('offline',()=>{tamaSetStatus('Adafruit IO offline.',false);petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
     client.on('close',()=>{
+      tamaSetStatus('Disconnected from Adafruit IO.',false);
       petReady=false;showPet();petStatus('Disconnected from Adafruit IO.');
-      status('Disconnected');tamaSetStatus('Adafruit IO disconnected.',false);$('apply').disabled=true;$('sendMessage').disabled=true;
+      status('Disconnected');$('apply').disabled=true;$('sendMessage').disabled=true;
       $('disconnect').disabled=true; $('connect').disabled=false; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;
     });
     client.on('error',e=>{status('Connection error');feedback('Connection error: '+e.message+'. Verify your AIO username/key and feed access.');});
   };
   $('disconnect').onclick=()=>{
     if(client) client.end(true);
-    client=null;topic='';kittyTopic='';tamaFrameTopic='';tamaButtonTopic='';tamaSetStatus('Connect to Adafruit IO on Overview.',false);petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
+    client=null;topic='';kittyTopic='';tamaTopic='';tamaButtonTopic='';tamaSetStatus('Connect to Adafruit IO first.',false);petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
     $('connect').disabled=false;$('disconnect').disabled=true;$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true; rgbFeedback('Connect to Adafruit IO first.');
   };
   // Hue is the angle; saturation is how far out from center you drag.
@@ -1877,80 +1962,6 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     else $('kitAnimFeedback').textContent='Automatic preview restored on this screen.';
   };
   kitRefreshPoseButtons();
-
-
-  // The same 128x64 buffer displayed on the hardware OLED, compressed by
-  // the UNO R4 WiFi directly and delivered through private Adafruit IO feeds.
-  const tamaCanvas=$('tamaScreen');
-  const tamaCtx=tamaCanvas.getContext('2d',{alpha:false});
-  const tamaImage=tamaCtx.createImageData(128,64);
-  tamaCtx.fillStyle='#101a1d';tamaCtx.fillRect(0,0,128,64);
-  function tamaSetStatus(message,ok){
-    $('tamaStatus').textContent=message;
-    $('tamaDot').className='tama-live-dot '+(ok?'ok':'err');
-    for(const b of document.querySelectorAll('[data-tama-button]'))b.disabled=!ok;
-  }
-  let tamaDecodeSeq=0;
-  async function tamaReceive(raw){
-    const parts=raw.split('|');
-    if(parts.length!==3 || (parts[0]!=='v1' && parts[0]!=='v2'))return;
-    const current=++tamaDecodeSeq;
-    try{
-      const binary=atob(parts[2]);
-      const packed=Uint8Array.from(binary,c=>c.charCodeAt(0));
-      let bytes;
-      if(parts[0]==='v1'){
-        if(!('DecompressionStream' in window))throw Error('Update your browser.');
-        const unzipped=new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'));
-        bytes=new Uint8Array(await new Response(unzipped).arrayBuffer());
-      }else{
-        // v2 is PackBits-like RLE, compressed on the physical UNO R4.
-        bytes=new Uint8Array(1024);
-        let i=0,j=0;
-        while(i<packed.length){
-          const token=packed[i++];
-          const count=(token&127)+1;
-          if(j+count>1024)throw Error('Frame decode overflow');
-          if(token&128){
-            if(i>=packed.length)throw Error('Truncated RLE frame');
-            bytes.fill(packed[i++],j,j+count);
-          }else{
-            if(i+count>packed.length)throw Error('Truncated literal frame');
-            bytes.set(packed.subarray(i,i+count),j);
-            i+=count;
-          }
-          j+=count;
-        }
-        if(j!==1024)throw Error('Incomplete RLE frame');
-      }
-      if(bytes.length!==1024)throw Error('Wrong display frame size');
-      if(current!==tamaDecodeSeq)return;
-      const pixels=tamaImage.data;
-      for(let y=0;y<64;y++)for(let x=0;x<128;x++){
-        const lit=!!(bytes[(y>>3)*128+x] & (1<<(y&7)));
-        const k=(y*128+x)*4;
-        pixels[k]=lit?227:13; pixels[k+1]=lit?252:25;
-        pixels[k+2]=lit?255:28; pixels[k+3]=255;
-      }
-      tamaCtx.putImageData(tamaImage,0,0);
-      tamaLastFrame=Date.now();
-      tamaSetStatus('Live connection to the real Arduino',true);
-    }catch(err){tamaSetStatus('Screen decode failed: '+err.message,false);}
-  }
-  function tamaPress(key){
-    if(!client?.connected||!tamaButtonTopic||Date.now()-tamaLastFrame>45000){
-      tamaSetStatus('Not connected to Arduino.',false);return;
-    }
-    // Unique command ID prevents duplicate presses when a broker re-delivers.
-    const command=key+'|'+Date.now()+'|'+Math.floor(Math.random()*1000000000);
-    client.publish(tamaButtonTopic,command,{qos:0},err=>{
-      if(err)tamaSetStatus('Button not sent. Check Read + Write feed sharing.',false);
-    });
-  }
-  document.querySelectorAll('[data-tama-button]').forEach(b=>b.addEventListener('click',()=>tamaPress(b.dataset.tamaButton)));
-  setInterval(()=>{
-    if(tamaLastFrame && Date.now()-tamaLastFrame>45000)tamaSetStatus('Arduino appears offline.',false);
-  },5000);
 
   kitUseDraft(kitDefault());kitShow();
 
