@@ -94,7 +94,7 @@
   const W=120,H=120,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const names=['STATUS','FOOD','TOILET','GAMES','CONNECT','DISCIPLINE','MEDICINE','LIGHTS','FRIENDS','ATTENTION'];
   const context=(()=>{const can=document.createElement('canvas');can.width=W;can.height=H;return can.getContext('2d',{alpha:false,willReadFrequently:true});})();
-  const ice={state:null,cloud:null,view:null,menu:'home',selected:-1,opt:0,busy:false,unsub:null,watch:null,localInfo:'',lastLocal:0,lastTick:0};
+  const ice={state:null,cloud:null,view:null,menu:'home',selected:-1,opt:0,busy:false,unsub:null,unsubDevice:null,watch:null,localInfo:'',lastLocal:0,lastTick:0,deviceFrame:null,pending:[],lastSeq:0,awaiting:0,awaitingSince:0,deviceBusy:false};
   function random(n){return Math.floor(Math.random()*n);}
   function defaultPet(){const now=Date.now();return {v:1,updatedAt:now,stage:0,stageStartMinutes:0,ageMinutes:0,careMisses:0,pcm:0,mcm:0,hunger:4,happy:4,discipline:0,weight:5,poops:0,sick:0,naughty:0,lightOff:0,points:0,generation:1,childGroup:2,childVariant:random(2),babyVariant:random(2),teenBranch:0,teenType:0,adultClass:0,adultVariant:1,parentClass:2,paused:0,gameWins:0,gameCount:0,careCount:0,cleanCount:0,hungerAlertMins:0,happyAlertMins:0,sickAlertMins:0,naughtyAlertMins:0,lightAlertMins:0};}
   function sleep(p,date){const h=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false}).format(date))%24;return p.stage>=1 && p.stage<=6 && (h>= (p.stage<=2?20:21) || h < (p.stage<=2?8:9));}
@@ -189,26 +189,104 @@
       const part=lines[i];lcdDraw(part,Math.round((120-lcdWidth(part,1))/2),firstY+i*9,1);
     }
   }
+  // Draw exact 1-bit lines, never anti-aliased Canvas strokes.  The original
+  // Arduino GFXcanvas1 uses integer pixels, so CSS strokeRect loses 1px borders
+  // when quantized into the monochrome buffer.
+  function lcdRect(x,y,w,h){
+    context.fillStyle='#000';
+    context.fillRect(x,y,w,1); context.fillRect(x,y+h-1,w,1);
+    context.fillRect(x,y,1,h); context.fillRect(x+w-1,y,1,h);
+  }
+  function lcdRoundRect(x,y,w,h,r){
+    // Pixel-aligned GFX-style outline using nearest-integer corner positions.
+    const pixel=(px,py)=>context.fillRect(px,py,1,1);
+    r=Math.max(0,Math.min(r,Math.floor(Math.min(w,h)/2)));
+    if(!r){lcdRect(x,y,w,h);return;}
+    context.fillStyle='#000';
+    context.fillRect(x+r,y,w-2*r,1);context.fillRect(x+r,y+h-1,w-2*r,1);
+    context.fillRect(x,y+r,1,h-2*r);context.fillRect(x+w-1,y+r,1,h-2*r);
+    for(let yy=0;yy<r;yy++)for(let xx=0;xx<r;xx++){
+      // Edge boundary of a quarter circle, draw each chosen pixel just once.
+      const d=(r-0.5-xx)**2+(r-0.5-yy)**2;
+      const inside=d<=(r-0.5)**2;
+      const adjacent=(r-0.5-(xx+1))**2+(r-0.5-yy)**2 <= (r-0.5)**2 &&
+        (r-0.5-xx)**2+(r-0.5-(yy+1))**2 <= (r-0.5)**2;
+      if(inside&&!adjacent){
+        pixel(x+xx,y+yy);pixel(x+w-1-xx,y+yy);
+        pixel(x+xx,y+h-1-yy);pixel(x+w-1-xx,y+h-1-yy);
+      }
+    }
+  }
+  function lcdDrawBig(s,x,y){
+    // Adafruit GFX 2x text: 5x7 glyph and 1px spacing, each pixel doubled.
+    // The sleeping Arduino pet uses setTextSize(2), starting at y=47.
+    let px=x;const py=y;context.fillStyle='#000';
+    for(const ch of String(s).toUpperCase()){
+      const rows=lcdFont[ch]||lcdFont['?'];
+      for(let row=0;row<7;row++)for(let col=0;col<5;col++)
+        if(rows[row]&(1<<(4-col)))context.fillRect(px+col*2,py+row*2,2,2);
+      px+=12;
+    }
+  }
+  function liveDevice(){
+    return !!(ice.deviceFrame && Number(ice.deviceFrame.updatedAt) > Date.now()-25000 &&
+      Number(ice.deviceFrame.updatedAt) < Date.now()+120000 && ice.deviceFrame.v===1);
+  }
+  function decodeDeviceFrame(obj){
+    if(!obj || typeof obj.bits!=='string' || obj.bits.length!==2400)return null;
+    try{const decoded=atob(obj.bits);if(decoded.length!==1800)return null;
+      return Uint8Array.from(decoded,c=>c.charCodeAt(0));
+    }catch(e){console.warn('Arduino frame decode failed',e);return null;}
+  }
+  async function sendNextDeviceButton(){
+    if(!ice.cloud||!liveDevice()||ice.awaiting||!ice.pending.length)return;
+    const key=ice.pending.shift();
+    const seq=Math.max(Date.now(),ice.lastSeq+1);ice.lastSeq=seq;ice.awaiting=seq;ice.awaitingSince=Date.now();
+    try{await ice.cloud.set('shared/tamaCommand',{v:1,seq,key});}
+    catch(e){ice.awaiting=0;ice.awaitingSince=0;ice.pending.unshift(key);
+      ice.view?.setStatus('Remote button failed: '+e.message,false);}
+  }
+  function onDeviceFrame(frame,error){
+    if(error){console.warn('Arduino screen feed',error);return;}
+    ice.deviceFrame=frame;
+    if(ice.awaiting && Number(frame?.ack)===ice.awaiting){ice.awaiting=0;ice.awaitingSince=0;sendNextDeviceButton();}
+    if(liveDevice()){
+      ice.view?.setStatus(ice.awaiting?'Arduino connected · button pending':'Arduino live screen · pet synced',true);
+    }
+    paint();
+  }
   function bitmap(){const pixels=context.getImageData(0,0,W,H).data;const out=new Uint8Array(1800);for(let y=0;y<H;y++)for(let x=0;x<W;x++){
     if(pixels[(y*W+x)*4]<100)out[y*15+(x>>3)]|=0x80>>(x&7);
   }return out;}
-  function paint(){context.fillStyle='#fff';context.fillRect(0,0,W,H);const p=ice.state;
-    for(let i=0;i<10;i++){drawBitmap('connectionIcon'+i,6+(i%5)*23,i<5?2:102,16,16);}
-    if(!p){context.strokeStyle='#000';context.strokeRect(18,23,84,74);centered('NO PET YET',51);centered('START SHARED PET',65,6);return send();}
+  function paint(){
+    // When the physical device is online, mirror its exact 120x120 monochrome
+    // GFX canvas, including icon borders, sprites, menus and animation.
+    if(liveDevice()){
+      const decoded=decodeDeviceFrame(ice.deviceFrame);
+      if(decoded){ice.view?.render(120,120,decoded);return;}
+    }
+    context.fillStyle='#fff';context.fillRect(0,0,W,H);const p=ice.state;
+    for(let i=0;i<10;i++){
+      const ix=4+(i%5)*24,iy=i<5?4:103;
+      drawBitmap('connectionIcon'+i,ix,iy,16,16);
+      if(ice.selected===i)lcdRoundRect(1+(i%5)*24,i<5?2:101,22,18,3);
+    }
+    if(!p){lcdRect(18,23,84,74);centered('NO PET YET',51);centered('START SHARED PET',65,6);return send();}
     if(ice.menu==='home'){
-      context.strokeStyle='#000';context.strokeRect(18,23,84,74);
-      if(p.stage===0){context.beginPath();context.ellipse(60,61,12,17,0,0,Math.PI*2);context.stroke();text('*',58,57);}
+      lcdRect(18,23,84,74);
+      if(p.stage===0){lcdRoundRect(48,44,24,32,12);context.fillRect(55,54,1,1);context.fillRect(65,62,1,1);}
       else if(p.stage===5){centered('GOODBYE',52);centered('NEW EGG IN MORE',74,6);}
       else if(p.paused){centered('PAUSED',51,11);}
-      else if(sleep(p,new Date())&&p.lightOff){centered('Z z Z',51,12);}
+      else if(sleep(p,new Date())&&p.lightOff){lcdDrawBig('Z  z  Z',18,47);}
       else{const frame=Math.floor(Date.now()/650),bob=(frame%3===1)?-1:0,drift=(Math.floor(Date.now()/1200)%7)-3;
         drawBitmap(spriteName(p),46+drift,43+bob,28,28);
         for(let i=0;i<p.poops;i++)text('●',24+i*10,77,8);
-        if(p.sick)text('+',88,44);if(p.naughty)text('!',88,57);
+        if(p.sick)text('+',86,45);if(p.naughty)text('!',88,56);
+        if(sleep(p,new Date()))text('Zz',80,72);
       }
       if(ice.selected>=0)centered(names[ice.selected],89,7);
     }else{
-      context.strokeStyle='#000';context.strokeRect(18,23,84,74);
+      lcdRect(18,23,84,74);
       const title={status:'STATUS',food:'FOOD',games:'GAMES',discipline:'DISCIPLINE',lights:'LIGHTS',friends:'FRIENDS',more:'MORE',clock:'CLOCK',connect:'CONNECT',notice:'NOTICE'}[ice.menu]||ice.menu.toUpperCase();
       centered(title,28,8);context.fillStyle='#000';context.fillRect(23,40,74,1);
       if(ice.menu==='status'){
@@ -244,7 +322,13 @@
       if(!current||current.v!==1)return;const p=advance(current,Date.now());fn(p);p.updatedAt=Date.now();return p;
     });
   }catch(e){ice.view.setStatus('Could not save: '+e.message,false);}finally{ice.busy=false;}}
-  async function press(key){if(!ice.state){ice.view?.setStatus('Press Start shared pet first.',false);return;}
+  async function press(key){
+    if(!['A','B','C'].includes(key))return;
+    if(liveDevice()){
+      if(ice.pending.length>=12){ice.view?.setStatus('Arduino is catching up with queued buttons.',false);return;}
+      ice.pending.push(key);sendNextDeviceButton();return;
+    }
+    if(!ice.state){ice.view?.setStatus('Press Start shared pet first.',false);return;}
     if(ice.menu==='notice'){ice.menu='home';paint();return;}
     if(ice.menu==='home'){
       if(key==='A'){ice.selected=(ice.selected+1)%9;paint();return;}
@@ -270,22 +354,25 @@
       }
     }
   }
-  function updateStatus(){if(!ice.view)return;const p=ice.state;ice.view.setStatus(p?'Shared pet online · save synced':'Cloud connected · start your pet',true);
+  function updateStatus(){if(!ice.view)return;const p=ice.state;if(!liveDevice())ice.view.setStatus(p?'Web pet online · saved in Firebase':'Cloud connected · start your pet',true);
     if(!p)ice.view.details('Your pet has not been started. Press Start shared pet.');
     else ice.view.details('Age '+Math.floor(p.ageMinutes/1440)+' days · Stage '+(['Egg','Baby','Child','Teen','Adult','Goodbye','Senior'][p.stage]||'Unknown')+' · Gen '+p.generation+' · Hunger '+p.hunger+'/4 · Happy '+p.happy+'/4 · Care misses '+p.careMisses);
   }
   function connect(cloud,view){disconnect();ice.cloud=cloud;ice.view=view;ice.menu='home';ice.selected=-1;
+    ice.unsubDevice=cloud.listen('shared/tamaDevice',onDeviceFrame);
     ice.unsub=cloud.listen('shared/tamagotchi',(p,e)=>{
       if(e){view.setStatus('Firebase game permission denied: '+e.message,false);return;}
       if(p&&p.v!==1){view.setStatus('Unknown cloud pet version. Update website.',false);return;}
       ice.state=p;updateStatus();paint();
-      if(p&&Date.now()-p.updatedAt>=60000&&!ice.busy&&Date.now()-ice.lastTick>=12000){ice.lastTick=Date.now();edit(()=>{});}
+      if(p&&!liveDevice()&&Date.now()-p.updatedAt>=60000&&!ice.busy&&Date.now()-ice.lastTick>=12000){ice.lastTick=Date.now();edit(()=>{});}
     });
-    ice.watch=setInterval(()=>{if(!ice.cloud)return;paint();const p=ice.state;
-      if(p&&Date.now()-p.updatedAt>=60000&&!ice.busy){edit(()=>{});}
+    ice.watch=setInterval(()=>{if(!ice.cloud)return;
+      if(ice.awaiting && Date.now()-ice.awaitingSince>20000){ice.awaiting=0;ice.pending=[];ice.view?.setStatus('Arduino did not acknowledge the button. Check its Wi-Fi and reload.',false);}
+      paint();const p=ice.state;
+      if(p&&!liveDevice()&&Date.now()-p.updatedAt>=60000&&!ice.busy){edit(()=>{});}
     },1300);
   }
-  function disconnect(){if(ice.unsub){ice.unsub();ice.unsub=null;}if(ice.watch)clearInterval(ice.watch);ice.watch=null;ice.cloud=null;ice.state=null;}
+  function disconnect(){if(ice.unsub){ice.unsub();ice.unsub=null;}if(ice.unsubDevice){ice.unsubDevice();ice.unsubDevice=null;}if(ice.watch)clearInterval(ice.watch);ice.watch=null;ice.cloud=null;ice.state=null;ice.deviceFrame=null;ice.awaiting=0;ice.awaitingSince=0;ice.pending=[];}
   async function start(){if(!ice.cloud){ice.view?.setStatus('Connect to a private room first.',false);return;}
     try{await ice.cloud.transact('shared/tamagotchi',p=>p||defaultPet());}
     catch(e){ice.view.setStatus('Cannot start pet: '+e.message,false);}

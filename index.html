@@ -711,11 +711,11 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
  </div>
 <div class="device-area tama-area" data-device-panel="tamagotchi" hidden>
 <section role="region" id="panel-tamagotchi" aria-labelledby="tamaTitle">
- <div class="device-heading"><div><h2 id="tamaTitle">Tamagotchi Connection</h2><p>One shared web pet, saved in Firebase. The Arduino sync firmware can mirror the same save.</p></div><span class="tag rose">LIVE PET</span></div>
+ <div class="device-heading"><div><h2 id="tamaTitle">Tamagotchi Connection</h2><p>Play together in Firebase. When Arduino is online, this mirrors its actual screen and buttons.</p></div><span class="tag rose">LIVE PET</span></div>
  <div class="tama-layout">
    <div class="panel tama-outer">
      <div class="tama-header">♥ <span>Connection 2024</span> ♥</div>
-     <div class="tama-screen-shell"><canvas id="tamaScreen" width="120" height="120" aria-label="Live 120 by 120 Tamagotchi display"></canvas></div>
+     <div class="tama-screen-shell"><canvas id="tamaScreen" width="240" height="240" aria-label="240 by 240 Tamagotchi LCD, 2x pixel scale"></canvas></div>
      <div class="tama-controls" aria-label="Remote buttons">
        <button type="button" class="tama-button" data-tama-key="A" title="Next icon">A</button>
        <button type="button" class="tama-button" data-tama-key="B" title="Select">B</button>
@@ -878,9 +878,9 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     const staging=document.createElement('canvas');staging.width=w;staging.height=h;
     staging.getContext('2d',{alpha:false}).putImageData(img,0,0);
     tamaCtx.imageSmoothingEnabled=false;
-    tamaCtx.drawImage(staging,0,0,120,120);
+    tamaCtx.drawImage(staging,0,0,tamaCanvas.width,tamaCanvas.height);
   }
-  tamaCtx.fillStyle='rgb(196,190,184)';tamaCtx.fillRect(0,0,120,120);
+  tamaCtx.fillStyle='rgb(196,190,184)';tamaCtx.fillRect(0,0,tamaCanvas.width,tamaCanvas.height);
   $('tamaTone').addEventListener('change',()=>{
     tamaTone=Number($('tamaTone').value);
     if(tamaLastDecoded)tamaRenderPixels(tamaLastDecoded.w,tamaLastDecoded.h,tamaLastDecoded.packed);
