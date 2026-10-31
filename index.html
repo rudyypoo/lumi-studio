@@ -800,6 +800,11 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   let tamaButtonTopic = '';
   let tamaLastSeen = 0;
   let tamaLastButtonAt = 0;
+  let tamaLiveSubscribed = false;
+  let tamaRestTimer = null;
+  let tamaRestInFlight = false;
+  let tamaRestLastId = null;
+  let tamaScreenTimeout = null;
 
   // Tamagotchi viewer: mirrors the Arduino's existing /frame and /press endpoints
   // through Adafruit IO. This website never stores a separate pet state.
@@ -849,9 +854,57 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     }catch(error){tamaSetStatus('Frame decoding error: '+error.message,false);}
     finally{tamaFrameBusy=false;}
   }
+  // Some cross-account MQTT subscriptions are rejected even when another
+  // shared feed can be published to. Try Adafruit IO's authenticated HTTPS
+  // last-value endpoint as a read-only fallback, using this browser session's
+  // own key. Never put the key in the URL or the public HTML file.
+  async function tamaReadScreenHttp(){
+    if(tamaRestInFlight || !client || !client.connected || !tamaTopic)return;
+    const owner=$('owner').value.trim();
+    const userKey=$('key').value.trim();
+    if(!owner||!userKey)return;
+    tamaRestInFlight=true;
+    try{
+      const url='https://io.adafruit.com/api/v2/'+encodeURIComponent(owner)
+        +'/feeds/tama-live/data/last';
+      const response=await fetch(url,{
+        method:'GET',headers:{'X-AIO-Key':userKey,'Accept':'application/json'},
+        cache:'no-store'
+      });
+      if(!response.ok)throw new Error('HTTPS '+response.status+
+        (response.status===401?' (invalid key)':response.status===403||response.status===404?' (feed not accessible to this account)':''));
+      const result=await response.json();
+      if(!result || typeof result.value!=='string')throw new Error('No saved screen found');
+      if(result.id && result.id===tamaRestLastId)return;
+      if(!client || !client.connected)return;
+      tamaRestLastId=result.id||null;
+      await tamaReceive(result.value);
+      if(result.created_at){
+        const age=(Date.now()-Date.parse(result.created_at))/1000;
+        if(Number.isFinite(age)&&age>25){
+          tamaSetStatus('Last saved screen is '+Math.round(age)+' seconds old. Check your PC bridge.',false);
+        }
+      }
+    }catch(error){
+      if(!tamaLastSeen || Date.now()-tamaLastSeen>18000){
+        tamaSetStatus('Cannot load screen (MQTT/HTTPS): '+error.message+'. Check the feed or Adafruit IO Monitor.',false);
+      }
+    }finally{tamaRestInFlight=false;}
+  }
+  function tamaStartHttpFallback(){
+    if(tamaRestTimer)return;
+    tamaSetStatus('Live subscription unavailable; trying secure HTTPS screen access…',false);
+    tamaReadScreenHttp();
+    tamaRestTimer=setInterval(tamaReadScreenHttp,8000);
+  }
+  function tamaStopHttpFallback(){
+    if(tamaRestTimer){clearInterval(tamaRestTimer);tamaRestTimer=null;}
+    if(tamaScreenTimeout){clearTimeout(tamaScreenTimeout);tamaScreenTimeout=null;}
+  }
   function tamaRequestLatest(){
     if(!client||!client.connected||!tamaTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
-    client.publish(tamaTopic+'/get','\0',{qos:0,retain:false});
+    tamaRestLastId=null;
+    tamaReadScreenHttp();
   }
   function tamaPress(key){
     if(!client||!client.connected||!tamaButtonTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
@@ -860,7 +913,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     const id=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
     client.publish(tamaButtonTopic,JSON.stringify({key,id}),{qos:0,retain:false},err=>{
       if(err)tamaSetStatus('Could not send '+key+': '+err.message,false);
-      else tamaSetStatus('Sent '+key+' · waiting for screen update',true);
+      else tamaSetStatus('Sent '+key+' · '+(tamaLastSeen&&Date.now()-tamaLastSeen<18000?'waiting for next screen':'screen connection still unavailable'),Boolean(tamaLastSeen&&Date.now()-tamaLastSeen<18000));
     });
   }
   document.querySelectorAll('[data-tama-key]').forEach(b=>b.addEventListener('click',()=>tamaPress(b.dataset.tamaKey)));
@@ -1153,6 +1206,10 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     kittyTopic=owner+'/feeds/kitty-state';
     tamaTopic=owner+'/feeds/tama-live';
     tamaButtonTopic=owner+'/feeds/tama-buttons';
+    tamaStopHttpFallback();
+    tamaRestLastId=null;
+    tamaLastSeen=0;
+    tamaLiveSubscribed=false;
     petReady=false; petLoaded=false; petData=null; petPending=false; petSubscribed=false;
     showPet();
     petStatus('Connecting to shared kitty feed...');
@@ -1178,12 +1235,22 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
         if(err) feedback('Connected, but feed subscription failed. Check shared feed permission.');
         else feedback('Connected. Select LEDs and press Send Design to Arduino.');
       });
+      // Listen for actual broker errors so a failed subscription can be
+      // distinguished from a permission problem on a different feed.
+      client.subscribe(username+'/errors',{qos:0},()=>{});
       client.subscribe(tamaTopic,{qos:0},(err,grants)=>{
         if(err || (grants && grants.some(g=>g.qos===128))){
-          tamaSetStatus('Cannot read tama-live. Check feed permissions.',false);return;
+          tamaLiveSubscribed=false;
+          tamaStartHttpFallback();
+          return;
         }
-        tamaSetStatus('Connected; waiting for your Arduino screen…',false);
-        tamaRequestLatest();
+        tamaLiveSubscribed=true;
+        tamaSetStatus('Subscribed; waiting for your Arduino screen…',false);
+        // The PC bridge publishes automatically every four seconds.
+        // Don't publish to /get on a shared feed: it can be unauthorized.
+        tamaScreenTimeout=setTimeout(()=>{
+          if(client&&client.connected&&!tamaLastSeen)tamaStartHttpFallback();
+        },9000);
       });
       client.subscribe(kittyTopic, {qos:0}, (err,grants)=>{
         if(err || (grants && grants.some(g=>g.qos===128))) {
@@ -1202,7 +1269,14 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       });
     });
     client.on('message',(t,p)=>{
-      if (t === tamaTopic) { tamaReceive(p.toString()); return; }
+      if(t===username+'/errors'){
+        const detail=p.toString();
+        if(detail.includes('tama-live') && (!tamaLastSeen || Date.now()-tamaLastSeen>18000)){
+          tamaSetStatus('Adafruit IO screen error: '+detail.slice(0,200),false);
+        }
+        return;
+      }
+      if (t === tamaTopic) { tamaStopHttpFallback(); tamaReceive(p.toString()); return; }
       if (t === kittyTopic) { receivePet(p.toString()); return; }
       if (t === topic && /^RGB:[0-9a-f]{6}$/i.test(p.toString())) rgbFeedback('RGB command received: #' + p.toString().slice(4).toUpperCase());
       if (t === topic && p.toString().startsWith('FX:')) effectFeedback('Effect command received: ' + p.toString().slice(3, 70));
@@ -1220,8 +1294,9 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       }
     });
     client.on('reconnect',()=>status('Reconnecting...'));
-    client.on('offline',()=>{tamaSetStatus('Adafruit IO offline.',false);petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
+    client.on('offline',()=>{tamaStopHttpFallback();tamaSetStatus('Adafruit IO offline.',false);petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
     client.on('close',()=>{
+      tamaStopHttpFallback();
       tamaSetStatus('Disconnected from Adafruit IO.',false);
       petReady=false;showPet();petStatus('Disconnected from Adafruit IO.');
       status('Disconnected');$('apply').disabled=true;$('sendMessage').disabled=true;
@@ -1230,6 +1305,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     client.on('error',e=>{status('Connection error');feedback('Connection error: '+e.message+'. Verify your AIO username/key and feed access.');});
   };
   $('disconnect').onclick=()=>{
+    tamaStopHttpFallback();
     if(client) client.end(true);
     client=null;topic='';kittyTopic='';tamaTopic='';tamaButtonTopic='';tamaSetStatus('Connect to Adafruit IO first.',false);petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
     $('connect').disabled=false;$('disconnect').disabled=true;$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true; rgbFeedback('Connect to Adafruit IO first.');
