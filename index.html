@@ -4,7 +4,12 @@
 <!-- Lumi Studio v4 — editorial pink + curated 12x8 presets -->
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#fff7fb"><meta name="description" content="Lumi Studio — cute remote LED studio, RGB lights and shared virtual kitty"><title>Lumi Studio — Animated Kitty Edition</title>
-<script src="https://cdn.jsdelivr.net/npm/mqtt@5.16.0/dist/mqtt.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="lumi-cloud.js"></script>
+<script src="lumi-tamagotchi.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#0a0e14;--surface:#141b26;--surface2:#1b2634;--stroke:#2c3b4b;--text:#f0f5f8;--muted:#9aaaba;--accent:#76e3d0;--accent2:#b9a0ff;--amber:#ffc590;--red:#f18b9f;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-synthesis:none}
 *{box-sizing:border-box}
@@ -418,6 +423,8 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 .tama-tone-control select{font:inherit;font-weight:600;border:1px solid #e8bfd2;background:#fffaff;color:#784066;border-radius:9px;padding:9px 12px;max-width:100%}
 @media(max-width:920px){.tama-layout{grid-template-columns:1fr}.tama-instructions{max-width:550px;margin:auto}}
 @media(max-width:420px){.tama-outer{padding:25px 20px 37px}.tama-button{width:55px;height:55px}.tama-header{font-size:16px}}
+.tama-state{margin:14px 0}.studio-cloud-ready{color:#178060}.fields input{min-width:0}
+#pairDeviceUid{width:100%;background:#fff8fc;color:#7a4267;border:1px solid #e4b8cc;border-radius:9px;padding:10px}
 </style></head>
 <body data-active-device="connect">
 <div class="shell">
@@ -434,7 +441,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   <div class="sidebar-divider"></div>
   <div class="side-section-label sidebar-help-label">MADE FOR TWO</div>
   <div class="sidebar-love"><div class="sidebar-love-icon">♡</div><strong>Little moments, shared.</strong><span>A tiny bit of together, from anywhere.</span><div class="sidebar-love-decoration">✦ &nbsp; ♡ &nbsp; ✦</div></div>
-  <div class="sidebar-bottom"><span class="sidebar-bottom-dot"></span> UNO R4 WiFi · Adafruit IO</div>
+  <div class="sidebar-bottom"><span class="sidebar-bottom-dot"></span> UNO R4 WiFi · Firebase</div>
 </aside>
  <div class="workspace">
   <header class="top">
@@ -447,24 +454,37 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
    <main class="main">
  <div class="device-area" data-device-panel="connect">
 <section role="region" id="panel-connect" data-view="connect">
-  <div class="section-head"><div><h2>Connect your studio</h2><p class="section-description">Use your own Adafruit IO account to share little moments from anywhere.</p></div><span class="tag">SETUP</span></div>
+  <div class="section-head"><div><h2>Your shared studio</h2><p class="section-description">Private, automatically connected through Firebase. No Adafruit IO account or key.</p></div><span class="tag">FIREBASE</span></div>
   <div class="split equal">
-    <div class="panel">
-      <div class="panel-title">Adafruit IO credentials</div>
+    <div class="panel"><div class="panel-title">Connect once, play together</div>
       <div class="fields">
-        <div><label for="user">Your username</label><input id="user" type="text" autocomplete="username" placeholder="Your Adafruit username"></div>
-        <div><label for="owner">Feed owner's username</label><input id="owner" type="text" placeholder="Arduino owner's username"></div>
-        <div class="wide"><label for="key">Your private Active Key</label><input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your Adafruit IO key"></div>
+        <div class="wide"><label for="user">Your nickname</label><input id="user" type="text" maxlength="14" placeholder="What should we call you?"></div>
+        <div class="wide"><label for="studioRoom">Private room ID</label><input id="studioRoom" type="text" placeholder="Automatically filled by invitation"></div>
+        <div class="wide"><label for="studioInvite">Invite code (only needed the first time)</label><input id="studioInvite" type="password" spellcheck="false" autocomplete="off" placeholder="From private invite link"></div>
       </div>
-      <div class="connect-actions"><button class="action primary" id="connect">Connect to Arduino</button><button class="action ghost" id="disconnect" disabled>Disconnect</button></div>
-      <div class="small" role="status">Connection: <strong id="status" style="color:#dcc8ff">Not connected</strong></div>
+      <div class="connect-actions"><button class="action primary" id="createStudio" type="button">Create private studio</button><button class="action primary" id="connect" type="button">Join / open studio</button><button class="action ghost" id="disconnect" type="button">Disconnect</button></div>
+      <div class="connect-actions"><button class="action ghost" id="copyStudioInvite" type="button">Copy private invitation</button></div>
+      <div class="small">Connection: <strong id="status" role="status">Not connected</strong></div>
+      <div class="small" id="cloudSetupHint">Set up Firebase once using SETUP_FIREBASE.txt from your ZIP. Then you can both play without signing in.</div>
     </div>
-    <div class="panel stack">
-      <div><div class="step-label">HOW IT WORKS</div><div class="panel-title">One connection, lots of little moments.</div><p class="small">Once connected, open LED Matrix for drawings and messages, RGB Light for colors and animations, or Our Kitty to care for your shared virtual pet.</p></div>
-      <div class="security-note"><strong>Your key stays in your browser.</strong> Your Active Key is used only for the Adafruit IO connection; it is not built into this public website. Each person signs in with their own account and key.</div>
-      <div class="small">No Arduino upload is needed to switch between these features. Your existing sketch handles the LED features. The shared kitty lives in its own Adafruit IO feed, so no Arduino upload is needed.</div>
+    <div class="panel stack"><div class="step-label">ONE ROOM · TWO PEOPLE</div><div class="panel-title">Everything shared in one place</div>
+       <p class="small">Kitty progress and your Tamagotchi save synchronize live. LED Matrix and RGB controls publish their commands to Firebase.</p>
+       <div class="security-note"><strong>Private room access:</strong> You make a room once and share a private invitation. Browser authentication happens silently. Keep your invitation private.</div>
+       <div class="small">Physical Arduino devices still need their firmware switched from Adafruit IO to Firebase before they respond to these commands. The website works on its own.</div>
+       <div class="tool-divider"></div>
+       <div class="panel-title">Connect a physical Arduino</div><p class="small">Its Serial Monitor will show a Firebase device UID after you upload the sync sketch. Paste that UID below to authorize it.</p>
+       <input id="pairDeviceUid" type="text" placeholder="Firebase device UID" spellcheck="false" maxlength="128">
+       <button class="action ghost" id="pairDevice" type="button">Authorize this Arduino</button>
+       <p class="small" id="pairDeviceStatus"></p>
+       <div class="tool-divider"></div>
+       <div class="panel-title">Keep your existing kitty</div>
+       <p class="small">Paste the last JSON value from your old Adafruit IO <b>kitty-state</b> feed. Import only if the new shared kitty has not been adopted yet.</p>
+       <textarea id="importKittyJSON" rows="3" placeholder='Paste the saved JSON, starting with {"v":2,...}' spellcheck="false" style="width:100%;font-size:12px;border:1px solid #e4b8cc;border-radius:10px;padding:12px;background:#fffaff;color:#744260"></textarea>
+       <button class="action ghost" id="importKitty" type="button">Import old kitty save</button>
+       <p class="small" id="importKittyStatus"></p>
     </div>
   </div>
+  <input id="owner" type="hidden"><input id="key" type="hidden">
 </section>
  </div>
  <div class="device-area matrix-area" data-device-panel="matrix" hidden>
@@ -474,7 +494,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   <div class="section-head"><div><h2>Pixel art studio</h2><p class="section-description">Design on a tiny 12 × 8 canvas. Choose a preset or make your own, then send it when it’s ready.</p></div><span class="tag rose">12 × 8</span></div>
   <div class="split">
     <div class="panel">
-      <div class="canvas-board"><div id="grid" class="matrix" role="group" aria-label="12 by 8 LED drawing grid"></div><div class="canvas-note">Your 180° mirrored Arduino mapping is already applied.</div></div>
+      <div class="canvas-board"><div id="grid" class="matrix" role="group" aria-label="12 by 8 LED drawing grid"></div><div class="canvas-note">The saved matrix command uses your existing 180° mirrored LED mapping.</div></div>
       <div class="canvas-footer"><span id="counter" class="count-pill">0 / 96 selected</span><span id="dirty" class="status">Unsent changes</span></div>
     </div>
     <div class="panel">
@@ -512,8 +532,8 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       <input id="message" type="text" maxlength="28" autocomplete="off" placeholder="I MISS YOU" aria-describedby="messageCount">
       <div class="message-meta"><span id="messageCount">0 / 28 characters</span><span>Letters, numbers and basic punctuation</span></div>
       <button class="action primary full" id="sendMessage" disabled>Send Scrolling Message</button>
-      <p class="feedback" id="messageFeedback" role="status">Connect to Adafruit IO first.</p>
-      <div class="hint"><span aria-hidden="true">✉</span><span>Text scrolls once, then your last pixel art design returns. Messages are visible in the Adafruit IO feed history.</span></div>
+      <p class="feedback" id="messageFeedback" role="status">Connect your private studio first.</p>
+      <div class="hint"><span aria-hidden="true">✉</span><span>Text scrolls once, then your last pixel art design returns. Messages are saved as the latest Firebase device command.</span></div>
     </div>
     <div class="panel">
       <div class="step-label">LITTLE LED NOTE</div>
@@ -541,7 +561,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
         <input type="range" id="brightness" min="0" max="100" value="100" step="1">
         <button class="action primary full" id="sendColor" disabled>Send Color to Arduino</button>
         <button class="action ghost full" id="rgbOff" disabled style="margin-top:8px">Turn RGB LED Off</button>
-        <p class="feedback" id="rgbFeedback" role="status">Connect to Adafruit IO first.</p>
+        <p class="feedback" id="rgbFeedback" role="status">Connect your private studio first.</p>
       </div>
     </div>
     <div style="border-top:1px solid #353d56;margin-top:18px;padding-top:17px">
@@ -565,7 +585,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       <div class="fx-picked" id="selectedEffect">Selected: Rainbow Cycle</div>
       <div class="button-row"><button class="action primary" id="startEffect" disabled>Start Animation</button><button class="action ghost" id="stopEffect" disabled>Stop &amp; Hold</button></div>
       <button class="action ghost full" id="surpriseEffect" disabled style="margin-top:9px">Surprise Me — Random Effect</button>
-      <p class="feedback" id="effectFeedback" role="status">Connect to Adafruit IO first.</p>
+      <p class="feedback" id="effectFeedback" role="status">Connect your private studio first.</p>
       <div class="hint"><span aria-hidden="true">✧</span><span>Colors animate on the Arduino itself, without sending new internet commands every frame. A normal color command stops an animation.</span></div>
     </div>
   </div>
@@ -601,7 +621,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
         <div class="pet-stat"><div><span>✿ Love</span><strong id="petLoveValue">84%</strong></div><div class="pet-track"><div id="petLoveBar" style="width:84%"></div></div></div>
       </div>
       <div class="kit-insight"><span>✦</span><span id="kitInsight">Every little activity builds your bond and earns new stars.</span></div>
-      <p class="feedback" id="petFeedback" role="status">Connect to Adafruit IO and share your kitty-state feed to play together.</p>
+      <p class="feedback" id="petFeedback" role="status">Connect your private studio and share your kitty-state feed to play together.</p>
       <div class="pet-adopt" id="petAdoptBox"><div class="step-label">FIRST-TIME SETUP</div><p class="small">Create and share the <strong>kitty-state</strong> feed, then adopt your kitten.</p><label for="kittyName">Kitten's name</label><div class="pet-rename-row"><input type="text" id="kittyName" maxlength="16" value="Mochi" aria-label="Kitten's name"><button class="action primary" id="petAdopt" disabled>Adopt Kitty ♡</button></div></div>
     </div>
   </div>
@@ -631,7 +651,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
           <button type="button" class="action primary" id="kitSharePose" disabled>Send pose to both of you ♡</button>
           <button type="button" class="action secondary" id="kitAutoPose">Return to automatic</button>
         </div>
-        <p class="feedback" id="kitAnimFeedback" role="status">Preview poses without using Adafruit IO updates.</p>
+        <p class="feedback" id="kitAnimFeedback" role="status">Preview poses without making cloud updates.</p>
       </div>
       <div class="panel">
         <div class="step-label">LIVE CHARACTER ENGINE</div><h3 class="kit-form-title">A tiny personality, now in motion.</h3>
@@ -684,14 +704,14 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   </div>
   <div data-ktab-panel="memories" class="kit-pane" hidden>
     <div class="kit-section-intro"><h3>Every little moment matters.</h3><p>Celebrate kitty's milestones, look back on recent memories, and watch your little family grow.</p></div>
-    <div class="kit-quests-grid"><div class="panel"><h3>Our achievements</h3><div id="kitAchievements" class="kit-achievements"></div></div><div class="panel"><h3>Little diary</h3><p class="small">The six most recent shared moments, saved in your kitty feed.</p><div id="kitHistory" class="kit-history"></div></div></div>
-    <div class="panel kit-stats-summary"><h3>Our story so far</h3><div id="kitTotals" class="kit-totals"></div><div class="kit-footnote">♡ Shared using your existing kitty-state feed. If you both send at the exact same instant, the latest saved action may replace the other one.</div></div>
+    <div class="kit-quests-grid"><div class="panel"><h3>Our achievements</h3><div id="kitAchievements" class="kit-achievements"></div></div><div class="panel"><h3>Little diary</h3><p class="small">The recent shared moments, saved to your private room.</p><div id="kitHistory" class="kit-history"></div></div></div>
+    <div class="panel kit-stats-summary"><h3>Our story so far</h3><div id="kitTotals" class="kit-totals"></div><div class="kit-footnote">♡ Saved to your private Firebase room. If you both save at the same instant, the latest kitty action may take precedence.</div></div>
   </div>
 </section>
  </div>
 <div class="device-area tama-area" data-device-panel="tamagotchi" hidden>
 <section role="region" id="panel-tamagotchi" aria-labelledby="tamaTitle">
- <div class="device-heading"><div><h2 id="tamaTitle">Tamagotchi Connection</h2><p>Same pet, same save, same controls as your Arduino — view and play together.</p></div><span class="tag rose">LIVE PET</span></div>
+ <div class="device-heading"><div><h2 id="tamaTitle">Tamagotchi Connection</h2><p>One shared web pet, saved in Firebase. The Arduino sync firmware can mirror the same save.</p></div><span class="tag rose">LIVE PET</span></div>
  <div class="tama-layout">
    <div class="panel tama-outer">
      <div class="tama-header">♥ <span>Connection 2024</span> ♥</div>
@@ -704,40 +724,14 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
      <div class="tama-btn-desc"><span>NEXT</span><span>SELECT</span><span>BACK</span></div>
    </div>
    <div class="panel tama-instructions">
-     <h3>Same little pet, wherever you are</h3>
-     <p>Your Arduino runs the game and keeps the saved progress. This page mirrors the real 10-icon screen, with the actual character and menus from your sketch.</p>
-     <div class="tama-state"><span id="tamaDot" class="tama-dot"></span><strong id="tamaStatus" role="status">Connect to Adafruit IO to see the pet.</strong></div>
-     <p class="small">For instant mode, enter your private tunnel details below; Adafruit IO login is not required for the Tamagotchi. Your Arduino and PC must be on. It does not make a second pet or overwrite the separate <b>Our Kitty</b> game.</p>
-     <p class="small">Keyboard: A, B, C, or ←, Enter, Esc while this tab is open. The real buttons on your Arduino continue to work.</p>
-     <div class="tama-separator"></div>
-     <h3>Instant connection</h3>
-     <p>Stream your real Arduino screen live without Adafruit IO screen delays. Start <b>START_INSTANT_BRIDGE.bat</b> on your PC, then paste the tunnel address and access code printed there. Your girlfriend can connect with an invite link.</p>
-     <div class="tama-realtime-settings">
-       <label for="tamaRtURL">Cloudflare tunnel address</label>
-       <input id="tamaRtURL" type="url" placeholder="https://example.trycloudflare.com" spellcheck="false" autocomplete="off">
-       <label for="tamaRtCode">Private access code</label>
-       <input id="tamaRtCode" type="text" placeholder="Code displayed in the instant bridge window" spellcheck="false" autocomplete="off">
-       <div class="tama-rt-actions">
-         <button type="button" class="action" id="tamaRtConnect">Connect instantly</button>
-         <button type="button" class="action ghost" id="tamaRtShare">Copy girlfriend invite link</button>
-         <button type="button" class="action ghost" id="tamaRtDisconnect">Disconnect live</button>
-       </div>
-       <p class="small" id="tamaRtInfo">Only share your invite link or access code with someone you trust. The tunnel address changes after the bridge restarts.</p>
-     </div>
-     <div class="tama-separator"></div>
-     <h3>Older connection (fallback)</h3>
-     <p>You can still use your existing Adafruit IO connection for the pet at its slower update rate. The other Lumi Studio devices and kitty continue using Adafruit IO as before.</p>
-     <div class="tama-tone-control">
-       <label for="tamaTone">Screen colors</label>
-       <select id="tamaTone" aria-label="Match the Arduino screen colors">
-         <option value="1" selected>Soft pastels (default)</option>
-         <option value="0">Bright</option>
-         <option value="2">Dark</option>
-       </select>
-     </div>
-     <p class="small">Choose the same color setting as your Arduino. This changes the webpage preview only.</p>
-     <button type="button" class="action ghost" id="tamaReload">Request latest screen</button>
-   </div>
+      <h3>Our shared Connection pet</h3>
+      <p>Play right here. Your girlfriend sees each change instantly, and the save stays in your private studio. No PC bridge or Adafruit IO needed.</p>
+      <div class="tama-state"><span id="tamaDot" class="tama-dot"></span><strong id="tamaStatus" role="status">Connect to your private studio to play.</strong></div>
+      <div class="tama-tone-control"><label for="tamaTone">Screen colors</label><select id="tamaTone"><option value="0">Bright</option><option value="1" selected>Soft</option><option value="2">Dark</option></select></div>
+      <div class="tama-rt-actions"><button class="action primary" id="tamaStart">Start shared pet</button><button class="action ghost" id="tamaReload">Sync save now</button></div>
+      <div class="tama-separator"></div><p class="small" id="tamaDetails">Use A to choose an icon, B to select, C to go back. Your cloud pet grows using real elapsed time.</p>
+      <p class="small">This is a new browser-first game engine with your existing chart-derived sprites and Connection-style care. It does not yet reproduce every Arduino mini-game or the complete original Connection mechanics.</p>
+    </div>
  </div>
 </section>
 </div>
@@ -839,7 +833,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   let tamaScreenTimeout = null;
 
   // Tamagotchi viewer: mirrors the Arduino's existing /frame and /press endpoints
-  // through Adafruit IO. This website never stores a separate pet state.
+  // through private Firebase shared state. The web is now the game engine.
   const tamaCanvas=$('tamaScreen');
   const tamaCtx=tamaCanvas.getContext('2d',{alpha:false});
   let tamaFrameBusy=false;
@@ -882,228 +876,18 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     tamaTone=Number($('tamaTone').value);
     if(tamaLastDecoded)tamaRenderPixels(tamaLastDecoded.w,tamaLastDecoded.h,tamaLastDecoded.packed);
   });
-  function tamaSetStatus(message,online){
-    $('tamaStatus').textContent=message;
-    $('tamaDot').classList.toggle('online',Boolean(online));
-  }
-  // Direct real-time WebSocket through the user's temporary Cloudflare tunnel.
-  // The private access code is never included in the public GitHub source.
-  let tamaRtSocket=null;
+  // Website-first Tamagotchi engine is loaded from lumi-tamagotchi.js.
   let tamaRtReady=false;
-  let tamaRtWanted=false;
-  let tamaRtReconnect=null;
-  let tamaRtAddr='';
-  let tamaRtAccess='';
-  function tamaRtValidate(raw){
-    const u=new URL(raw.trim());
-    const local=(u.hostname==='localhost'||u.hostname==='127.0.0.1');
-    if(u.username||u.password||u.search||u.hash||u.pathname!=='/' && u.pathname!=='')throw new Error('Enter only the tunnel address, without a path or password.');
-    if(u.protocol!=='https:'&&!(local&&u.protocol==='http:'))throw new Error('Use https:// for your Cloudflare tunnel address.');
-    if(!local && !u.hostname.endsWith('.trycloudflare.com'))throw new Error('Use the trycloudflare.com URL printed by the bridge.');
-    return u;
-  }
-  function tamaRtStop(){
-    tamaRtWanted=false;tamaRtReady=false;
-    if(tamaRtReconnect){clearTimeout(tamaRtReconnect);tamaRtReconnect=null;}
-    if(tamaRtSocket){const old=tamaRtSocket;tamaRtSocket=null;old.onclose=null;old.close();}
-  }
-  function tamaRtOpen(){
-    if(!tamaRtWanted)return;
-    const u=tamaRtValidate(tamaRtAddr);
-    const wsPath=(u.protocol==='https:'?'wss:':'ws:')+'//'+u.host+'/ws';
-    tamaRtReady=false;
-    tamaSetStatus('Connecting to instant live screen…',false);
-    const ws=new WebSocket(wsPath);
-    tamaRtSocket=ws;
-    ws.onopen=()=>{if(ws===tamaRtSocket)ws.send(JSON.stringify({type:'auth',token:tamaRtAccess}));};
-    ws.onmessage=e=>{
-      if(ws!==tamaRtSocket)return;
-      let msg;try{msg=JSON.parse(e.data);}catch{return;}
-      if(msg.type==='auth_ok'){
-        tamaRtReady=true;tamaStopHttpFallback();
-        $('tamaRtInfo').textContent='Instant connection active. Your girlfriend can use the copied invite link.';
-        tamaSetStatus('Instant live connection active · waiting for screen',true);
-        return;
-      }
-      if(msg.type==='error'){
-        tamaSetStatus('Live bridge: '+String(msg.message).slice(0,150),false);
-        if(String(msg.message).includes('access code')){tamaRtWanted=false;}
-        return;
-      }
-      if(msg.type==='button_ok')return;
-      if(msg.v===1)tamaReceive(e.data);
-    };
-    ws.onerror=()=>{if(ws===tamaRtSocket&&!tamaRtReady)tamaSetStatus('Live tunnel unreachable. Verify URL, bridge window and access code.',false);};
-    ws.onclose=()=>{
-      if(ws!==tamaRtSocket)return;
-      tamaRtReady=false;
-      if(tamaRtWanted){
-        tamaSetStatus('Instant connection interrupted. Reconnecting…',false);
-        tamaRtReconnect=setTimeout(()=>{if(tamaRtWanted)tamaRtOpen();},2000);
-      }
-    };
-  }
-  function tamaRtConnect(){
-    try{
-      tamaRtAddr=$('tamaRtURL').value.trim();
-      tamaRtAccess=$('tamaRtCode').value.trim();
-      tamaRtValidate(tamaRtAddr);
-      if(tamaRtAccess.length<12)throw new Error('Enter the private access code from the bridge window.');
-      tamaRtStop();tamaRtWanted=true;tamaRtOpen();
-    }catch(err){tamaSetStatus('Instant setup: '+err.message,false);}
-  }
-  $('tamaRtConnect').onclick=tamaRtConnect;
-  $('tamaRtDisconnect').onclick=()=>{tamaRtStop();tamaSetStatus('Instant connection disconnected. Enter tunnel details to reconnect.',false);};
-  $('tamaRtShare').onclick=async()=>{
-    try{
-      const addr=$('tamaRtURL').value.trim();const code=$('tamaRtCode').value.trim();
-      tamaRtValidate(addr);
-      if(code.length<12)throw new Error('Enter your private access code first.');
-      const url=location.href.split('#')[0]+'#'+new URLSearchParams({tama:addr,code}).toString();
-      if(navigator.clipboard&&navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(url);
-        $('tamaRtInfo').textContent='Private invite link copied. Send it only to your girlfriend.';
-      }else{
-        window.prompt('Copy this private invite link:',url);
-      }
-    }catch(err){$('tamaRtInfo').textContent='Cannot copy link: '+err.message;}
-  };
-  // A private invite URL contains the token only after # (never sent to GitHub by HTTP).
-  try{
-    const hash=new URLSearchParams(location.hash.slice(1));
-    const addr=hash.get('tama'), code=hash.get('code');
-    if(addr&&code){
-      $('tamaRtURL').value=addr;$('tamaRtCode').value=code;
-      history.replaceState(null,'',location.pathname+location.search);
-      switchDevice('tamagotchi');
-      tamaRtConnect();
-    }
-  }catch(err){console.warn('Invalid instant invite',err);}
-
-  // Page-major 1-bit bitmap is decoded by the Python relay before publication.
-  function tamaBase64Bytes(encoded){
-    const s=atob(encoded), out=new Uint8Array(s.length);
-    for(let i=0;i<s.length;i++)out[i]=s.charCodeAt(i);
-    return out;
-  }
-  async function tamaReceive(raw){
-    if(tamaFrameBusy)return;
-    tamaFrameBusy=true;
-    try{
-      const msg=JSON.parse(raw);
-      if(msg.v!==1 || ![60,120].includes(msg.w) || msg.h!==msg.w || typeof msg.data!=='string')return;
-      let packed=tamaBase64Bytes(msg.data);
-      if(msg.codec==='deflate'){
-        if(typeof DecompressionStream==='undefined')throw new Error('Browser does not support decompression');
-        const decompressed=new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'));
-        packed=new Uint8Array(await new Response(decompressed).arrayBuffer());
-      }else if(msg.codec!=='raw')return;
-      const w=msg.w,h=msg.h,stride=Math.ceil(w/8);
-      if(packed.length!==stride*h)throw new Error('Incomplete frame');
-      tamaLastDecoded={w,h,packed};
-      tamaRenderPixels(w,h,packed);
-      tamaLastSeen=Date.now();
-      tamaSetStatus('Live screen · updated '+new Date().toLocaleTimeString(),true);
-    }catch(error){tamaSetStatus('Frame decoding error: '+error.message,false);}
-    finally{tamaFrameBusy=false;}
-  }
-  // Some cross-account MQTT subscriptions are rejected even when another
-  // shared feed can be published to. Try Adafruit IO's authenticated HTTPS
-  // last-value endpoint as a read-only fallback, using this browser session's
-  // own key. Never put the key in the URL or the public HTML file.
-  async function tamaReadScreenHttp(){
-    if(tamaRtReady || tamaRestInFlight || !client || !client.connected || !tamaTopic)return;
-    const owner=$('owner').value.trim();
-    const userKey=$('key').value.trim();
-    if(!owner||!userKey)return;
-    tamaRestInFlight=true;
-    try{
-      const url='https://io.adafruit.com/api/v2/'+encodeURIComponent(owner)
-        +'/feeds/tama-live/data/last';
-      const response=await fetch(url,{
-        method:'GET',headers:{'X-AIO-Key':userKey,'Accept':'application/json'},
-        cache:'no-store'
-      });
-      if(!response.ok)throw new Error('HTTPS '+response.status+
-        (response.status===401?' (invalid key)':response.status===403||response.status===404?' (feed not accessible to this account)':''));
-      const result=await response.json();
-      if(!result || typeof result.value!=='string')throw new Error('No saved screen found');
-      if(result.id && result.id===tamaRestLastId)return;
-      if(!client || !client.connected)return;
-      tamaRestLastId=result.id||null;
-      await tamaReceive(result.value);
-      if(result.created_at){
-        const age=(Date.now()-Date.parse(result.created_at))/1000;
-        if(Number.isFinite(age)&&age>25){
-          tamaSetStatus('Last saved screen is '+Math.round(age)+' seconds old. Check your PC bridge.',false);
-        }
-      }
-    }catch(error){
-      if(!tamaLastSeen || Date.now()-tamaLastSeen>18000){
-        tamaSetStatus('Cannot load screen (MQTT/HTTPS): '+error.message+'. Check the feed or Adafruit IO Monitor.',false);
-      }
-    }finally{tamaRestInFlight=false;}
-  }
-  function tamaStartHttpFallback(){
-    if(tamaRtReady||tamaRestTimer)return;
-    tamaSetStatus('Live subscription unavailable; trying secure HTTPS screen access…',false);
-    tamaReadScreenHttp();
-    tamaRestTimer=setInterval(tamaReadScreenHttp,1600);
-  }
-  function tamaStopHttpFallback(){
-    if(tamaRestTimer){clearInterval(tamaRestTimer);tamaRestTimer=null;}
-    if(tamaScreenTimeout){clearTimeout(tamaScreenTimeout);tamaScreenTimeout=null;}
-  }
-  function tamaRequestLatest(){
-    if(tamaRtReady&&tamaRtSocket&&tamaRtSocket.readyState===WebSocket.OPEN){
-      tamaRtSocket.send(JSON.stringify({type:'sync'}));return;
-    }
-    if(!client||!client.connected||!tamaTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
-    tamaRestLastId=null;
-    tamaReadScreenHttp();
-  }
-  function tamaPress(key){
-    if(tamaRtReady&&tamaRtSocket&&tamaRtSocket.readyState===WebSocket.OPEN){
-      if(Date.now()-tamaLastButtonAt<85)return;
-      tamaLastButtonAt=Date.now();
-      tamaRtSocket.send(JSON.stringify({type:'press',key}));return;
-    }
-    if(!client||!client.connected||!tamaButtonTopic){tamaSetStatus('Connect to Adafruit IO first.',false);return;}
-    if(Date.now()-tamaLastButtonAt<250)return;
-    tamaLastButtonAt=Date.now();
-    const id=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
-    client.publish(tamaButtonTopic,JSON.stringify({key,id}),{qos:0,retain:false},err=>{
-      if(err)tamaSetStatus('Could not send '+key+': '+err.message,false);
-      else {
-        tamaSetStatus('Sent '+key+' · '+(tamaLastSeen&&Date.now()-tamaLastSeen<18000?'waiting for next screen':'screen connection still unavailable'),Boolean(tamaLastSeen&&Date.now()-tamaLastSeen<18000));
-        // If the shared feed cannot stream via MQTT, request the freshest
-        // saved frame shortly after the button reaches the PC bridge.
-        setTimeout(tamaReadScreenHttp,900);
-      }
-    });
-  }
+  function tamaStopHttpFallback(){}
+  function tamaSetStatus(message,online){$('tamaStatus').textContent=message;$('tamaDot').classList.toggle('online',!!online);}
+  function tamaPress(key){window.LumiTama?.press(key);}
+  function tamaRequestLatest(){window.LumiTama?.refresh();}
   document.querySelectorAll('[data-tama-key]').forEach(b=>b.addEventListener('click',()=>tamaPress(b.dataset.tamaKey)));
-  $('tamaReload').addEventListener('click',tamaRequestLatest);
   document.addEventListener('keydown',e=>{
-    if(document.body.dataset.activeDevice!=='tamagotchi'||e.repeat)return;
-    if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;
-    const key={a:'A',b:'B',c:'C',ArrowLeft:'A',Enter:'B',Escape:'C'}[e.key];
+    if(document.body.dataset.activeDevice!=='tamagotchi'||e.repeat||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+    const key={'ArrowLeft':'A','ArrowUp':'A','ArrowDown':'A','Enter':'B',' ':'B','Escape':'C','Backspace':'C'}[e.key];
     if(key){e.preventDefault();tamaPress(key);}
   });
-  setInterval(()=>{
-    if(tamaLastSeen && Date.now()-tamaLastSeen>18000 && !tamaRtReady){
-      tamaSetStatus('Last screen update over 18 seconds ago. Check the PC relay.',false);
-    }
-  },4000);
-
-  let dirty = true;
-  let sending = false;
-  let sendingMessage = false;
-  let sendingRGB = false;
-  let sendingEffect = false;
-  let dragValue = null;
-
-  const buttons = [];
   function status(s) {
     $('status').textContent = s;
     const good=s==='Connected';
@@ -1362,122 +1146,109 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     }
     return hex;
   }
-  $('connect').onclick=()=>{
-    const username=$('user').value.trim();
-    const owner=$('owner').value.trim();
-    const key=$('key').value.trim();
-    if(!username||!owner||!key) {feedback('Enter your username, the feed owner, and your own AIO key.');return;}
-    if(!window.mqtt) {feedback('MQTT.js did not load. Check your internet connection and reload the page.');return;}
-    topic=owner+'/feeds/remote-control';
-    kittyTopic=owner+'/feeds/kitty-state';
-    tamaTopic=owner+'/feeds/tama-live';
-    tamaButtonTopic=owner+'/feeds/tama-buttons';
-    tamaStopHttpFallback();
-    tamaRestLastId=null;
-    tamaLastSeen=0;
-    tamaLiveSubscribed=false;
-    petReady=false; petLoaded=false; petData=null; petPending=false; petSubscribed=false;
+  // Firebase-backed private room replaces Adafruit MQTT for website features.
+  let cloudRoom='', cloudInvite='', cloudUnsub=[];
+  function setCloudConnected(connected){
+    for(const id of ['apply','sendMessage','sendColor','rgbOff','startEffect','stopEffect','surpriseEffect'])$(id).disabled=!connected;
+    $('connect').disabled=connected;$('disconnect').disabled=!connected;
+    petReady=connected;
+    if(connected){feedback('Designs save to Firebase. Hardware requires its Firebase firmware update.');rgbFeedback('Connected to private Firebase room.');}
     showPet();
-    petStatus('Connecting to shared kitty feed...');
-    if(client) client.end(true);
-    status('Connecting...');
-    $('connect').disabled=true;
-    // WebSocket is encrypted. No router port forwarding required.
-    client=mqtt.connect('wss://io.adafruit.com:443/mqtt/', {
-      username:username,password:key,protocolVersion:4,clean:true,
-      clientId:'matrix96-'+Math.random().toString(16).slice(2,12),
-      reconnectPeriod:5000,connectTimeout:15000
-    });
-    client.on('connect',()=>{
-      status('Connected');
-      if(firstConnect) { firstConnect=false; switchDevice('matrix'); }
-      $('connect').disabled=true;
-      $('disconnect').disabled=false;
-      $('apply').disabled=false;
-      $('sendMessage').disabled=false;
-      $('sendColor').disabled=false; $('rgbOff').disabled=false;
-      $('startEffect').disabled=false; $('stopEffect').disabled=false; $('surpriseEffect').disabled=false;
-      client.subscribe(topic, {qos:0}, err=>{
-        if(err) feedback('Connected, but feed subscription failed. Check shared feed permission.');
-        else feedback('Connected. Select LEDs and press Send Design to Arduino.');
-      });
-      // Listen for actual broker errors so a failed subscription can be
-      // distinguished from a permission problem on a different feed.
-      client.subscribe(username+'/errors',{qos:0},()=>{});
-      client.subscribe(tamaTopic,{qos:0},(err,grants)=>{
-        if(err || (grants && grants.some(g=>g.qos===128))){
-          tamaLiveSubscribed=false;
-          tamaStartHttpFallback();
-          return;
-        }
-        tamaLiveSubscribed=true;
-        if(!tamaRtReady)tamaSetStatus('Subscribed; waiting for your Arduino screen…',false);
-        // Load the last frame immediately, even if live MQTT events from a
-        // cross-account shared feed are unavailable. This read is read-only.
-        tamaReadScreenHttp();
-        // Don't publish to /get on a shared feed: it can be unauthorized.
-        tamaScreenTimeout=setTimeout(()=>{
-          if(client&&client.connected&&!tamaLastSeen)tamaStartHttpFallback();
-        },9000);
-      });
-      client.subscribe(kittyTopic, {qos:0}, (err,grants)=>{
-        if(err || (grants && grants.some(g=>g.qos===128))) {
-          petStatus('Kitty feed unavailable. Create kitty-state and share it with Read + Write access.');
-          petReady=false;showPet();return;
-        }
-        petSubscribed=true;
-        petReady=true;
-        showPet();
-        petStatus('Loading your shared kitty...');
-        // Adafruit IO /get asks for the LAST SAVED value without writing a new data point.
-        client.publish(kittyTopic+'/get','\0',{qos:0},error=>{
-          if(error) petStatus('Could not retrieve kitty state. Try reconnecting.');
-        });
-        setTimeout(()=>{if(!petLoaded && petReady && client && client.connected){petStatus('No saved kitty yet? Click Adopt our kitty to begin.');showPet();}},1800);
-      });
-    });
-    client.on('message',(t,p)=>{
-      if(t===username+'/errors'){
-        const detail=p.toString();
-        if(!tamaRtReady && detail.includes('tama-live') && (!tamaLastSeen || Date.now()-tamaLastSeen>18000)){
-          tamaSetStatus('Adafruit IO screen error: '+detail.slice(0,200),false);
-        }
-        return;
-      }
-      if (t === tamaTopic) { if(!tamaRtReady){tamaStopHttpFallback();tamaReceive(p.toString());} return; }
-      if (t === kittyTopic) { receivePet(p.toString()); return; }
-      if (t === topic && /^RGB:[0-9a-f]{6}$/i.test(p.toString())) rgbFeedback('RGB command received: #' + p.toString().slice(4).toUpperCase());
-      if (t === topic && p.toString().startsWith('FX:')) effectFeedback('Effect command received: ' + p.toString().slice(3, 70));
-      if(t===topic && /^[0-9A-Fa-f]{24}$/.test(p.toString())) {
-        // No silent overwriting: local unsent edits stay as drawn.
-        if(!dirty) {
-          const bits=[];
-          for(const c of p.toString()) {
-            const v=parseInt(c,16);
-            for(let k=3;k>=0;k--) bits.push(Boolean((v>>k)&1));
-          }
-          draft=bits.reverse();
-          updateUI();
-        }
-      }
-    });
-    client.on('reconnect',()=>status('Reconnecting...'));
-    client.on('offline',()=>{tamaStopHttpFallback();if(!tamaRtReady)tamaSetStatus('Adafruit IO offline.',false);petReady=false;showPet();petStatus('Offline — reconnect to play with your shared kitty.');status('Offline');$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;});
-    client.on('close',()=>{
-      tamaStopHttpFallback();
-      if(!tamaRtReady)tamaSetStatus('Disconnected from Adafruit IO.',false);
-      petReady=false;showPet();petStatus('Disconnected from Adafruit IO.');
-      status('Disconnected');$('apply').disabled=true;$('sendMessage').disabled=true;
-      $('disconnect').disabled=true; $('connect').disabled=false; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true;
-    });
-    client.on('error',e=>{status('Connection error');feedback('Connection error: '+e.message+'. Verify your AIO username/key and feed access.');});
+  }
+  function cloudClient(){
+    const stub={connected:true,end(){this.connected=false;},publish(t,value,opts,callback){
+      const done=typeof callback==='function'?callback:()=>{};
+      let promise;
+      if(t===kittyTopic+'/get')promise=Promise.resolve();
+      else if(t===kittyTopic)promise=LumiCloud.set('shared/kitty',JSON.parse(value));
+      else if(t===topic)promise=LumiCloud.set('shared/deviceCommand',{command:String(value),at:firebase.database.ServerValue.TIMESTAMP,by:firebase.auth().currentUser.uid,nonce:Date.now()+'-'+Math.random().toString(36).slice(2)});
+      else promise=Promise.reject(new Error('Unknown command'));
+      promise.then(()=>done(null),done);
+    }};
+    return stub;
+  }
+  async function openCloudRoom(roomId,inviteCode){
+    try{
+      status('Connecting to Firebase…');
+      const result=await LumiCloud.joinRoom(roomId,inviteCode);
+      cloudRoom=result.room;cloudInvite=result.invite||inviteCode||'';
+      localStorage.setItem('lumi-room',cloudRoom);
+      $('studioRoom').value=cloudRoom;
+      $('studioInvite').value='';
+      client=cloudClient();topic='remote-control';kittyTopic='kitty-state';
+      setCloudConnected(true);status('Private room connected');
+      $('cloudSetupHint').textContent='Room '+cloudRoom+' · automatically signed in · share a private invite link.';
+      cloudUnsub.forEach(fn=>fn());cloudUnsub=[];
+      cloudUnsub.push(LumiCloud.listen('shared/kitty',v=>{
+        if(v){receivePet(JSON.stringify(v));}else{petLoaded=false;petData=null;showPet();petStatus('Your kitty is ready to adopt.');}
+      }));
+      cloudUnsub.push(LumiCloud.listen('shared/deviceCommand',v=>{
+        if(!v||typeof v.command!=='string')return;
+        const command=v.command;
+        if(/^RGB:[0-9a-f]{6}$/i.test(command))rgbFeedback('RGB color shared: #'+command.slice(4).toUpperCase()+' · hardware requires Firebase firmware');
+        if(command.startsWith('FX:'))effectFeedback('Effect shared: '+command.slice(3,65));
+      }));
+      if(window.LumiTama)window.LumiTama.connect(LumiCloud,{setStatus:tamaSetStatus,render:tamaRenderPixels,details:t=>{$('tamaDetails').textContent=t;}});
+      if(firstConnect){firstConnect=false;switchDevice('tamagotchi');}
+    }catch(e){status('Could not connect');$('cloudSetupHint').textContent=e.message;setCloudConnected(false);}
+  }
+  $('createStudio').onclick=async()=>{
+    try{
+      status('Creating private room…');
+      const result=await LumiCloud.createRoom();
+      $('studioRoom').value=result.room;$('studioInvite').value=result.invite;
+      await openCloudRoom(result.room,result.invite);
+      cloudInvite=result.invite;
+      $('cloudSetupHint').textContent='Private room created. Click Copy private invitation and send it to your girlfriend.';
+    }catch(e){status('Setup failed');$('cloudSetupHint').textContent=e.message;}
+  };
+  $('connect').onclick=()=>{
+    const id=$('studioRoom').value.trim();const code=$('studioInvite').value.trim();
+    if(!id){$('cloudSetupHint').textContent='Paste the room ID from your invite or click Create private studio.';return;}
+    openCloudRoom(id,code);
   };
   $('disconnect').onclick=()=>{
-    tamaStopHttpFallback();
-    if(client) client.end(true);
-    client=null;topic='';kittyTopic='';tamaTopic='';tamaButtonTopic='';if(!tamaRtReady)tamaSetStatus('Connect to Adafruit IO first.',false);petReady=false;petSubscribed=false;petLoaded=false;petData=null;showPet();petStatus('Connect to Adafruit IO to play together.');status('Not connected');
-    $('connect').disabled=false;$('disconnect').disabled=true;$('apply').disabled=true;$('sendMessage').disabled=true; $('sendColor').disabled=true; $('rgbOff').disabled=true; $('startEffect').disabled=true; $('stopEffect').disabled=true; $('surpriseEffect').disabled=true; rgbFeedback('Connect to Adafruit IO first.');
+    cloudUnsub.forEach(fn=>fn());cloudUnsub=[];
+    if(window.LumiTama)window.LumiTama.disconnect();
+    client=null;cloudRoom='';petReady=false;petLoaded=false;petData=null;
+    setCloudConnected(false);status('Disconnected');
+    tamaSetStatus('Connect to your shared studio to play.',false);
   };
+  $('copyStudioInvite').onclick=async()=>{
+    if(!cloudRoom){$('cloudSetupHint').textContent='Create or join a studio first.';return;}
+    if(!cloudInvite){try{cloudInvite=await LumiCloud.getOwnerInvite();}catch(e){$('cloudSetupHint').textContent='Only the room owner can copy an invite: '+e.message;return;}}
+    const link=location.origin+location.pathname+'#room='+encodeURIComponent(cloudRoom)+'&invite='+encodeURIComponent(cloudInvite);
+    try{await navigator.clipboard.writeText(link);$('cloudSetupHint').textContent='Invite copied. Share it privately.';}
+    catch(e){$('cloudSetupHint').textContent='Copy this private link: '+link;}
+  };
+  $('pairDevice').onclick=async()=>{
+    try{await LumiCloud.pairDevice($('pairDeviceUid').value.trim());$('pairDeviceStatus').textContent='Arduino authorized in your room.';}
+    catch(e){$('pairDeviceStatus').textContent=e.message;}
+  };
+  $('importKitty').onclick=async()=>{
+    try{
+      if(!cloudRoom)throw Error('Connect to the new private studio first.');
+      const existing=await LumiCloud.get('shared/kitty');
+      if(existing)throw Error('This room already has a saved kitty. Import stopped to protect that save.');
+      const text=$('importKittyJSON').value.trim();let incoming=JSON.parse(text);
+      if(incoming && typeof incoming.value==='string')incoming=JSON.parse(incoming.value);
+      const data=kitNormalize(incoming);
+      if(!data)throw Error('That is not valid Lumi Kitty save JSON.');
+      await LumiCloud.set('shared/kitty',data);
+      $('importKittyStatus').textContent='Old kitty imported successfully. Please verify the progress under Our Kitty.';
+      $('importKittyJSON').value='';
+    }catch(e){$('importKittyStatus').textContent='Import failed: '+e.message;}
+  };
+  $('tamaStart').onclick=()=>window.LumiTama?.start();
+  $('tamaReload').onclick=()=>window.LumiTama?.refresh();
+  const cloudLink=new URLSearchParams(location.hash.slice(1));
+  if(cloudLink.has('room')){$('studioRoom').value=cloudLink.get('room');$('studioInvite').value=cloudLink.get('invite')||'';switchDevice('connect');}
+  else if(localStorage.getItem('lumi-room')){$('studioRoom').value=localStorage.getItem('lumi-room');}
+  // Auth starts silently. Existing members can reconnect without an invite code.
+  if(window.LumiCloud?.isConfigured())LumiCloud.initialize().then(()=>{
+    if($('studioRoom').value)openCloudRoom($('studioRoom').value,$('studioInvite').value.trim());
+  }).catch(e=>{status('Firebase setup needed');$('cloudSetupHint').textContent=e.message;});
+  else $('cloudSetupHint').textContent='Firebase is not configured yet. Open SETUP_FIREBASE.txt in the ZIP to finish the one-time setup.';
   // Hue is the angle; saturation is how far out from center you drag.
   // Brightness is a separate slider to reach dark colors or black.
   let hue = 275;
@@ -1542,7 +1313,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
 
   function sendRGB(hex) {
     if (sendingRGB || !client || !client.connected) {
-      rgbFeedback('Connect to Adafruit IO first.');return;
+      rgbFeedback('Connect your private studio first.');return;
     }
     sendingRGB=true;
     $('sendColor').disabled=true;$('rgbOff').disabled=true;
@@ -1551,7 +1322,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       sendingRGB=false;
       $('sendColor').disabled=!client || !client.connected;
       $('rgbOff').disabled=!client || !client.connected;
-      rgbFeedback(error?'Could not send: '+error.message:'Color sent! The physical RGB LED should update shortly.');
+      rgbFeedback(error?'Could not send: '+error.message:'Color saved to Firebase. Hardware requires the Firebase receiver firmware.');
     });
   }
   $('sendColor').onclick=()=>sendRGB(hexColor());
@@ -1569,7 +1340,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   });
   $('sendMessage').onclick = () => {
     if (sendingMessage || !client || !client.connected) {
-      messageFeedback('Connect to Adafruit IO first.');
+      messageFeedback('Connect your private studio first.');
       return;
     }
     const text = $('message').value.toUpperCase().trim();
@@ -1651,7 +1422,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   $('fxBrightness').oninput=()=>{$('fxBrightnessValue').textContent=$('fxBrightness').value+'%';};
 
   function publishEffect(command){
-    if(sendingEffect||!client||!client.connected){effectFeedback('Connect to Adafruit IO first.');return;}
+    if(sendingEffect||!client||!client.connected){effectFeedback('Connect your private studio first.');return;}
     sendingEffect=true;
     for(const id of ['startEffect','stopEffect','surpriseEffect'])$(id).disabled=true;
     effectFeedback('Sending effect...');
@@ -1659,7 +1430,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
       sendingEffect=false;
       const connected=!!client&&client.connected;
       for(const id of ['startEffect','stopEffect','surpriseEffect'])$(id).disabled=!connected;
-      effectFeedback(err?'Send failed: '+err.message:'Sent! The Arduino should update shortly.');
+      effectFeedback(err?'Send failed: '+err.message:'Effect saved to Firebase. Hardware needs the Firebase receiver firmware.');
     });
   }
   function effectCommand(id){
@@ -1717,14 +1488,14 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
   requestAnimationFrame(previewTick);
 
   $('apply').onclick=()=>{
-    if(sending||!client||!client.connected) {feedback('Connect first.');return;}
+    if(sending||!client||!client.connected) {feedback('Connect your private studio first.');return;}
     sending=true;$('apply').disabled=true;feedback('Sending pattern...');
     const pattern=encodeRotated();
     client.publish(topic,pattern,{qos:1,retain:false},error=>{
       sending=false;
       $('apply').disabled=!client || !client.connected;
       if(error) feedback('Send failed: '+error.message);
-      else {dirty=false;updateUI();feedback('Pattern sent to Adafruit IO. The Arduino should display it shortly.');}
+      else {dirty=false;updateUI();feedback('Pattern saved to Firebase. Hardware needs the Firebase receiver firmware.');}
     });
   };
 
@@ -2081,7 +1852,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(changed)burstPet(p.act);
   }
   function kitPublish(action,detail='',extra={}){
-    if(!client||!client.connected||!petReady){petStatus('Connect to Adafruit IO and check kitty-state feed access.');return false;}
+    if(!client||!client.connected||!petReady){petStatus('Connect your private studio first.');return false;}
     if(petPending)return false;
     if(action!=='adopt'&&!petLoaded){petStatus('Adopt the kitten first.');return false;}
     if(action==='adopt'&&petLoaded)return false;
@@ -2113,7 +1884,7 @@ label{color:#84546d;font-size:12px}input[type=text],input[type=password],textare
     if(previous!==7&&p.qb===7){p.c=Math.min(100000,p.c+25);p.x+=15;}
     p.hi=[...(p.hi||[]),[action,kitClean(detail,19),p.who,Math.floor(p.t/1000)]].slice(-5);
     let data=JSON.stringify(p);
-    // Adafruit IO history-on feed limit: 1024 bytes. Remove oldest memories if needed.
+    // Keep kitty memories compact for fast shared syncing.
     while(new TextEncoder().encode(data).length>1000 && p.hi.length>1){p.hi.shift();data=JSON.stringify(p);}
     if(new TextEncoder().encode(data).length>1000){petStatus('Kitty state is too large to save.');return false;}
     petPending=true;showPet();petStatus('Sharing a little moment...');
