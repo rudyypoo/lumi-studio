@@ -130,8 +130,65 @@
     if(p.stage===2)return 'chart_child_'+(p.childGroup%5)+'_'+(p.childVariant%2);
     if(p.stage===3){const row=(p.teenBranch%4)*2+(p.generation%2===1?0:1);const i=(p.teenBranch>=2?2:0)+p.teenType%2;return 'chart_teen_'+row+'_'+i;}
     const row=(p.adultClass%5)*2+(p.generation%2===1?0:1);let slot=p.adultVariant%3;if([2,6,7,8].includes(row)&&slot===0)slot=1;return 'chart_adult_'+row+'_'+slot;}
-  function text(v,x,y,size=8){context.fillStyle='#000';context.font='bold '+size+'px monospace';context.textBaseline='top';context.fillText(String(v),x,y);}
-  function centered(t,y,size=8){context.font='bold '+size+'px monospace';const w=context.measureText(String(t)).width;text(t,Math.round((120-w)/2),y,size);}
+  // Crisp 5x7 LCD glyphs. Canvas/system fonts are anti-aliased, so converting
+  // them to 1-bit pixels drops parts of characters on the 120x120 screen.
+  // Integer pixel rectangles survive that conversion exactly.
+  const lcdFont={
+    'A':[14,17,17,31,17,17,17], 'B':[30,17,17,30,17,17,30],
+    'C':[14,17,16,16,16,17,14], 'D':[30,17,17,17,17,17,30],
+    'E':[31,16,16,30,16,16,31], 'F':[31,16,16,30,16,16,16],
+    'G':[14,17,16,23,17,17,15], 'H':[17,17,17,31,17,17,17],
+    'I':[14,4,4,4,4,4,14],       'J':[7,2,2,2,18,18,12],
+    'K':[17,18,20,24,20,18,17], 'L':[16,16,16,16,16,16,31],
+    'M':[17,27,21,21,17,17,17], 'N':[17,25,21,19,17,17,17],
+    'O':[14,17,17,17,17,17,14], 'P':[30,17,17,30,16,16,16],
+    'Q':[14,17,17,17,21,18,13], 'R':[30,17,17,30,20,18,17],
+    'S':[15,16,16,14,1,1,30],   'T':[31,4,4,4,4,4,4],
+    'U':[17,17,17,17,17,17,14], 'V':[17,17,17,17,17,10,4],
+    'W':[17,17,17,21,21,21,10], 'X':[17,17,10,4,10,17,17],
+    'Y':[17,17,10,4,4,4,4],     'Z':[31,1,2,4,8,16,31],
+    '0':[14,17,19,21,25,17,14], '1':[4,12,4,4,4,4,14],
+    '2':[14,17,1,2,4,8,31],    '3':[30,1,1,14,1,1,30],
+    '4':[2,6,10,18,31,2,2],    '5':[31,16,16,30,1,1,30],
+    '6':[14,16,16,30,17,17,14], '7':[31,1,2,4,8,8,8],
+    '8':[14,17,17,14,17,17,14], '9':[14,17,17,15,1,1,14],
+    '!':[4,4,4,4,4,0,4],       '?':[14,17,1,2,4,0,4],
+    '+':[0,4,4,31,4,4,0],     '-':[0,0,0,31,0,0,0],
+    '.':[0,0,0,0,0,12,12],    ',':[0,0,0,0,0,4,8],
+    ':':[0,4,4,0,4,4,0],      '/':[1,1,2,4,8,16,16],
+    '<':[2,4,8,16,8,4,2],     '>':[8,4,2,1,2,4,8],
+    '(':[2,4,8,8,8,4,2],     ')':[8,4,2,2,2,4,8],
+    "'": [4,4,8,0,0,0,0],    '*':[0,21,14,31,14,21,0],
+    '♥':[0,10,31,31,31,14,4],  '●':[0,14,31,31,31,14,0],
+    ' ':[0,0,0,0,0,0,0]
+  };
+  function lcdAdvance(ch,spacing){return ch===' '?3+spacing:5+spacing;}
+  function lcdWidth(s,spacing){let w=0;for(const ch of s)w+=lcdAdvance(ch,spacing);return Math.max(0,w-spacing);}
+  function lcdDraw(s,x,y,spacing){
+    let px=Math.round(x);const py=Math.round(y);context.fillStyle='#000';
+    for(const ch of s){const rows=lcdFont[ch]||lcdFont['?'];
+      if(ch!==' '){for(let row=0;row<7;row++){const bits=rows[row];
+        for(let col=0;col<5;col++)if(bits&(1<<(4-col)))context.fillRect(px+col,py+row,1,1);
+      }}px+=lcdAdvance(ch,spacing);
+    }
+  }
+  function text(v,x,y,size=8){lcdDraw(String(v).toUpperCase(),x,y,1);}
+  function centered(value,y,size=8){
+    const str=String(value).toUpperCase();
+    const spacing=1;
+    if(lcdWidth(str,spacing)<=82){lcdDraw(str,Math.round((120-lcdWidth(str,spacing))/2),y,spacing);return;}
+    // Word-wrap long notices inside the 84-pixel play area.
+    const lines=[];let line='';
+    for(const word of str.split(' ')){
+      const attempt=line?line+' '+word:word;
+      if(line&&lcdWidth(attempt,1)>80){lines.push(line);line=word;}else line=attempt;
+    }
+    if(line)lines.push(line);
+    const firstY=Math.round(y-(lines.length-1)*4);
+    for(let i=0;i<lines.length&&i<3;i++){
+      const part=lines[i];lcdDraw(part,Math.round((120-lcdWidth(part,1))/2),firstY+i*9,1);
+    }
+  }
   function bitmap(){const pixels=context.getImageData(0,0,W,H).data;const out=new Uint8Array(1800);for(let y=0;y<H;y++)for(let x=0;x<W;x++){
     if(pixels[(y*W+x)*4]<100)out[y*15+(x>>3)]|=0x80>>(x&7);
   }return out;}
