@@ -84,5 +84,7 @@ api.applyOwned=(input,id,a,now=Date.now())=>{
  const r=apply(s,{...a,pet:id},now),p=r.state.pets[id];
  return {pet:{...p,v:4,revision:r.state.revision,memories:r.state.album,receipts:r.state.receipts},message:r.message};
 };
+// Display everyone at the same time without writing to another player's save.
+api.scenePets=(pets,now=Date.now())=>Object.fromEntries(PET_IDS.filter(id=>pets?.[id]).map(id=>[id,api.applyOwned(pets[id],id,{type:'tick'},now).pet]));
 if(typeof module!=='undefined')module.exports=api;else root.LumiPetEngine=api;
 })(typeof window!=='undefined'?window:globalThis);
