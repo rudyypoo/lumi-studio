@@ -2,7 +2,7 @@
 (function(){
   'use strict';
   const cfg=window.LUMI_FIREBASE_CONFIG || {};
-  let auth,db,roomId='',roomInvite='',currentUid='',promise=null;
+  let auth,db,roomId='',roomInvite='',currentUid='',promise=null,online=false,serverOffset=0;
   const configured=()=>!!(cfg.apiKey&&cfg.databaseURL&&cfg.projectId&&!cfg.apiKey.includes('PASTE')&&!cfg.databaseURL.includes('YOUR_'));
   function check(){if(!configured())throw Error('Edit firebase-config.js using your Firebase Web app configuration first.');if(!window.firebase)throw Error('Firebase SDK could not load; check internet or ad blockers.');}
   function randHex(bytes){const a=new Uint8Array(bytes);crypto.getRandomValues(a);return Array.from(a,n=>n.toString(16).padStart(2,'0')).join('');}
@@ -14,6 +14,8 @@
     promise=(async()=>{
       if(!firebase.apps.length)firebase.initializeApp(cfg);
       auth=firebase.auth();db=firebase.database();
+      db.ref('.info/connected').on('value',s=>{online=s.val()===true;});
+      db.ref('.info/serverTimeOffset').on('value',s=>{serverOffset=Number(s.val())||0;});
       await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       await new Promise((resolve,reject)=>{
         const off=auth.onAuthStateChanged(async user=>{
@@ -22,7 +24,7 @@
         },reject);
       });
       return {uid:currentUid};
-    })();
+    })().catch(error=>{promise=null;throw error;});
     return promise;
   }
   function path(rel){if(!roomId)throw Error('Connect to a studio first.');if(!/^[a-zA-Z0-9_/-]+$/.test(rel))throw Error('Invalid data path');return 'rooms/'+roomId+'/'+rel;}
@@ -64,14 +66,23 @@
     if(owner!==currentUid)throw Error('Only the room owner can authorize an Arduino.');
     await db.ref(path('members/'+uid)).set({role:'device'});
   }
-  async function set(rel,value){await initialize();return db.ref(path(rel)).set(value);}
-  async function get(rel){await initialize();return (await db.ref(path(rel)).once('value')).val();}
-  async function transact(rel,fn){await initialize();return db.ref(path(rel)).transaction(fn,undefined,false);}
+  async function set(rel,value){const target=path(rel);await initialize();return db.ref(target).set(value);}
+  async function get(rel){const target=path(rel);await initialize();return (await db.ref(target).once('value')).val();}
+  async function transact(rel,fn){const target=path(rel);await initialize();return db.ref(target).transaction(fn,undefined,false);}
   function listen(rel,fn){
     const r=db.ref(path(rel));
     const callback=s=>fn(s.val());
     r.on('value',callback,e=>{console.error('Firebase listener error',rel,e);fn(null,e);});
     return ()=>r.off('value',callback);
   }
-  window.LumiCloud={initialize,isConfigured:configured,createRoom,joinRoom,getOwnerInvite,pairDevice,set,get,transact,listen,get room(){return roomId},get uid(){return currentUid}};
+  function presence(petId,onError=console.error){
+    if(!['p1','p2','p3'].includes(petId))throw Error('Invalid pet');
+    const ref=db.ref(path('pocketPresence/'+currentUid+'/'+randHex(12)));
+    const connected=db.ref('.info/connected');let stopped=false;
+    const beat=()=>{if(!stopped&&online)ref.set({petId,at:firebase.database.ServerValue.TIMESTAMP}).catch(onError);};
+    const changed=async snapshot=>{if(snapshot.val()!==true||stopped)return;try{await ref.onDisconnect().remove();if(!stopped)beat();}catch(e){onError(e);}};
+    connected.on('value',changed);const timer=setInterval(beat,20000);
+    return ()=>{stopped=true;clearInterval(timer);connected.off('value',changed);ref.remove().catch(onError);ref.onDisconnect().cancel().catch(onError);};
+  }
+  window.LumiCloud={initialize,isConfigured:configured,createRoom,joinRoom,getOwnerInvite,pairDevice,set,get,transact,listen,presence,now:()=>Date.now()+serverOffset,get online(){return online},get room(){return roomId},get uid(){return currentUid}};
 })();

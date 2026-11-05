@@ -1,382 +1,114 @@
-/* Shared Tamagotchi · browser-first playable fan recreation.
-   All persistent pet data is stored once in Firebase, not in the local browser.
-   Sprite art is derived from the prior user's chart-image recreation.
-   Gameplay covers the core care/evolution menus, not official Bandai ROM behavior. */
+/* Lumi Pocket: one authenticated player, one owned pet. The board is optional. */
 (function(){'use strict';
-  const sprites = {
-    chart_baby_0: "0000000000000000000000000040000000e0e00000e0e00000ffe00000ffe00000ffe00003fff80003fff80003fff80003fff80007fff8001ce0e7001ce0e7001c60c7001c0007001c0007001c1f07001c1f07001fffff0003fff80003fff80000000000000000000000000000000000",
-    chart_baby_1: "0000000000000000000000000000400000e0e00000e0e00000ffe00000ffe00000ffe0000380380003803c0003fffc0003fffc0007fffc001f9fbf001f9f3f001fffff001fffff001fffff001ff0ff001fe0ff000fffff0003fffc0003fff80000000000000000000000000000000000",
-    chart_child_0_0: "00000000000f0000000f8000001f800001fffc0003fffc0007fffe000e0f83800e0f8380380f81e0700f80e0700f80e070001ce070001ce0718008e0738000e0718000e07003f0e07003f0e07001e0e0700000e0700000e01e0003800e0003800fffff0003fffc0001fffc0000000000",
-    chart_child_0_1: "0000000000000000000ff000000ff00000700e0000700e000fcc1b001fcc31803f8c11c0700000e03f8000e01fc000e01f8000e0700000e03f8000e01fc000e00fc000e001c000e000c000e000c000e000c000e00070018000700180000ffe00000ffe00000000000000000000000000",
-    chart_child_1_0: "00000000000f8000000f800001fffc0003fffc0003fffc000e0f83800e0f83803c0f81e0700f80e0700f80e070001ce070001ce071800ce0738000e0718000e07003e0e07003f0e07001e0e0700000e0700000e01e0003c00e0003800e00038003fffc0003fffc000000000000000000",
-    chart_child_1_1: "0000000000000000000ff000000ff00000700e0000700e000fdc1b001fcc31801fcc3180700000e03f8000e01fc000e01fc000e0700000e07f8000e01fc000e00fc000e001c000e000c000e000c000e000c000e00070018000700180000ffe00000ffe00000000000000000000000000",
-    chart_child_2_0: "00000000000f8000000f8000003fc0000030600000f0780001f0780003e07c000300060003000600030006000fc107001dc383801cc383801c0003801c0003801c3c03801c3c0380061c07000300060001fffb8001fffb8003ffff800330078003e0000003c0000003c0000000000000",
-    chart_child_2_1: "000000000000000000fff00000fff00007000e0007000e000e30c7001870e1801870e18018000180180f0180180f0180180f038078000fe078000fe018000380180001801800018018000180077fee00077fee00077ffc00077030000770100000c00000008000000000000000000000",
-    chart_child_3_0: "00000000000f8000000f8000001fc0000030600000f0780001f0780001f07800030006000300060003000600030006001dc383801dc383801c0003801c0003801c3c03801c3e03800e1c07800300060001fffb8001fffb8001ffff800330078003e0000003c0000003c0000000000000",
-    chart_child_3_1: "0000000000000000007ff00000fff00007000e0007000e0007000e001870e1801870e1801800018018000180180f0180180f018078000fe078000fe018000380180001801800018018000180077fee00077fee00077fee00077030000770300000c00000008000000000000000000000",
-    chart_child_4_0: "00000000000f8000000f8000001f80000030600000f0780001f0780001f07800030006000300060003000600030006001dc383801dc383801c0003801c0003801c3c03801c3e03800c3c03800300060001ffff8001fffb8001ffff800330078003e0030003c0000003c0000000000000",
-    chart_child_4_1: "000000000000000000fff00000fff00007000e0007000e000c70e3001870e1801820c18018000180180f0180180f0180380f07c078000fe018000380180001801800018018000180073fef00077fee00077fee00077030000770300000c0000000c00000000000000000000000000000",
-    chart_teen_0_0: "00000000018060000780780007807800007f8000007f800001806000018060003e6018003e601800000198003f808f003f8007000001f8c03f83ffc03f8207c0187e0300187e0300078180c0078180c000007f0000007f0000000000000000000000000001fff80001fff00000000000",
-    chart_teen_0_1: "00000000000f0000000f00001fce3f801fcc3f801fee7f807fffffe07fffffe07e0f0fe07e0f0fe07c30c3e07c30c3e07c30c3e07c30c3e07c0003e07c0003e07c0f03e07c0f03c01e0007801e000f801fffff8063fffc4001fff8000030c0000070e00001f0f80000f0f00000000000",
-    chart_teen_0_2: "000000000f001e000f001e000ffffe000ffffe0003fff80003fff8000ffffe000f001e000ce0e6000ce0e6000cc0c6000c0006000c0006000c1e06000e1e0e0003001800030018000c0006000c0006000300180003001800031f1800031f180000e0e00000e0e00000c0c00000000000",
-    chart_teen_0_3: "0000000000078000000fc000007ff000007ff000019c1800019c1800060f0700060f07000660370006400700060007000600070006000700060f0700060f07001f8007800f800780060007000600070006000700019fd800019fd8000060d8000060d800000030000000200000000000",
-    chart_teen_1_0: "000000000000e0000000e0000000e000003ff800007ffc0000c3ee0000c3ee000770018007f001800fc0e1800fc0e18070700180703001800fc001800fc00180707000e0703000e0707000e00fc00f800fc00f0000c00e0000c00e00007ff800007ffc0000f01e0000f01e0000000000",
-    chart_teen_1_1: "00000000001f8000001fc000003fc000007de00001fff80003fffc0003fffc0003be7f0003bf7f000fffe7000fffe7000e007fc00e007fc030061fc030061fc031801fc033801cc031801dc030781fc01c783fc00e007fc00e007fc003fffc0003fffe000fe07f000fe07f0000000000",
-    chart_teen_1_2: "0000000000f0700000f0f80000f0f80000f0f80000f8f80000fff80000fff80007fffe0007fffe0007fffe0007fffe000c0003800c0001800c00e1800c00e180788040e070c000e070c000e00c0f01800e0f070007000e0007000e00073fee0003ffee0000c0180000c0180000000000",
-    chart_teen_1_3: "00000000001f800000e0600000e0700007301800071818001801860018018600070006000f000600180006000700060007000600030306000303060006ed990006edd98006fdf98007ffff8007ef8f000000000000000000030306000303060006ed998006ef8f000303060000000000",
-    chart_teen_2_0: "0000000001006000030060000700780007fff00000ff800003006000030060007ec018007cc0180040019800400198007f000f007f01ff804001f9c07f060fc03ffe078018fe03000f0180800f0180c000007f0000007f0000000000000000000000000001fff00003fff80000000000",
-    chart_teen_2_1: "00000000000f0000000f00000f8f1f001fcc3f807fffffe07fffffe07fffffe07f0f0fe07e3fc7e07c70e1e07c70e1e07c70e1e07c70e1e07c0001e07c0001e07c0f01e07c0f01e07e0f07e00f000f807fffffe077fffee077fffe600070e00000f0f00000f0f80000f0f00000000000",
-    chart_teen_2_2: "0000000007800e000f801f000f801f000fffff0007fffe0003fffc0003fffc000f801f000fe07f000c6073000c6073000c0003000c0003000c1f03000c1f030003800c0003801c0003800c000c00030007800e0003801c0003801c00039f9c0001fffc00006070000060700000000000",
-    chart_teen_2_3: "00000000000fc000007fe000007fe000007ff00001bc1800019c1800060f0700064f27000660770006000700060007000600070006000700060f07000f0f07001f8007801f800780060007000600070006000700079f8e0001bfd8000060d8000060d8000040f8000000200000000000",
-    chart_teen_3_0: "000000000000e0000000e000003ff000007ff00000c3ee0000c3ee0003e3cf00077003000fc0e3001fc0e3001fc0c30070700300707003001fc003001fc00180707000e0707000e03ff00fc00fc00f0001c00e0000c00e0000fffc00007ff00000f03e0000f03e0000f01e0000000000",
-    chart_teen_3_1: "00000000003f8000003f8000007fe00000ffe00003fff80003fffc0003fffe0003be7f000fffe7000fffe7000fffe7000e007fc00c007fc030061fc030061fc033801dc033801cc031f81fc030781fc00c007fc00e007fc00fffff8003fffc000fe07f000fe07f000fc07f0000000000",
-    chart_teen_3_2: "0000000000f0f00000f0f00000f0f00000f0f00000fff00000fff00001fff80007fffe0007fffe0007fffe0007fffe001c000300180003001800e3001800e180708000e070c000e0788f01e00c0f030007000e0007000e0007000e00077fee0001c0380000c030000080300000000000",
-    chart_teen_3_3: "00000000003f8000003f800000c0600007f078000730180018018c00180186000700060007000600180006001800060007000600030206000306060006cd9b0006fdfb0006fdfb0007cf9f0007cf9f0000000000000000000306060003870e0006cd9b0003870e000302060000000000",
-    chart_teen_4_0: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_4_1: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_4_2: "000000000001fc000007fc0000070300001f0d80001e0d80001e0300001e0300007f0000007f000001ffc00001ffc000019ec00003fff00003fff0000380f0000ffffc000ffffc000ffffc000ffffc003dffcf001dffce0001ffc00001ffc00001e1c0000380f0000380f00000000000",
-    chart_teen_4_3: "0000000000040000000c0000003f0000003b800003fbf80003fbf8000ff3fe000c00060030c0418030c0618030404180300001803000018033fff98033fff98033bbb98033bbb98031fff180307fc1800c0006000c0006000ffffe0003fff8000f803e000f803e000f001e0000000000",
-    chart_teen_5_0: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_5_1: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_5_2: "00000000000300000003000000c3040001c3060001c3060001ccc60003703b8003303b8003303b8003000380033001c003300060073000601f0000601f00006020003860700038607e0000607f00006060000380200003801e0006001f00060001fff80001fff8000000000000000000",
-    chart_teen_5_3: "00000000001ff000003ff000003ff00000e00e003ff983007ff9c3007ff98300703800e0703800e07ff80ce07ff80ee07ff80ee070e000e07fe000e07fe000e07fe000e0078000e0070000e0070000e0070000e0070000e000e0030000e00300003ffe00003ffe000000000000000000",
-    chart_teen_6_0: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_6_1: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_6_2: "000000000000f8000003fc000007860000070700000e0d80001e0f00001e0300003f0000003f000000ffc00000ffc00000dec00000dee00003fff00003c0f00003c0f0000ffffc000ffffc000ffffc001cffcf001cffcf0000ffc00000ffc00000f3c00001e1f00003c0f00000000000",
-    chart_teen_6_3: "0000000000040000000c0000000e0000003b800003fbf00003fbf80003fbf8000c0006000c00060030c0618030c04180300001803000018033fff98033fff98033fbf98033bbb98033fbb98030ffe1803c7fc7800c0006000c00060003fff80007fffc000f803e000f803e0000000000",
-    chart_teen_7_0: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_7_1: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_teen_7_2: "00000000000300000003000001c3040001c3060001ccc60001ccc60003303b8003303b80033013800300038003300060033000600f3000601f0000601f000060600038607e0038607f0000607f00006060000380300003801f0006001f00040001fff80001fff8000000000000000000",
-    chart_teen_7_3: "00000000000fe000003ff000003ff00000f01c0000e00e007ff9c3007ff983007ff981c0703800e0703800e07ff80ee07ff80ee07ff80ce070e000e07fe000e07fe000e03fc000e0070000e0070000e0070000e0070000e0038001e000e00300007ffe00003ffe00001ffe0000000000",
-    chart_adult_0_0: "000000001e000f001f803f001980330019c03300187fc30018fff3001980f3000fe1fe000661bc0018618c0018618c0018010c0018000c0018700c000e300c0006000c0006000e00066e0f0007fe1f000198330001803e0001803c00006ec000006ec000003f80000011000000000000",
-    chart_adult_0_1: "000000000000010000000000000000000000000003c0f0000fe3f8000ffff8000ffff8000ffff8000c0018000c000c001bc3c6001ba3b6001ba3b6001ba3b6001bc3c6000c1e080007fff80003fff00001804000018060000240b00003c0f000005c8000007f80000063800000000000",
-    chart_adult_0_2: "00000000180000000000000000000000000000000000000001c0070003fffb80037ffb8002d8358001f01b0001e00b0001c00700027031800270318002383980020381800100030001fffe0000fffc00007018000070180000d8340000f83c00001bb000000fe0000004c00000000000",
-    chart_adult_1_0: "0000000000007000000070000f81fc000fc1fc000fe1fc000ff1fc0007f9fc0003fffc0003fffc0001c03c000371ec000638e6000c1067000c00070006060e00030f3c00058066000580660003803c000380380000c01800006f8c00006ff800006c7000003800000010000000000000",
-    chart_adult_1_1: "000000000000010000000000000000000000000000000000000000000380c0000380c0000fc3f0000fc3f00007e7f00003efc00003ffc00003ffc000020040000d80b0000c3c30001e3c38001e0038001e0038001e0038000c0030000200c00001ffc00003e0400003c0400000000000",
-    chart_adult_1_2: "0000000000ffc00000ffc00003003c0007001e000c000300180003e0180003e078000f6078000f60780000607800006078c18f607fff87e07fff83e00fce03000fcc03000c0003000cfc03000cfc03000c0003000c0003000c000c0006000c0003fff0000070e0000030c00000000000",
-    chart_adult_2_0: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_adult_2_1: "000000000000f0000000f0000007f0000007f000000ff0000018f00001fff00001fff00001fff0000180000001c0100001fff00001fff000018000000180000001fff00000fff000007ff000007ff00000f8300001f0300001f0000001f0000000f83000007c3000001ff00000000000",
-    chart_adult_2_2: "0000000000f0000000f0000000fe000000fe000000ff000000ef000000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000ffe00000f0e00000f0e00000ffe00000ffe00000ff800000000000",
-    chart_adult_3_0: "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000578037a0330004802200048000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_adult_3_1: "000000000010000000300000000c3c00000c3c000007fc000003fc00000ffc00000ffc000030000000300000003300000033000000300c0000300c000030f4000030f0000030000000300000000c0000001c0000003c000001fffc0003effc0003effc00000ffc00000ffc0000000000",
-    chart_adult_3_2: "000000000783c0000783e00007ffc00007fc000007ff000007ff000007ff80000001c000000de000001de000000de0000001e0000001e0000781e0000781e0000001e0000001e0000003fc0000033c000003e0000003e00007ffc00007ff000007ff000007ff000007ff000000000000",
-    chart_adult_4_0: "00000000007fe00001fff9c001fff9c039ffffc039ffffc03fe07fc03fe07fc03f801fc03f801fc03f919fc03f801fc03f801fc03f819fc03f9f9fc0399f1bc00060600000606000001f8000003f80000079e00000f9f00001999800001f8000001f8000001980000000800000000000",
-    chart_adult_4_1: "00000000000002000000000000000000000000000000000000ffc0000101f0000101f0000222f8001ff838001ff81800181818001ff818001ff01800186018001fe01800020004000200040002000c000100180000c03e0000c03700033fc2000c0004001e000e001e000e0000000000",
-    chart_adult_4_2: "00000000300000000000000000000000003fe000007ff00001fdf80003e07c0003e03c000300040003f0fc0007fdfe00040d020004cf2200048f2200040d0200040cfc0003f004003f03e4003f87fc0039cc1c0003e7fe000367fa00041c1980030fe200070003800700030000000000",
-    chart_adult_5_0: "0000000000000000060006001effe7803efff7c03efff7800300180007c03e0006c036000600060006000600063fc600063fc6003e0007803e0007c063001860630018606300186063001c6067001e607fc03fc038c037c001bfde00033fde0003ffce0003c000000000000000000000",
-    chart_adult_5_1: "000000000000000001ffe00007fff0000600300008000c0009800e000981860030700600307006003180060031800600306006003181f6403181f6e0387307e0387207e0400276604e0272604e0360c04c0183807f009f8037803c0000ffe000007fc000000000000000000000000000",
-    chart_adult_5_2: "0000000007fff8000fffff001800078019ffe0c019ffe0c0060018c0060018c006601f8007f09f801ff980c0380000c0300000c03f8001801f8001801800018019ff818019ff818007800600078006001998798019fff980307fe0c0180001801c0003803e0007c01e00078000000000",
-    chart_adult_6_0: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_adult_6_1: "00000000000e0000001f00000031000000310000000e0000000fc000000fc000001fc000003fc000003fc000003fc000007fc0000070c00000700000007c0000006e0000006e000000600000006040000060c0000060c0000060c0000070000000700000003fc000003fc00000000000",
-    chart_adult_6_2: "00000000000e0000001f00000033000000330000000e0000007e0000007e0000007f0000007f0000007f0000007f0000007f80000063c0000003c0000001c0000000c0000000c000000ec000004cc0000060c0000060c0000060c0000003c0000003c000007f8000007f000000000000",
-    chart_adult_7_0: "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003fe000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_adult_7_1: "000000000000c0000003b00000033000000330000000e0000000f0000000f0000003000000030000000ce000000ce000000ce000000cc00000fc000001800000018000000180000000f80000018000000180000000fc000000fc000000030000000300000003f0000007f00000000000",
-    chart_adult_7_2: "0000000000060000000fc000000fc000000fc0000006000000fe000000fe000000060000000600000001c0000001c0000081c00000c1c00000c070000000700000007000000070000000700000007000000070000001c0000001c000000600000006000000fde00000fde00000000000",
-    chart_adult_8_0: "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    chart_adult_8_1: "00000000007fc000007fc00007f1fc000ff1fe001ff1ff001ff1ff001ff1ff001ff1ff007ff1ffc07ff1ffc07e318fc07ff1ffc07ff1ffc07ffbffc01fffff00038038000380380001803800007ffc0001fffc0003e1f8000660ec000660cc000670cc00063f8c00007bc00000000000",
-    chart_adult_8_2: "0000000001fff0001ffffe003ffffe003ffffe003bbf36003ffffe003ffbfe0060000780600007c0600007c07ffff1c0380006001800060007fff80007fff8003ffffe003ffffe0067fffe6067ffffc0663fffc0663fff80063ff8000e3ffc0038fff6003f801f800000000000000000",
-    chart_adult_9_0: "00000000001800000018000000d860000ff8fc000f39be0000ffe00000ffe00000ffc000007f800000ffc00001fff000030030000e001c000e000e000effee000effee000ef1ee000ee1ee000e000e001e080f003e180f006e180ec06e180ec0730033c0730031c000ffe00000000000",
-    chart_adult_9_1: "0000000000008f800000078000000200000000000000000000000000000000000001800003ffc00003ffc0000ffff0001ffff8001ffff8001c0038001dc3b8001c0038001ffff8001ffff8001ffff8000ffff00007ffe00001c3800002e6f00002fe0000027e0000007c000000000000",
-    chart_adult_9_2: "000000001f1000001e0000000c0000000000000000000000000300000003800000038000003ff800007ff80000c3840001c0070001fdff0001fdff0001d8c70000c0040003f7840003f7840002780c00027fff8003ffff8003f00f8000c0040000fffc0000fffe0000dadb0000000000",
-  };
-  const icons = {
-    connectionIcon0: "0000000007c03ff825887336dc06c40aa30286c2cc667ffc3818000000000000",
-    connectionIcon1: "07807ed0c87ce0467006301e3c3c3fe0c43080109010c810c77070e01f800000",
-    connectionIcon2: "000c003e0062004200c61f8670ecc738f6e0cf6040c060c0c060e0e03f000000",
-    connectionIcon3: "0000000030006c00c41c847c6cfc31f803e007e00f8078007000300000000000",
-    connectionIcon4: "0000001c0006006200483024781079c0ffe0ffe07fe03fc03f801f000c000000",
-    connectionIcon5: "000000000002000e04183f307f06fe1ef800fe187f8e7f801f00000000000000",
-    connectionIcon6: "0000000003c00e600c20600c4106c182c18287e283828180e0067ffe00000000",
-    connectionIcon7: "000003c00c30100820043ffc03c00180018003c0042003c00000000000000000",
-    connectionIcon8: "0000700efc3efffefffefffefffefffe7ffe7ffe7ffefffe7ffe03e001800000",
-    connectionIcon9: "0000000000003e004100d384c002e042763a4002018400f80010000000000000",
-  };
-  const W=120,H=120,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const names=['STATUS','FOOD','TOILET','GAMES','CONNECT','DISCIPLINE','MEDICINE','LIGHTS','FRIENDS','ATTENTION'];
-  const context=(()=>{const can=document.createElement('canvas');can.width=W;can.height=H;return can.getContext('2d',{alpha:false,willReadFrequently:true});})();
-  const ice={state:null,cloud:null,view:null,menu:'home',selected:-1,opt:0,busy:false,unsub:null,unsubDevice:null,watch:null,localInfo:'',lastLocal:0,lastTick:0,deviceFrame:null,pending:[],lastSeq:0,awaiting:0,awaitingSince:0,deviceBusy:false};
-  function random(n){return Math.floor(Math.random()*n);}
-  function defaultPet(){const now=Date.now();return {v:1,updatedAt:now,stage:0,stageStartMinutes:0,ageMinutes:0,careMisses:0,pcm:0,mcm:0,hunger:4,happy:4,discipline:0,weight:5,poops:0,sick:0,naughty:0,lightOff:0,points:0,generation:1,childGroup:2,childVariant:random(2),babyVariant:random(2),teenBranch:0,teenType:0,adultClass:0,adultVariant:1,parentClass:2,paused:0,gameWins:0,gameCount:0,careCount:0,cleanCount:0,hungerAlertMins:0,happyAlertMins:0,sickAlertMins:0,naughtyAlertMins:0,lightAlertMins:0};}
-  function sleep(p,date){const h=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false}).format(date))%24;return p.stage>=1 && p.stage<=6 && (h>= (p.stage<=2?20:21) || h < (p.stage<=2?8:9));}
-  function chooseTeen(p){if(p.childGroup===0)return p.pcm>=3&&p.mcm>=3?1:0;if(p.childGroup===1)return p.pcm>=3&&p.mcm>=3?2:1;if(p.childGroup===3)return p.pcm>=4&&p.mcm>=4?3:2;if(p.childGroup===4)return 3;return p.pcm<=1&&p.mcm<=1?0:p.pcm<=2&&p.mcm<=2?1:p.pcm<=3&&p.mcm<=3?2:3;}
-  function chooseAdult(p){return p.pcm>=3&&p.mcm>=3?4:p.pcm>=3?3:p.mcm>=3?2:p.pcm<=1&&p.mcm<=1&&(p.parentClass<=2||p.generation===1)&&p.teenBranch<3?0:1;}
-  function grow(p,stage){p.stage=stage;p.stageStartMinutes=p.ageMinutes;p.hunger=4;p.happy=4;p.sick=0;p.naughty=0;
-    p.hungerAlertMins=p.happyAlertMins=p.sickAlertMins=p.naughtyAlertMins=p.lightAlertMins=0;
-    if(stage===2){p.pcm=0;p.mcm=0;}if(stage===3){p.teenBranch=chooseTeen(p);p.teenType=random(2);p.pcm=0;p.mcm=0;}
-    if(stage===4){p.adultClass=chooseAdult(p);p.adultVariant=random(3);const row=p.adultClass*2+(p.generation%2===1?0:1);if([2,6,7,8].includes(row)&&p.adultVariant===0)p.adultVariant=1;p.pcm=0;p.mcm=0;}
+const E=window.LumiPetEngine,S=window.LumiPetSocial,$=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search),demo=params.get('preview')==='1'&&location.pathname.endsWith('/pocket-preview.html');
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let root,ctx,cloud=null,petId=null,pets={},sessions={},presence={},owner=false,unsubs=[],epoch=0,busy=false,tab='care',menu=null,cursor=0,notice='',noticeUntil=0,game=null,lastUI=0;
+const actions={care:[['feed','Warm meal','Fill a little tummy'],['snack','Berry treat','A little joy'],['clean','Bubble bath','Clean & feel better'],['rest','Cozy rest','Restore energy'],['medicine','Medicine','Care for a sick pet']],play:[['game','Star catch','Timing · A/B/C'],['explore','Go exploring','Discover keepsakes · +12 stars']]};
+const now=()=>cloud?.now?.()||Date.now();
+const own=()=>petId&&pets[petId]?E.applyOwned(pets[petId],petId,{type:'tick'},now()).pet:null;
+function say(text){notice=text;noticeUntil=Date.now()+6500;if($('pocketNotice'))$('pocketNotice').textContent=text;}
+function setStatus(text){if($('tamaStatus'))$('tamaStatus').textContent=text;}
+function onlinePeers(){const result=new Map();for(const [uid,tabs] of Object.entries(presence||{}))for(const record of Object.values(tabs||{})){
+ if(cloud&&uid!==cloud.uid&&record.petId!==petId&&E.PET_IDS.includes(record.petId)&&now()-record.at<45000)result.set(record.petId,{uid,petId:record.petId});
+ }return cloud?.online===false?[]:[...result.values()];}
+function mine(){return Object.values(sessions||{}).filter(e=>cloud&&(e.fromUid===cloud.uid||e.toUid===cloud.uid)&&e.expiresAt>now()&&['pending','accepted'].includes(e.status)).sort((a,b)=>b.createdAt-a.createdAt);}
+function socialScene(){const peers=onlinePeers();return mine().find(e=>e.status==='accepted'&&peers.some(p=>p.uid===(e.fromUid===cloud.uid?e.toUid:e.fromUid)));}
+function mount(){root=$('panel-tamagotchi');if(!root)return;root.className='pocket';
+ root.innerHTML=`${demo?'<div class="pocket-preview-banner">Local multiplayer playground · browser test data only. <a href="?preview=1&player=p1" target="_blank" rel="noopener">Your window</a> · <a href="?preview=1&player=p2" target="_blank" rel="noopener">Her window</a> · <a href="?preview=1&player=p3" target="_blank" rel="noopener">Friend’s window</a></div>':''}
+ <div class="pocket-heading"><div><span class="pocket-eyebrow">Your own little life. A world to share.</span><h2>Our little universe</h2><p>Your pet belongs to you. Meet your people when you both feel like it.</p></div><span class="pocket-status" id="tamaStatus" role="status">Connect through Overview to save & play.</span></div>
+ <div class="pocket-layout"><div class="pocket-console"><div class="pocket-player-label" id="pocketPlayer">Your pocket</div><div class="pocket-device" id="pocketDevice"><div class="pocket-brand">lumi · pocket</div><div class="pocket-bezel"><canvas id="tamaScreen" width="240" height="240" aria-label="Your own virtual pet’s screen"></canvas></div><div class="pocket-buttons" aria-label="Pet controls"><button data-key="A" aria-label="A: next">A</button><button data-key="B" aria-label="B: select">B</button><button data-key="C" aria-label="C: back">C</button></div><div class="pocket-key-hints"><span>NEXT</span><span>SELECT</span><span>BACK</span></div><div class="pocket-device-footer">A LITTLE CLOSER, ALWAYS</div></div><div class="pocket-footnote">Keyboard: arrows · Enter · Escape</div><div id="pocketNotice" class="pocket-notice" role="status" aria-live="polite"></div></div>
+ <div><div class="pocket-card" id="pocketSummary"></div><div class="pocket-tabs" role="tablist" aria-label="Pet activities">${[['care','Care'],['play','Adventure'],['decorate','Decorate'],['together','Together'],['album','Memories']].map(([id,label])=>`<button role="tab" data-tab="${id}" aria-controls="pocketContent">${label}</button>`).join('')}</div><div class="pocket-card" id="pocketContent" role="tabpanel"></div><div class="pocket-card" id="pocketLink"></div><p class="pocket-footnote">Always playable on the website. Your UNO Q can stay switched off.</p></div></div>`;
+ ctx=$('tamaScreen').getContext('2d');
+ root.addEventListener('click',event=>{const b=event.target.closest('button');if(!b)return;
+  if(b.dataset.key)press(b.dataset.key);
+  if(b.dataset.tab){tab=b.dataset.tab;menu=null;game=null;update();}
+  if(b.dataset.action)act(b.dataset.action,b.dataset.item);
+  if(b.id==='pocketRename')edit({type:'rename',name:$('pocketName').value});
+  if(b.dataset.invite)invite(b.dataset.peer,b.dataset.invite);
+  if(b.dataset.reply)respond(b.dataset.event,b.dataset.reply);
+  if(b.dataset.ready)contribute(b.dataset.ready);
+  if(b.dataset.end)endSession(b.dataset.end);
+  if(b.id==='pocketAssign')assign();
+ });
+ root.addEventListener('keydown',event=>{if(!event.target.matches('[data-tab]')||!['ArrowLeft','ArrowRight'].includes(event.key))return;event.preventDefault();event.stopPropagation();const tabs=[...root.querySelectorAll('[data-tab]')],i=tabs.indexOf(event.target),next=tabs[(i+(event.key==='ArrowRight'?1:tabs.length-1))%tabs.length];tab=next.dataset.tab;menu=null;game=null;update();next.focus();});
+ update();requestAnimationFrame(frame);
+ if(demo)connect(window.createPocketDemoCloud(params.get('player')||'p1'));
+ window.addEventListener('pagehide',()=>disconnect());
+}
+function update(){if(!root)return;const p=own();
+ root.querySelectorAll('[data-tab]').forEach(b=>{b.setAttribute('aria-selected',String(b.dataset.tab===tab));b.tabIndex=b.dataset.tab===tab?0:-1;});
+ $('pocketDevice').classList.toggle('mint',petId==='p2');$('pocketDevice').classList.toggle('lilac',petId==='p3');
+ $('pocketPlayer').textContent=petId?({p1:'Your pocket',p2:'Her pocket',p3:'Friend’s pocket'})[petId]:'Your pocket';
+ if(!p){$('pocketSummary').innerHTML='<h3>A little life of your own</h3><p>'+(!cloud?'Connect through Overview to load your pet.':'Your pet is being linked. No one else can care for it.')+'</p>';$('pocketContent').innerHTML='<p>Only your assigned pet can be fed, dressed, renamed or played with. Shared activities always need an invitation and acceptance.</p>';return;}
+ const status=demo?'Local playground · your pet only':cloud?.online===false?'Offline · reconnect to save':'Private room · your pet only';if(!busy)setStatus(status);
+ $('pocketSummary').innerHTML=`<div class="pocket-pet-heading"><div><span class="pocket-eyebrow">${esc(p.stage)} · ${Math.floor(p.age/E.DAY)} days old</span><h3>${esc(p.name)}${p.sick?' · feeling poorly':''}</h3></div><span class="pocket-coins">✦ ${p.coins} stars</span></div><div class="pocket-meters">${[['food','Full tummy'],['joy','Happiness'],['clean','Cleanliness'],['energy','Energy']].map(([key,label])=>`<div><div class="pocket-meter-label"><span>${label}</span><span>${Math.round(p[key])}%</span></div><div class="pocket-meter" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(p[key])}"><i style="width:${p[key]}%"></i></div></div>`).join('')}</div>`;
+ const button=(type,title,description,item='',equipped=false)=>`<button class="pocket-action" data-action="${type}" data-item="${item}" data-equipped="${equipped}" ${busy?'disabled':''}><strong>${esc(title)}</strong><small>${esc(description)}</small></button>`;
+ let html=actions[tab]?'<div class="pocket-grid">'+actions[tab].map(([id,t,d])=>button(id,t,d)).join('')+'</div>':'';
+ if(tab==='care')html+=`<div class="pocket-subhead">A name of their own</div><div class="pocket-rename"><input id="pocketName" aria-label="Pet name" maxlength="16" value="${esc(p.name)}"><button id="pocketRename">Save name</button></div><p>Egg → baby → child → teen → adult. Decorating favors Bloom, exploring favors Comet, and minigames favor Bun. Every form is loved. No death.</p>`;
+ if(tab==='decorate')html='<p>Buy & place pieces in your own room. Owned pieces can be swapped freely.</p><div class="pocket-grid">'+E.catalog.map(i=>button('decorate',i.name,p.decor[i.slot]===i.id?'Placed ♡':p.owned[i.id]?'Owned · place it':i.cost+' stars',i.id,p.decor[i.slot]===i.id)).join('')+'</div>';
+ if(tab==='play')html+='<div class="pocket-subhead">Your keepsakes · '+Object.keys(p.discoveries||{}).length+'/6</div><p>'+esc(Object.keys(p.discoveries||{}).join(' · ')||'Your first adventure is waiting.')+'</p><p>Explore every five minutes. Rest when energy is low. Earn decorating stars in Star Catch.</p>';
+ if(tab==='album')html=[...(p.memories||[])].reverse().map(m=>`<div class="pocket-memory"><small>${esc(new Date(m.at).toLocaleDateString())}</small><p>${esc(m.text)}</p></div>`).join('')||'<p>Your first memories are still ahead.</p>';
+ if(tab==='together'){
+  const peers=onlinePeers();html='<h3>A little company?</h3><p>You can always play alone. Invite an online friend when you both want to meet. Your pets remain yours.</p>';
+  html+=peers.length?peers.map(peer=>`<div class="pocket-social-peer"><strong>${esc(pets[peer.petId]?.name||'Your friend')} · online</strong><div class="pocket-grid">${Object.entries(S.ACTIVITIES).map(([id,a])=>`<button class="pocket-action" data-invite="${id}" data-peer="${esc(peer.uid)}"><strong>${a.name}</strong><small>${a.description}</small></button>`).join('')}</div></div>`).join(''):'<p class="pocket-empty">No other players are online right now. Your friends will appear here when they connect.</p>';
+  for(const event of mine()){
+   const incoming=event.toUid===cloud.uid,otherName=pets[incoming?event.fromPet:event.toPet]?.name||'Your friend',activity=S.ACTIVITIES[event.activity];if(!activity)continue;
+   html+=`<div class="pocket-social-event"><strong>${esc(activity.name)} · ${esc(otherName)}</strong>`;
+   if(event.status==='pending')html+=incoming?`<p>Would you like to join? It’s completely up to you.</p><button class="pocket-start" data-reply="accepted" data-event="${esc(event.id)}">Accept invitation</button> <button class="pocket-start" data-reply="declined" data-event="${esc(event.id)}">No thanks</button>`:'<p>Invitation sent. Waiting for your friend to choose.</p>';
+   else if(S.complete(event))html+='<p>♡ '+(event.activity==='stargaze'?'A constellation, made by the two of you.':'Two treats, two happy pets. A little picnic to remember.')+'</p>';
+   else if(!peers.some(p=>p.uid===(incoming?event.fromUid:event.toUid)))html+='<p>Your friend is offline. You can leave or wait for them to reconnect.</p>';
+   else html+=event.ready?.[cloud.uid]?'<p>Your contribution is ready. Waiting for your friend.</p>':`<p>You both said yes. Add your part when you’re ready.</p><button class="pocket-start" data-ready="${esc(event.id)}">${activity.verb}</button>`;
+   if(event.status==='accepted')html+=`<button class="pocket-start" data-end="${esc(event.id)}">Leave activity</button>`;
+   else if(!incoming)html+=`<button class="pocket-start" data-end="${esc(event.id)}">Cancel invitation</button>`;
+   html+='</div>';
   }
-  function mistake(p,physical){p.careMisses=Math.min(255,p.careMisses+1);const field=physical?'pcm':'mcm';p[field]=Math.min(99,p[field]+1);}
-  function nextMinute(p,t){if(p.paused||p.stage===5)return;
-    p.ageMinutes++;
-    for(const [stage,time] of [[0,3],[1,60],[2,1440],[3,4320],[4,14400]])if(p.stage===stage&&p.ageMinutes-p.stageStartMinutes>=time)grow(p,stage+1===5?6:stage+1);
-    if(p.stage<1||p.stage>6)return;
-    const resting=sleep(p,new Date(t));
-    if(!resting){if(p.ageMinutes%(p.stage===1?30:55)===0&&p.hunger>0)p.hunger--;
-      if(p.ageMinutes%75===0&&p.happy>0)p.happy--;
-      if(p.ageMinutes%95===0)p.poops=Math.min(3,p.poops+1);
-      if(p.ageMinutes%210===0&&random(4)===0)p.naughty=1;
-      if(p.ageMinutes%270===0&&random(7)===0)p.sick=1;}
-    if(p.poops>=2&&p.ageMinutes%90===0&&random(2)===0)p.sick=1;
-    for(const [need,field,delay,phys] of [[p.hunger===0,'hungerAlertMins',15,true],[p.happy===0,'happyAlertMins',15,false],[p.sick,'sickAlertMins',15,true],[p.naughty,'naughtyAlertMins',15,true],[resting&&!p.lightOff,'lightAlertMins',60,false]]){
-      if(need){p[field]=Math.min(delay+1,(p[field]||0)+1);if(p[field]===delay)mistake(p,phys);}else p[field]=0;
-    }
-    if(p.careMisses>=20){p.stage=5;p.lightOff=0;}
-  }
-  function advance(p,now){const ms=Math.max(0,now-p.updatedAt);const mins=Math.min(40000,Math.floor(ms/60000));if(!mins)return p;
-    for(let i=0;i<mins;i++)nextMinute(p,p.updatedAt+60000*(i+1));p.updatedAt+=mins*60000;return p;
-  }
-  function drawBitmap(name,x,y,w,h){const s=(icons[name]||sprites[name]);if(!s)return;const bytes=Uint8Array.from(s.match(/../g),h=>parseInt(h,16));const stride=Math.ceil(w/8);context.fillStyle='#000';for(let j=0;j<h;j++)for(let i=0;i<w;i++)if(bytes[j*stride+(i>>3)]&(0x80>>(i&7)))context.fillRect(x+i,y+j,1,1);}
-  function spriteName(p){if(p.stage===1)return 'chart_baby_'+(p.babyVariant%2);
-    if(p.stage===2)return 'chart_child_'+(p.childGroup%5)+'_'+(p.childVariant%2);
-    if(p.stage===3){const row=(p.teenBranch%4)*2+(p.generation%2===1?0:1);const i=(p.teenBranch>=2?2:0)+p.teenType%2;return 'chart_teen_'+row+'_'+i;}
-    const row=(p.adultClass%5)*2+(p.generation%2===1?0:1);let slot=p.adultVariant%3;if([2,6,7,8].includes(row)&&slot===0)slot=1;return 'chart_adult_'+row+'_'+slot;}
-  // Crisp 5x7 LCD glyphs. Canvas/system fonts are anti-aliased, so converting
-  // them to 1-bit pixels drops parts of characters on the 120x120 screen.
-  // Integer pixel rectangles survive that conversion exactly.
-  const lcdFont={
-    'A':[14,17,17,31,17,17,17], 'B':[30,17,17,30,17,17,30],
-    'C':[14,17,16,16,16,17,14], 'D':[30,17,17,17,17,17,30],
-    'E':[31,16,16,30,16,16,31], 'F':[31,16,16,30,16,16,16],
-    'G':[14,17,16,23,17,17,15], 'H':[17,17,17,31,17,17,17],
-    'I':[14,4,4,4,4,4,14],       'J':[7,2,2,2,18,18,12],
-    'K':[17,18,20,24,20,18,17], 'L':[16,16,16,16,16,16,31],
-    'M':[17,27,21,21,17,17,17], 'N':[17,25,21,19,17,17,17],
-    'O':[14,17,17,17,17,17,14], 'P':[30,17,17,30,16,16,16],
-    'Q':[14,17,17,17,21,18,13], 'R':[30,17,17,30,20,18,17],
-    'S':[15,16,16,14,1,1,30],   'T':[31,4,4,4,4,4,4],
-    'U':[17,17,17,17,17,17,14], 'V':[17,17,17,17,17,10,4],
-    'W':[17,17,17,21,21,21,10], 'X':[17,17,10,4,10,17,17],
-    'Y':[17,17,10,4,4,4,4],     'Z':[31,1,2,4,8,16,31],
-    '0':[14,17,19,21,25,17,14], '1':[4,12,4,4,4,4,14],
-    '2':[14,17,1,2,4,8,31],    '3':[30,1,1,14,1,1,30],
-    '4':[2,6,10,18,31,2,2],    '5':[31,16,16,30,1,1,30],
-    '6':[14,16,16,30,17,17,14], '7':[31,1,2,4,8,8,8],
-    '8':[14,17,17,14,17,17,14], '9':[14,17,17,15,1,1,14],
-    '!':[4,4,4,4,4,0,4],       '?':[14,17,1,2,4,0,4],
-    '+':[0,4,4,31,4,4,0],     '-':[0,0,0,31,0,0,0],
-    '.':[0,0,0,0,0,12,12],    ',':[0,0,0,0,0,4,8],
-    ':':[0,4,4,0,4,4,0],      '/':[1,1,2,4,8,16,16],
-    '<':[2,4,8,16,8,4,2],     '>':[8,4,2,1,2,4,8],
-    '(':[2,4,8,8,8,4,2],     ')':[8,4,2,2,2,4,8],
-    "'": [4,4,8,0,0,0,0],    '*':[0,21,14,31,14,21,0],
-    '♥':[0,10,31,31,31,14,4],  '●':[0,14,31,31,31,14,0],
-    ' ':[0,0,0,0,0,0,0]
-  };
-  function lcdAdvance(ch,spacing){return ch===' '?3+spacing:5+spacing;}
-  function lcdWidth(s,spacing){let w=0;for(const ch of s)w+=lcdAdvance(ch,spacing);return Math.max(0,w-spacing);}
-  function lcdDraw(s,x,y,spacing){
-    let px=Math.round(x);const py=Math.round(y);context.fillStyle='#000';
-    for(const ch of s){const rows=lcdFont[ch]||lcdFont['?'];
-      if(ch!==' '){for(let row=0;row<7;row++){const bits=rows[row];
-        for(let col=0;col<5;col++)if(bits&(1<<(4-col)))context.fillRect(px+col,py+row,1,1);
-      }}px+=lcdAdvance(ch,spacing);
-    }
-  }
-  function text(v,x,y,size=8){lcdDraw(String(v).toUpperCase(),x,y,1);}
-  function centered(value,y,size=8){
-    const str=String(value).toUpperCase();
-    const spacing=1;
-    if(lcdWidth(str,spacing)<=82){lcdDraw(str,Math.round((120-lcdWidth(str,spacing))/2),y,spacing);return;}
-    // Word-wrap long notices inside the 84-pixel play area.
-    const lines=[];let line='';
-    for(const word of str.split(' ')){
-      const attempt=line?line+' '+word:word;
-      if(line&&lcdWidth(attempt,1)>80){lines.push(line);line=word;}else line=attempt;
-    }
-    if(line)lines.push(line);
-    const firstY=Math.round(y-(lines.length-1)*4);
-    for(let i=0;i<lines.length&&i<3;i++){
-      const part=lines[i];lcdDraw(part,Math.round((120-lcdWidth(part,1))/2),firstY+i*9,1);
-    }
-  }
-  // Draw exact 1-bit lines, never anti-aliased Canvas strokes.  The original
-  // Arduino GFXcanvas1 uses integer pixels, so CSS strokeRect loses 1px borders
-  // when quantized into the monochrome buffer.
-  function lcdRect(x,y,w,h){
-    context.fillStyle='#000';
-    context.fillRect(x,y,w,1); context.fillRect(x,y+h-1,w,1);
-    context.fillRect(x,y,1,h); context.fillRect(x+w-1,y,1,h);
-  }
-  function lcdRoundRect(x,y,w,h,r){
-    // Pixel-aligned GFX-style outline using nearest-integer corner positions.
-    const pixel=(px,py)=>context.fillRect(px,py,1,1);
-    r=Math.max(0,Math.min(r,Math.floor(Math.min(w,h)/2)));
-    if(!r){lcdRect(x,y,w,h);return;}
-    context.fillStyle='#000';
-    context.fillRect(x+r,y,w-2*r,1);context.fillRect(x+r,y+h-1,w-2*r,1);
-    context.fillRect(x,y+r,1,h-2*r);context.fillRect(x+w-1,y+r,1,h-2*r);
-    for(let yy=0;yy<r;yy++)for(let xx=0;xx<r;xx++){
-      // Edge boundary of a quarter circle, draw each chosen pixel just once.
-      const d=(r-0.5-xx)**2+(r-0.5-yy)**2;
-      const inside=d<=(r-0.5)**2;
-      const adjacent=(r-0.5-(xx+1))**2+(r-0.5-yy)**2 <= (r-0.5)**2 &&
-        (r-0.5-xx)**2+(r-0.5-(yy+1))**2 <= (r-0.5)**2;
-      if(inside&&!adjacent){
-        pixel(x+xx,y+yy);pixel(x+w-1-xx,y+yy);
-        pixel(x+xx,y+h-1-yy);pixel(x+w-1-xx,y+h-1-yy);
-      }
-    }
-  }
-  function lcdDrawBig(s,x,y){
-    // Adafruit GFX 2x text: 5x7 glyph and 1px spacing, each pixel doubled.
-    // The sleeping Arduino pet uses setTextSize(2), starting at y=47.
-    let px=x;const py=y;context.fillStyle='#000';
-    for(const ch of String(s).toUpperCase()){
-      const rows=lcdFont[ch]||lcdFont['?'];
-      for(let row=0;row<7;row++)for(let col=0;col<5;col++)
-        if(rows[row]&(1<<(4-col)))context.fillRect(px+col*2,py+row*2,2,2);
-      px+=12;
-    }
-  }
-  function liveDevice(){
-    return !!(ice.deviceFrame && Number(ice.deviceFrame.updatedAt) > Date.now()-25000 &&
-      Number(ice.deviceFrame.updatedAt) < Date.now()+120000 && ice.deviceFrame.v===1);
-  }
-  function decodeDeviceFrame(obj){
-    if(!obj || typeof obj.bits!=='string' || obj.bits.length!==2400)return null;
-    try{const decoded=atob(obj.bits);if(decoded.length!==1800)return null;
-      return Uint8Array.from(decoded,c=>c.charCodeAt(0));
-    }catch(e){console.warn('Arduino frame decode failed',e);return null;}
-  }
-  async function sendNextDeviceButton(){
-    if(!ice.cloud||!liveDevice()||ice.awaiting||!ice.pending.length)return;
-    const key=ice.pending.shift();
-    const seq=Math.max(Date.now(),ice.lastSeq+1);ice.lastSeq=seq;ice.awaiting=seq;ice.awaitingSince=Date.now();
-    try{await ice.cloud.set('shared/tamaCommand',{v:1,seq,key});}
-    catch(e){ice.awaiting=0;ice.awaitingSince=0;ice.pending.unshift(key);
-      ice.view?.setStatus('Remote button failed: '+e.message,false);}
-  }
-  function onDeviceFrame(frame,error){
-    if(error){console.warn('Arduino screen feed',error);return;}
-    ice.deviceFrame=frame;
-    if(ice.awaiting && Number(frame?.ack)===ice.awaiting){ice.awaiting=0;ice.awaitingSince=0;sendNextDeviceButton();}
-    if(liveDevice()){
-      ice.view?.setStatus(ice.awaiting?'Arduino connected · button pending':'Arduino live screen · pet synced',true);
-    }
-    paint();
-  }
-  function bitmap(){const pixels=context.getImageData(0,0,W,H).data;const out=new Uint8Array(1800);for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    if(pixels[(y*W+x)*4]<100)out[y*15+(x>>3)]|=0x80>>(x&7);
-  }return out;}
-  function paint(){
-    // When the physical device is online, mirror its exact 120x120 monochrome
-    // GFX canvas, including icon borders, sprites, menus and animation.
-    if(liveDevice()){
-      const decoded=decodeDeviceFrame(ice.deviceFrame);
-      if(decoded){ice.view?.render(120,120,decoded);return;}
-    }
-    context.fillStyle='#fff';context.fillRect(0,0,W,H);const p=ice.state;
-    for(let i=0;i<10;i++){
-      const ix=4+(i%5)*24,iy=i<5?4:103;
-      drawBitmap('connectionIcon'+i,ix,iy,16,16);
-      if(ice.selected===i)lcdRoundRect(1+(i%5)*24,i<5?2:101,22,18,3);
-    }
-    if(!p){lcdRect(18,23,84,74);centered('NO PET YET',51);centered('START SHARED PET',65,6);return send();}
-    if(ice.menu==='home'){
-      lcdRect(18,23,84,74);
-      if(p.stage===0){lcdRoundRect(48,44,24,32,12);context.fillRect(55,54,1,1);context.fillRect(65,62,1,1);}
-      else if(p.stage===5){centered('GOODBYE',52);centered('NEW EGG IN MORE',74,6);}
-      else if(p.paused){centered('PAUSED',51,11);}
-      else if(sleep(p,new Date())&&p.lightOff){lcdDrawBig('Z  z  Z',18,47);}
-      else{const frame=Math.floor(Date.now()/650),bob=(frame%3===1)?-1:0,drift=(Math.floor(Date.now()/1200)%7)-3;
-        drawBitmap(spriteName(p),46+drift,43+bob,28,28);
-        for(let i=0;i<p.poops;i++)text('●',24+i*10,77,8);
-        if(p.sick)text('+',86,45);if(p.naughty)text('!',88,56);
-        if(sleep(p,new Date()))text('Zz',80,72);
-      }
-      if(ice.selected>=0)centered(names[ice.selected],89,7);
-    }else{
-      lcdRect(18,23,84,74);
-      const title={status:'STATUS',food:'FOOD',games:'GAMES',discipline:'DISCIPLINE',lights:'LIGHTS',friends:'FRIENDS',more:'MORE',clock:'CLOCK',connect:'CONNECT',notice:'NOTICE'}[ice.menu]||ice.menu.toUpperCase();
-      centered(title,28,8);context.fillStyle='#000';context.fillRect(23,40,74,1);
-      if(ice.menu==='status'){
-        centered('HUNGER  '+ '♥'.repeat(p.hunger),45,7);centered('HAPPY   '+ '♥'.repeat(p.happy),58,7);centered('AGE '+Math.floor(p.ageMinutes/1440)+'d  GEN '+p.generation,72,7);centered('GP '+p.points,84,7);
-      }else if(ice.menu==='clock'){
-        centered(new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit'}),50,10);centered('EASTERN TIME',76,7);
-      }else if(ice.menu==='notice'){centered(ice.localInfo||'OK!',57,8);}
-      else{
-        const arr=options();if(arr.length){centered('< '+arr[ice.opt%arr.length]+' >',57,8);centered('A NEXT B OK',80,6);}
-      }
-    }
-    send();
-  }
-  function send(){if(ice.view)ice.view.render(120,120,bitmap());}
-  function options(){switch(ice.menu){case'food':return['MEAL','SNACK'];case'games':return['PLAY','PRACTICE'];case'lights':return['ON','OFF'];case'discipline':return['SCOLD','PRAISE'];case'friends':return['VISIT','GIFT'];case'more':return['NEW EGG','PAUSE / GO','SAVE','HELP'];case'connect':return['SAY HELLO'];default:return[];}}
-  function info(t){ice.localInfo=t;ice.menu='notice';paint();setTimeout(()=>{if(ice.menu==='notice'){ice.menu='home';paint();}},1350);}
-  function action(p,id,choice){if(!p||p.stage===5)return 'PET IS AWAY';
-    if(p.stage===0)return 'EGG HATCHING';
-    if(p.paused&&id!=='more')return 'PET IS PAUSED';
-    switch(id){case'food':if(choice===0){p.hunger=Math.min(4,p.hunger+1);p.weight=Math.min(99,p.weight+1);}else{p.happy=Math.min(4,p.happy+1);p.weight=Math.min(99,p.weight+2);}p.careCount++;return choice===0?'YUMMY MEAL!':'TASTY SNACK!';
-      case'toilet':if(p.poops){p.poops=0;p.cleanCount++;p.careCount++;return 'ALL CLEAN!';}return 'NO MESS';
-      case'games':{p.gameCount++;const win=random(4)!==0;p.points=Math.min(9999,p.points+(win?15:3));if(win){p.gameWins++;p.happy=Math.min(4,p.happy+1);p.weight=Math.max(5,p.weight-1);}return win?'YOU WIN! +15':'TRY AGAIN! +3';}
-      case'discipline':if(choice===0){p.discipline=Math.min(4,p.discipline+1);p.naughty=0;p.careCount++;return 'BE GOOD!';}p.happy=Math.min(4,p.happy+1);return 'GOOD JOB!';
-      case'lights':p.lightOff=choice===1?1:0;return p.lightOff?'LIGHTS OFF':'LIGHTS ON';
-      case'medicine':if(p.sick){p.sick=0;p.careCount++;return 'FEELS BETTER!';}return 'FEELING GREAT';
-      case'friends':p.happy=Math.min(4,p.happy+1);p.points=Math.min(9999,p.points+5);return choice===1?'GIFT RECEIVED!':'HELLO FRIEND!';
-      case'connect':p.happy=Math.min(4,p.happy+1);return 'CONNECTED!';
-      case'more':if(choice===1){p.paused=p.paused?0:1;return p.paused?'PAUSED':'RESUMED';}return 'SAVE IN CLOUD';
-      default:return 'OK';}
-  }
-  async function edit(fn){if(!ice.cloud||ice.busy)return;ice.busy=true;try{
-    await ice.cloud.transact('shared/tamagotchi',current=>{
-      if(!current||current.v!==1)return;const p=advance(current,Date.now());fn(p);p.updatedAt=Date.now();return p;
-    });
-  }catch(e){ice.view.setStatus('Could not save: '+e.message,false);}finally{ice.busy=false;}}
-  async function press(key){
-    if(!['A','B','C'].includes(key))return;
-    if(liveDevice()){
-      if(ice.pending.length>=12){ice.view?.setStatus('Arduino is catching up with queued buttons.',false);return;}
-      ice.pending.push(key);sendNextDeviceButton();return;
-    }
-    if(!ice.state){ice.view?.setStatus('Press Start shared pet first.',false);return;}
-    if(ice.menu==='notice'){ice.menu='home';paint();return;}
-    if(ice.menu==='home'){
-      if(key==='A'){ice.selected=(ice.selected+1)%9;paint();return;}
-      if(key==='C'){ice.selected=-1;ice.menu='more';ice.opt=0;paint();return;}
-      if(key==='B'){
-        const id=names[ice.selected]||'STATUS';
-        ice.opt=0;
-        const m={STATUS:'status',FOOD:'food',TOILET:'toilet',GAMES:'games',CONNECT:'connect',DISCIPLINE:'discipline',MEDICINE:'medicine',LIGHTS:'lights',FRIENDS:'friends'}[id];
-        if(m==='toilet'||m==='medicine'){
-          let message='';await edit(p=>{message=action(p,m,0);});info(message);return;
-        }
-        ice.menu=m||'status';paint();return;
-      }
-    }else{
-      if(key==='C'){ice.menu='home';ice.selected=-1;paint();return;}
-      if(key==='A'){ice.opt=(ice.opt+1)%Math.max(1,options().length);paint();return;}
-      if(key==='B'){
-        if(ice.menu==='status'||ice.menu==='clock'){ice.menu='home';paint();return;}
-        const id=ice.menu,idx=ice.opt;
-        if(id==='more'&&idx===0){await edit(p=>{const oldGen=p.generation,prev=p.adultClass,pts=p.points;Object.assign(p,defaultPet());p.generation=Math.min(99,oldGen+1);p.parentClass=prev;p.points=pts;});info('NEW EGG!');return;}
-        if(id==='more'&&idx===3){info('A NEXT B OK C BACK');return;}
-        let message='';await edit(p=>{message=action(p,id,idx);});info(message);return;
-      }
-    }
-  }
-  function updateStatus(){if(!ice.view)return;const p=ice.state;if(!liveDevice())ice.view.setStatus(p?'Web pet online · saved in Firebase':'Cloud connected · start your pet',true);
-    if(!p)ice.view.details('Your pet has not been started. Press Start shared pet.');
-    else ice.view.details('Age '+Math.floor(p.ageMinutes/1440)+' days · Stage '+(['Egg','Baby','Child','Teen','Adult','Goodbye','Senior'][p.stage]||'Unknown')+' · Gen '+p.generation+' · Hunger '+p.hunger+'/4 · Happy '+p.happy+'/4 · Care misses '+p.careMisses);
-  }
-  function connect(cloud,view){disconnect();ice.cloud=cloud;ice.view=view;ice.menu='home';ice.selected=-1;
-    ice.unsubDevice=cloud.listen('shared/tamaDevice',onDeviceFrame);
-    ice.unsub=cloud.listen('shared/tamagotchi',(p,e)=>{
-      if(e){view.setStatus('Firebase game permission denied: '+e.message,false);return;}
-      if(p&&p.v!==1){view.setStatus('Unknown cloud pet version. Update website.',false);return;}
-      ice.state=p;updateStatus();paint();
-      if(p&&!liveDevice()&&Date.now()-p.updatedAt>=60000&&!ice.busy&&Date.now()-ice.lastTick>=12000){ice.lastTick=Date.now();edit(()=>{});}
-    });
-    ice.watch=setInterval(()=>{if(!ice.cloud)return;
-      if(ice.awaiting && Date.now()-ice.awaitingSince>20000){ice.awaiting=0;ice.pending=[];ice.view?.setStatus('Arduino did not acknowledge the button. Check its Wi-Fi and reload.',false);}
-      paint();const p=ice.state;
-      if(p&&!liveDevice()&&Date.now()-p.updatedAt>=60000&&!ice.busy){edit(()=>{});}
-    },1300);
-  }
-  function disconnect(){if(ice.unsub){ice.unsub();ice.unsub=null;}if(ice.unsubDevice){ice.unsubDevice();ice.unsubDevice=null;}if(ice.watch)clearInterval(ice.watch);ice.watch=null;ice.cloud=null;ice.state=null;ice.deviceFrame=null;ice.awaiting=0;ice.awaitingSince=0;ice.pending=[];}
-  async function start(){if(!ice.cloud){ice.view?.setStatus('Connect to a private room first.',false);return;}
-    try{await ice.cloud.transact('shared/tamagotchi',p=>p||defaultPet());}
-    catch(e){ice.view.setStatus('Cannot start pet: '+e.message,false);}
-  }
-  function refresh(){if(!ice.cloud)return;ice.cloud.get('shared/tamagotchi').then(p=>{ice.state=p;updateStatus();paint();}).catch(e=>ice.view?.setStatus(e.message,false));}
-  window.LumiTama={connect,disconnect,start,press,refresh};
+ }
+ if(!(tab==='care'&&document.activeElement?.id==='pocketName'))$('pocketContent').innerHTML=html;
+}
+function linkPanel(){if(!$('pocketLink'))return;if(!cloud){$('pocketLink').hidden=true;return;}$('pocketLink').hidden=false;
+ $('pocketLink').innerHTML=`<h3>Your player connection</h3><p>This browser stays linked to your own pet. To link another browser, give its player code to the studio owner.</p><label class="small" for="pocketPlayerCode">This browser’s player code</label><input id="pocketPlayerCode" readonly value="${esc(cloud.uid)}" aria-label="This browser’s player code">${owner?'<div class="pocket-subhead">Link your people</div><p>Have your girlfriend and her friend join the studio first, then paste each person’s player code here.</p><label for="pocketLinkCode">Player code to link</label><input id="pocketLinkCode" aria-label="Player code to link"><label for="pocketLinkPet">Their pet</label><select id="pocketLinkPet" aria-label="Their pet"><option value="p2">Her pet · Pip</option><option value="p3">Friend’s pet · Clover</option><option value="p1">Your pet · another browser</option></select><button class="pocket-start" id="pocketAssign">Link player</button>':''}`;
+}
+async function assign(){const active=cloud,uid=$('pocketLinkCode').value.trim(),id=$('pocketLinkPet').value;if(!owner||!active)return;if(!/^[a-zA-Z0-9_-]{10,128}$/.test(uid)){say('Paste the player code from their connected browser.');return;}
+ try{const existing=await active.get('pocketAccess/'+uid);if(existing&&existing.petId!==id)throw Error('This player is already linked to their own pet. Existing assignments cannot be switched here.');await active.set('pocketAccess/'+uid,{petId:id});say('Player linked to their own pet.');}catch(e){say('Could not link player: '+e.message);}}
+async function edit(action){if(busy||!cloud||!petId||!pets[petId])return false;if(cloud.online===false){say('You are offline. Reconnect before making changes.');return false;}
+ busy=true;update();const active=cloud,ownedId=petId,token=epoch,at=now(),a={...action,id:crypto.randomUUID()};let message='';setStatus('Saving your pet…');
+ try{const result=await active.transact('pocketPets/'+ownedId,raw=>{if(!raw||raw.v!==4)return;const r=E.applyOwned(raw,ownedId,a,at);message=r.message;return r.pet;});if(epoch!==token)return false;if(!result.committed)throw Error('Your save changed. Reconnect and try again.');pets[ownedId]=result.snapshot.val();say(message);return true;}
+ catch(e){if(epoch===token)say('Could not save: '+e.message);return false;}finally{if(epoch===token){busy=false;update();}}}
+function act(type,item){menu=null;if(type==='game'){if(!own()||own().stage==='egg'){say('Your egg will hatch in a minute.');return;}game={round:0,score:0,position:0,started:performance.now()};say('B when the marker is green. Ten catches!');return;}edit({type,item,seed:Math.floor(Math.random()*1e6)});}
+async function invite(uid,activity){const peer=onlinePeers().find(p=>p.uid===uid);if(!peer||!petId){say('That friend is no longer online.');return;}if(mine().some(e=>e.status==='pending'||(e.status==='accepted'&&!S.complete(e)))){say('Finish your current invitation first.');return;}
+ const active=cloud,token=epoch,id=crypto.randomUUID(),event=S.invite({uid:active.uid,petId},peer,activity,now(),id);
+ try{await active.set('pocketSessions/'+id,event);if(epoch===token){say('Invitation sent. They can accept or decline.');update();}}catch(e){if(epoch===token)say('Could not invite: '+e.message);}}
+async function respond(id,response){const event=sessions[id],active=cloud,token=epoch;if(!event||!active)return;try{if(active.online===false)throw Error('Reconnect before responding.');if(response==='accepted'&&!onlinePeers().some(p=>p.uid===event.fromUid))throw Error('Your friend is offline. Try again when they reconnect.');S.reply(event,active.uid,response,now());const result=await active.transact('pocketSessions/'+id+'/status',current=>current==='pending'?response:undefined);if(epoch===token){say(result.committed?(response==='accepted'?'You’re meeting up!':'No problem. Keep enjoying your own pocket.'):'This invitation has already changed.');update();}}catch(e){if(epoch===token)say(e.message);}}
+async function contribute(id){const event=sessions[id],active=cloud,token=epoch;if(!event||!active||event.status!=='accepted'||event.expiresAt<=now()||![event.fromUid,event.toUid].includes(active.uid))return;
+ if(active.online===false||!onlinePeers().some(p=>p.uid===(event.fromUid===active.uid?event.toUid:event.fromUid))){say('Wait for your friend to reconnect before joining in.');return;}
+ try{await active.set('pocketSessions/'+id+'/ready/'+active.uid,true);if(epoch===token){say('Your part is ready.');update();}}catch(e){if(epoch===token)say('Could not join in: '+e.message);}}
+async function endSession(id){const event=sessions[id],active=cloud,token=epoch;if(!event||!active||![event.fromUid,event.toUid].includes(active.uid))return;
+ try{await active.transact('pocketSessions/'+id+'/status',current=>current==='accepted'?'ended':current==='pending'&&event.fromUid===active.uid?'cancelled':undefined);if(token===epoch){say('Back to your own little world.');update();}}catch(e){if(token===epoch)say(e.message);}}
+const top=['Care','Play','Decorate','Together','Memories'];
+function menuItems(){if(menu==='main')return top;if(menu==='decorate')return E.catalog.map(x=>x.name+' '+(pets[petId].owned[x.id]?'OWNED':x.cost+'*'));if(menu==='album')return (own().memories||[]).map(m=>m.text.slice(0,30));if(menu==='together')return ['Open Together on website'];return actions[menu].map(x=>x[1]);}
+function press(key){if(!['A','B','C'].includes(key)||!own()||busy)return;if(game){if(key==='C'){game=null;say('Game left. No stars awarded.');return;}if(key==='B'){if(performance.now()-game.started<250)return;if(game.position>=.41&&game.position<=.59)game.score++;game.round++;game.started=performance.now();if(game.round===10){const score=game.score;game=null;edit({type:'game',score});}}return;}
+ if(key==='C'){menu=null;return;}if(!menu){menu='main';cursor=0;return;}const list=menuItems();if(key==='A'){cursor=(cursor+1)%Math.max(1,list.length);return;}if(key==='B'){if(menu==='main'){tab=['care','play','decorate','together','album'][cursor];menu=tab;cursor=0;update();}else if(menu==='decorate')act('decorate',E.catalog[cursor].id);else if(menu==='album'||menu==='together'){menu=null;update();}else act(actions[menu][cursor][0]);}}
+function frame(t){if(root){const p=own(),event=socialScene();let opts=null,start=0;if(menu&&p){opts=menuItems();start=Math.floor(cursor/5)*5;}if(game)game.position=(Math.sin((t-game.started)/400)+1)/2;
+ const visiblePets={...pets};if(p)visiblePets[petId]=p;
+ window.LumiPetRenderer.render(ctx,p?{pets:visiblePets}:null,petId,{scene:event?'garden':'room',guests:event?[event.fromPet,event.toPet]:null,social:event?{activity:event.activity,complete:S.complete(event)}:null,menu:opts?.slice(start,start+5),cursor:cursor-start,title:menu==='main'?'YOUR LITTLE WORLD':(menu||'').toUpperCase(),game,notice:Date.now()<noticeUntil?notice:'',label:menu?'A NEXT   B OK   C HOME':'A MENU   B SELECT   C HOME'},t);
+ if(t-lastUI>10000&&!busy&&!root.contains(document.activeElement?.closest('input,select'))){lastUI=t;update();}}
+ requestAnimationFrame(frame);}
+function disconnect(){epoch++;for(const stop of unsubs)stop();unsubs=[];cloud=null;petId=null;pets={};sessions={};presence={};owner=false;busy=false;menu=null;game=null;update();linkPanel();}
+async function connect(c){disconnect();cloud=c;const token=epoch;setStatus('Loading your player connection…');
+ try{owner=(await c.get('owner'))===c.uid;if(token!==epoch)return;let access=await c.get('pocketAccess/'+c.uid);if(token!==epoch)return;
+  if(!access&&owner){await c.set('pocketAccess/'+c.uid,{petId:'p1'});if(token!==epoch)return;access={petId:'p1'};}
+  linkPanel();update();
+  unsubs.push(c.listen('pocketAccess/'+c.uid,async value=>{if(token!==epoch)return;if(value?.petId===petId)return;if(petId){connect(c);return;}if(!E.PET_IDS.includes(value?.petId)){setStatus('Ask the studio owner to link your player code.');return;}petId=value.petId;
+   try{const old=await c.get('shared/pocketV2/pets/'+petId);if(token!==epoch)return;const id=petId,at=now();await c.transact('pocketPets/'+id,raw=>raw|| (old?{...old,v:4,memories:[],receipts:{}}:E.newOwned(id,at)));if(token!==epoch)return;
+    unsubs.push(c.listen('pocketPets',(value,error)=>{if(token!==epoch)return;if(error){setStatus('Pet permissions need setup: '+error.message);return;}pets=value||{};update();}));
+    unsubs.push(c.listen('pocketSessions',(value,error)=>{if(token!==epoch)return;if(error){say('Shared activities need the new Firebase permissions.');return;}sessions=value||{};update();}));
+    unsubs.push(c.listen('pocketPresence',(value,error)=>{if(token!==epoch||error)return;presence=value||{};update();}));
+    unsubs.push(c.presence(id,e=>{if(token===epoch)say('Could not announce online status: '+e.message);}));
+   }catch(e){if(token===epoch)setStatus('Could not load your pet: '+e.message);}
+  }));
+ }catch(e){if(token===epoch){setStatus('Player permissions need setup: '+e.message);linkPanel();}}
+}
+window.LumiTama={connect,disconnect,press,start:()=>{},refresh:()=>{if(cloud)connect(cloud);}};
+document.addEventListener('DOMContentLoaded',mount);
 })();
