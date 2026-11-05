@@ -30,6 +30,12 @@ function render(ctx,s,id,ui={},time=0){
  }
  rect(0,0,240,240,'#fff4eb');
  if(!p){text('POCKET LUMI',67,91,16);text('Three little lives.',64,116);text('One little universe.',58,133);text(ui.welcomeHint||'Your little life awaits.',18,178,11);return;}
+ if(ui.collection){
+  rect(0,0,240,240,'#dedbd0');
+  text('♥   ♫   ◇',17,32,22,'#8a7579');
+  ellipse(120,197,57,7,'#a69c9633');creature(p,72,119+(tick%2?0:2),6);
+  text(p.name,14,225,13,'#68555e');return;
+ }
  const wall=root.LumiPetEngine.catalog.find(x=>x.id===p.decor.wall)?.color||'#f9dbe5';
  const garden=ui.scene==='garden';rect(0,24,240,152,garden?'#d9eadb':wall);
  if(garden){ellipse(55,50,16,16,'#ffe2a0');rect(0,150,240,64,'#b4d2ad');for(let i=0;i<10;i++){star(10+i*25,165+(i%3)*12,i%2?'#fff5dd':'#f0b6ca');}}

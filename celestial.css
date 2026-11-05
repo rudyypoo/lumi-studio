@@ -1,0 +1,67 @@
+/* Celestial collection: calm paper, pearl-colored shells, and a single live toy. */
+:root{--celestial-ink:#77545c;--celestial-line:#bc969b;--celestial-paper:#fbf2e8}
+body{min-height:100vh;background:#f5ebe0 url('celestial-paper.png') center top / 780px auto repeat;color:var(--celestial-ink)}
+.app-topbar{background:transparent;border:0}.app-topbar::after{display:none}
+.app-topbar-inner{max-width:none;min-height:76px;padding:18px clamp(18px,3vw,48px);gap:18px}
+.app-topbar-inner::before{content:'';height:1px;flex:1;background:#cbaaab;order:1}
+.app-brand{font:400 26px Georgia,serif;letter-spacing:-.9px;color:#91626d}
+.app-brand span{font-size:19px;margin-left:6px}.app-topbar-actions{order:2}
+.connection-chip,.studio-button{color:#79535e;background:#fff5ebcc;border:1px solid #c9a4a8;box-shadow:none}
+.studio-button:hover,.collection-tools button:hover{background:#f8e2e4}
+.app-main{max-width:1540px;background:transparent;border:0;box-shadow:none;padding:12px clamp(17px,5vw,78px) 52px}
+.celestial-title{position:relative;display:table;margin:9px auto 46px;padding:13px clamp(26px,5vw,90px);isolation:isolate}
+.celestial-title::before{content:'';position:absolute;inset:8% -1% 8%;border:1px solid #b98b93;border-left-color:transparent;border-right-color:transparent;transform:rotate(-12deg);border-radius:50%;z-index:-1;opacity:.66}
+.celestial-title h1{margin:0;color:#95666f;font:400 clamp(48px,7vw,105px)/1 Georgia,serif;letter-spacing:-.06em;text-shadow:0 1px #fff4ea}
+.celestial-title>span{position:absolute;right:0;top:12%;color:#9e7380;font-size:26px}
+.collection-layout{position:relative;padding-right:69px}
+.collection-tools{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;border:1px solid #d6b5b4;border-radius:38px;padding:10px 7px;background:#fff5eb99}
+.collection-tools button{border:1px solid #c4a0a5;border-radius:50%;width:44px;height:44px;display:grid;place-items:center;background:#fff4eb;color:#996a77;transition:background .2s,transform .2s}
+.collection-tools button:active{transform:scale(.93)}.collection-tools svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.all-pockets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,3vw,55px);align-items:start}
+.collection-item{position:relative;min-width:0;text-align:center}
+.display-toy,.pocket-ingame .pocket-device.blue,.pocket-ingame .pocket-device.pink,.pocket-ingame .pocket-device.lilac{--toy-edge:#b98d97;--toy-ink:#916571;background:var(--shell,#f3cbd2);border:2px solid var(--toy-edge);box-shadow:inset 0 0 0 4px #fff8f170,0 10px 0 -4px #bb929b35;border-radius:49% 49% 47% 47% / 53% 53% 38% 38%}
+.blush,[data-player=p1]{--shell:#f4ced5}.ivory,[data-player=p2]{--shell:#f5e1d0}.lavender,[data-player=p3]{--shell:#e9d1e4}
+.display-toy{aspect-ratio:0.88;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:relative;padding-bottom:10%;isolation:isolate}
+.display-toy::before,.pocket-ingame .pocket-device::before{content:'';position:absolute;inset:4%;border:1px solid #fff8eeab;border-radius:inherit;pointer-events:none;z-index:0}
+.display-toy::after{content:'✧';position:absolute;left:7%;top:55%;color:#fff8ed;font-size:clamp(12px,2.3vw,30px)}
+.toy-star{color:#a77380;font-size:clamp(20px,3.6vw,48px);line-height:1;margin-bottom:5%;text-shadow:1px 1px #fff5eb}
+.collection-lcd{display:block;width:58%;aspect-ratio:1;image-rendering:pixelated;border:2px solid #a9848c;border-radius:14%;background:#dedbd0;box-shadow:0 0 0 3px #fff5edb0}
+.display-buttons{display:flex;justify-content:center;gap:13%;width:56%;margin-top:8%}
+.display-buttons i{width:21%;aspect-ratio:1;border-radius:50%;background:#fff1e9;border:1px solid #b78d98;box-shadow:0 3px #b68a963c}.display-buttons i:nth-child(2){transform:translateY(18%)}
+.collection-caption{display:flex;flex-direction:column;gap:2px;margin-top:13px;color:#795460}.collection-caption strong{font:400 19px Georgia,serif}.collection-caption span{font-size:11px}
+.open-pocket{position:absolute;inset:0;background:transparent;border:0;border-radius:44%;z-index:3}
+.collection-item:has(.open-pocket):hover .display-toy{transform:translateY(-4px)}.display-toy{transition:transform .22s}
+#panel-tamagotchi[data-mode=all]>.pocket-console,#panel-tamagotchi[data-mode=all]>.pocket-heading,#panel-tamagotchi[data-mode=mine]>.all-pockets{display:none}
+#panel-tamagotchi>.pocket-heading{display:none}.pocket-ingame .pocket-console{width:min(560px,100%,calc((100svh - 95px)*.8));margin:0 auto;padding:0}
+body:has([data-mode=mine]) .celestial-title{display:none}
+body:has([data-mode=mine]) .app-main{padding-top:5px}
+.pocket-ingame .pocket-device{padding:9% 13% 8%;animation:toy-in .24s ease-out}
+@keyframes toy-in{from{opacity:.6;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.pocket-ingame .pocket-device::after{content:'✧';writing-mode:horizontal-tb;left:6%;top:54%;color:#fff7ed}
+.pocket-ingame .toy-faceplate,.pocket-ingame .toy-loop,.pocket-ingame .toy-speaker,.pocket-ingame .pocket-device-footer{display:none}
+.pocket-ingame .pocket-brand{font-size:0;margin:0 0 5%;color:#a77481}.pocket-ingame .pocket-brand>span{font-size:0}.pocket-ingame .pocket-brand i{font:400 clamp(21px,4vw,45px)/1 Georgia,serif;margin:0}
+.pocket-ingame .pocket-bezel{padding:3%;border-radius:14%;background:#f4dfda;border:1px solid #b08891;box-shadow:0 0 0 2px #fff6ed}
+.pocket-ingame .pocket-screen{border-radius:12%;border-color:#a8898d}
+.pocket-ingame .pocket-buttons{margin-top:7%;gap:10%}.pocket-ingame .pocket-buttons button,.pocket-ingame .pocket-buttons button:nth-child(2){width:19%;height:auto;aspect-ratio:1;border-radius:50%;background:#fff0e9;border:1px solid #b18792;color:#805966;box-shadow:0 4px #b58a984c;font-size:clamp(11px,2vw,16px)}
+.pocket-ingame .pocket-buttons button:nth-child(2){transform:translateY(13%)}.pocket-ingame .pocket-key-hints{display:none}
+.pocket-ingame .pocket-footnote{color:#77545c;margin:14px 0 0;font-size:10px}
+.shell-piece{position:absolute;z-index:2;pointer-events:none;color:#986975;font-size:clamp(17px,3vw,34px);line-height:1;text-shadow:0 1px #fff7ed}
+.shell-piece.place-left{left:6%}.shell-piece.place-right{right:6%}.shell-piece.place-center{left:50%;translate:-50% 0}
+.shell-piece.stickers{bottom:27%}.shell-piece.stickers.place-center{bottom:3%}.shell-piece.charms{top:35%}.shell-piece.charms.place-center{top:4%}
+.shell-piece.keychains{bottom:-5%}.shell-piece.hippers{top:1%;font-size:clamp(13px,2vw,23px)}.shell-piece.hats{top:-7%}
+#collectionDialog{max-width:min(760px,94vw);width:760px;background:#fbf1e8;color:#77545c;border:1px solid #bd969d;box-shadow:0 13px 45px #6e475631}
+#collectionDialog h2{font:400 29px Georgia,serif;color:#865e6a}
+.celestial-tabs,.view-options,.accessory-options{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.celestial-tabs button,.accessory-options button{background:#fff5eb;border:1px solid #c7a3aa;border-radius:14px;color:#7c5762;padding:7px 11px}
+.celestial-tabs button[aria-pressed=true],.accessory-options button[aria-pressed=true]{background:#eed5dc;border-color:#ae8593}
+.journal-feed{display:grid;gap:12px}.journal-feed article{background:#fff9f0;border:1px solid #dbc2c0;padding:14px;border-radius:12px}.journal-feed article header{display:flex;justify-content:space-between;gap:10px}.journal-feed time{font-size:11px}.journal-feed p{white-space:pre-wrap;overflow-wrap:anywhere}.journal-feed img,.journal-preview{display:block;max-width:100%;max-height:280px;border-radius:8px}
+#journalForm{display:grid;gap:7px;margin-bottom:18px}#journalForm textarea{width:100%;background:#fff9f1;color:#704d59;border:1px solid #c7a3aa;border-radius:8px;padding:8px;resize:vertical}#journalForm label,.customizer label{font-size:12px;font-weight:700}.collection-message{margin:5px 0;font-size:12px}
+.customizer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:24px;align-items:center}.accessory-options button span{display:block;font-size:22px}.customizer select{margin:7px 0 13px}
+@media(max-width:720px){.app-topbar-inner{min-height:58px;gap:9px}.app-brand{font-size:20px}.app-topbar-actions{gap:7px}.connection-chip{display:none}.collection-layout{padding-right:0;padding-top:55px}.collection-tools{top:0;right:50%;transform:translateX(50%);flex-direction:row;padding:4px 7px;gap:8px}.collection-tools button{width:35px;height:35px}.collection-tools svg{width:18px;height:18px}.celestial-title{margin-bottom:16px}.all-pockets{grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.all-pockets .collection-item:last-child{grid-column:1/-1;width:calc((100% - 17px)/2);justify-self:center}.pocket-ingame .pocket-console{width:min(440px,100%)}.customizer{grid-template-columns:1fr}.customizer #customPreview{width:min(180px,70%);margin:auto}}
+@media(prefers-reduced-motion:reduce){.display-toy,.pocket-ingame .pocket-device{animation:none;transition:none}}
+body{background-image:linear-gradient(#fff5ec26,#fff5ec26),url('celestial-paper.png');background-size:cover,cover;background-attachment:fixed;background-repeat:no-repeat}
+.display-toy .collection-lcd{width:58%;height:auto;flex:none;border-radius:13%;background:#dedbd0}
+.display-toy{padding-bottom:10%;min-height:0}
+.display-buttons{flex:none}
+@media(min-width:900px){.celestial-title{margin-bottom:34px}}
+.pocket-screen-ui button:not(#pocketConnect){pointer-events:none;cursor:default}

@@ -11,24 +11,32 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script><script src="lumi-cloud.js?v=pocket4"></script>
-<script src="pet-engine.js?v=ingame1"></script><script src="pet-renderer.js?v=pocket5"></script>
-<script src="pet-social.js?v=ingame1"></script><script src="lumi-tamagotchi.js?v=ingame1"></script>
-<script defer src="pocket-shell.js?v=ingame1"></script>
+<script src="pet-engine.js?v=ingame1"></script><script src="pet-renderer.js?v=celestial1"></script>
+<script src="pet-social.js?v=ingame1"></script><script src="lumi-tamagotchi.js?v=celestial1"></script>
+<script defer src="pocket-shell.js?v=celestial1"></script>
+<link rel="stylesheet" href="celestial.css?v=1">
+<script defer src="celestial.js?v=1"></script>
 </head>
 <body>
 <header class="app-topbar"><div class="app-topbar-inner">
- <a class="app-brand" href="./" aria-label="Pocket Lumi home"><span class="brand-sticker" aria-hidden="true">✦</span><span>pocket lumi<span class="brand-period">.</span><small>A LITTLE WORLD OF YOUR OWN</small></span></a>
+ <a class="app-brand" href="./" aria-label="Pocket Lumi home">pocket lumi <span aria-hidden="true">✧</span></a>
  <div class="app-topbar-actions"><span id="connectionChip" class="connection-chip"><span class="dot"></span><span id="connectionChipText" role="status">Not connected</span></span><button class="studio-button" type="button" data-device="connect" id="openStudio">My studio <span aria-hidden="true">↗</span></button></div>
 </div></header>
 <main class="app-main">
- <section class="clubhouse-intro" aria-labelledby="welcomeTitle">
-  <div class="intro-copy"><span class="eyebrow">WELCOME TO YOUR LITTLE CLUBHOUSE</span><h1 id="welcomeTitle">Tiny friends. <em>Little adventures.</em></h1><p>Raise a little character, make a space your own, and find your next favorite adventure.</p><div class="intro-tags"><span>✦ Care &amp; grow</span><span>✦ Make it yours</span><span>✦ Meet friends</span></div></div>
-  <div class="intro-art"><img src="pocket-meadow.png?v=1" width="2172" height="724" alt="Tiny creature friends playing across a pastel meadow with clouds, a swing, and little flowers."></div>
- </section>
- <section id="panel-tamagotchi" aria-label="Pocket Lumi game"></section>
- <aside class="play-note"><span aria-hidden="true">✦</span><p>Your pet. Your pace. <span>Always playable here, with or without an Arduino.</span></p><span class="note-stamp">A LITTLE MORE PLAY, EVERY DAY</span></aside>
+ <div class="celestial-title"><h1>pocket lumi</h1><span aria-hidden="true">✧</span></div>
+ <div class="collection-layout">
+  <section id="panel-tamagotchi" aria-label="Pocket Lumi collection"></section>
+  <nav class="collection-tools" aria-label="Pocket Lumi tools">
+   <button type="button" data-tool="journal" aria-label="Journal" title="Journal"><svg viewBox="0 0 24 24"><path d="M4 4h7l1 2 1-2h7v15h-7l-1 1-1-1H4zM12 6v13"/><path d="m16 8 1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg></button>
+   <button type="button" data-tool="view" aria-label="Display mode" title="Display mode"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button>
+   <button type="button" data-tool="customize" aria-label="Customize shell" title="Customize shell"><svg viewBox="0 0 24 24"><path d="M10 13c1-4 6-9 11-10 0 5-5 10-9 11zM10 13c-4-1-5 2-5 4l-2 3c5 0 9-1 9-6"/></svg></button>
+  </nav>
+ </div>
 </main>
-<footer class="app-footer"><span>Pocket Lumi · A tiny world worth coming back to.</span><span>PLAY · DECORATE · DISCOVER</span></footer>
+<dialog id="collectionDialog" aria-labelledby="collectionTitle">
+ <div class="dialog-heading"><h2 id="collectionTitle"></h2><button type="button" class="dialog-close" id="closeCollection" aria-label="Close">×</button></div>
+ <div id="collectionContent"></div>
+</dialog>
 <dialog id="studioDialog" aria-labelledby="studioTitle">
  <div class="dialog-heading"><div><span class="eyebrow">YOUR PEOPLE. YOUR SPACE.</span><h2 id="studioTitle">Your private studio</h2></div><button id="closeStudio" class="dialog-close" type="button" aria-label="Close studio settings">×</button></div>
  <p class="dialog-intro">Use the same invitation as your friends to join their studio. Each player keeps their own pet.</p>

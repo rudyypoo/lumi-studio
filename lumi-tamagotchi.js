@@ -6,7 +6,8 @@ const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 let root,ctx,cloud=null,petId=null,pets={},sessions={},presence={},owner=false,unsubs=[],epoch=0,busy=false,tab='care',menu=null,cursor=0,notice='',noticeUntil=0,game=null,lastUI=0,nameDraft='',selectedPeer=null,selectedItem=null,promptId=null,lastFrame=0,socialBusy=false;
 const actions={care:[['feed','Warm meal','Fill a little tummy'],['snack','Berry treat','A little joy'],['clean','Bubble bath','Clean & feel better'],['rest','Cozy rest','Restore energy'],['medicine','Medicine','Care for a sick pet']],play:[['game','Star catch','Timing · A/B/C'],['explore','Go exploring','Discover keepsakes · +12 stars']]};
 const now=()=>cloud?.now?.()||Date.now();
-const own=()=>petId&&pets[petId]?E.applyOwned(pets[petId],petId,{type:'tick'},now()).pet:null;
+const lightPet=({journal,careLog,...pet})=>pet;
+const own=()=>petId&&pets[petId]?E.applyOwned(lightPet(pets[petId]),petId,{type:'tick'},now()).pet:null;
 function say(text){notice=text;noticeUntil=Date.now()+6500;if($('pocketNotice'))$('pocketNotice').textContent=text;}
 function setStatus(text){if($('tamaStatus'))$('tamaStatus').textContent=text;}
 function onlinePeers(){return friends().filter(peer=>peer.status==='online').map(({uid,petId})=>({uid,petId}));}
@@ -14,12 +15,13 @@ function mine(){return Object.values(sessions||{}).filter(e=>cloud&&(e.fromUid==
 function socialScene(){const peers=onlinePeers();return mine().find(e=>e.status==='accepted'&&peers.some(p=>p.uid===(e.fromUid===cloud.uid?e.toUid:e.fromUid)));}
 function mount(){root=$('panel-tamagotchi');if(!root)return;root.className='pocket pocket-ingame';
  root.innerHTML=`${demo?'<div class="pocket-preview-banner">Local multiplayer playground · test data only</div>':''}<div class="pocket-heading"><div><span class="pocket-eyebrow">YOUR LITTLE WORLD</span><h2>Pocket Lumi</h2></div><span class="pocket-status" id="tamaStatus" role="status">Open My studio to save & play.</span></div>
- <div class="pocket-console"><div class="toy-loop" aria-hidden="true"></div><div class="pocket-device blue" id="pocketDevice"><div class="toy-faceplate" aria-hidden="true"></div><div class="pocket-brand">pocket <span>lumi</span><i>✦</i></div><div class="pocket-bezel"><div class="pocket-screen"><canvas id="tamaScreen" width="240" height="240" aria-label="Your own virtual pet’s screen"></canvas><div id="pocketScreenUI" class="pocket-screen-ui"></div></div></div><div class="toy-speaker" aria-hidden="true"><i></i><i></i><i></i></div><div class="pocket-buttons" aria-label="Pet controls"><button data-key="A" aria-label="A: next">A</button><button data-key="B" aria-label="B: select">B</button><button data-key="C" aria-label="C: back">C</button></div><div class="pocket-key-hints"><span>NEXT</span><span>SELECT</span><span>BACK</span></div><div class="pocket-device-footer">A LITTLE WORLD OF YOUR OWN</div></div><div class="pocket-footnote">Click inside the screen or use A · B · C<br>Keyboard: arrows · Enter · Escape</div><div id="pocketNotice" class="screen-reader-only" role="status" aria-live="polite"></div></div>
+ <div class="pocket-console"><div class="toy-loop" aria-hidden="true"></div><div class="pocket-device blue" id="pocketDevice"><div class="toy-faceplate" aria-hidden="true"></div><div class="pocket-brand">pocket <span>lumi</span><i>✦</i></div><div class="pocket-bezel"><div class="pocket-screen"><canvas id="tamaScreen" width="240" height="240" aria-label="Your own virtual pet’s screen"></canvas><div id="pocketScreenUI" class="pocket-screen-ui"></div></div></div><div class="toy-speaker" aria-hidden="true"><i></i><i></i><i></i></div><div class="pocket-buttons" aria-label="Pet controls"><button data-key="A" aria-label="A: next">A</button><button data-key="B" aria-label="B: select">B</button><button data-key="C" aria-label="C: back">C</button></div><div class="pocket-key-hints"><span>NEXT</span><span>SELECT</span><span>BACK</span></div><div class="pocket-device-footer">A LITTLE WORLD OF YOUR OWN</div></div><div class="pocket-footnote">A next · B select · C back<br>Keyboard: arrows · Enter · Escape</div><div id="pocketNotice" class="screen-reader-only" role="status" aria-live="polite"></div></div>
  <details class="player-settings" id="pocketPlayerSettings" hidden><summary>Player &amp; friend connections</summary><div class="pocket-card" id="pocketLink"></div></details>`;
  ctx=$('tamaScreen').getContext('2d');
  const settings=$('pocketPlayerSettings');if($('playerConnectionSettings'))$('playerConnectionSettings').append(settings);
  settings.addEventListener('click',event=>{if(event.target.closest('#pocketAssign'))assign();});
  root.addEventListener('click',event=>{const b=event.target.closest('button');if(!b)return;
+  if(window.LumiCollection&&b.closest('#pocketScreenUI')&&b.id!=='pocketConnect')return;
   if(b.dataset.key)press(b.dataset.key);
   else if(b.dataset.choice!==undefined){cursor=Number(b.dataset.choice);choose();}
   else if(b.dataset.screen){openMenu(b.dataset.screen);}
@@ -38,11 +40,11 @@ function friends(){return S.friends(pets,presence,{uid:cloud?.uid,petId},now(),!
 function incoming(){return cloud?S.incoming(sessions,cloud.uid,now()):null;}
 function openMenu(next){menu=next;cursor=0;game=null;if(next==='rename')nameDraft=own()?.name||'';update();}
 function activeEvent(){return mine().find(e=>e.status==='accepted'||e.fromUid===cloud?.uid)||null;}
-function menuTitle(){return ({main:'Your little world',stats:'How am I doing?',care:'Care time',play:'Little adventures',decorate:'Make it yours',friends:'Your people',activity:'Play together',album:'Your memories',keepsakes:'Your collection',rename:'A name of my own',item:'A little makeover',session:'Together'})[menu]||'Pocket Lumi';}
+function menuTitle(){return ({camera:'Pocket camera',main:'Your little world',stats:'How am I doing?',care:'Care time',play:'Little adventures',decorate:'Make it yours',friends:'Your people',activity:'Play together',album:'Your memories',keepsakes:'Your collection',rename:'A name of my own',item:'A little makeover',session:'Together'})[menu]||'Pocket Lumi';}
 function menuChoices(){
  const p=own(),entry=(label,run,detail='',disabled=false)=>({label,run,detail,disabled});if(!p)return[];
  const inc=incoming();if(inc)return [entry('Yes, let’s play',()=>respond(inc.id,'accepted'),'Join this invitation',busy||!onlinePeers().some(x=>x.uid===inc.fromUid)),entry('No thanks',()=>respond(inc.id,'declined'),'Keep playing on your own',busy||cloud?.online===false)];
- if(menu==='main')return [['stats','My stats','Tummy, mood & stars'],['care','Care','Food, bath & rest'],['play','Adventure','Play or go exploring'],['decorate','Decorate','Make your room your own'],['friends','Friends','Who’s around?'],['album','Memories','Your little story'],['rename','Pet name','Choose a name']].map(([id,label,detail])=>entry(label,()=>openMenu(id),detail));
+ if(menu==='main')return [['stats','My stats','Tummy, mood & stars'],['care','Care','Food, bath & rest'],['play','Adventure','Play or go exploring'],['decorate','Decorate','Make your room your own'],['friends','Friends','Who’s around?'],['album','Memories','Your little story'],['rename','Pet name','Choose a name'],['camera','Camera','Capture this moment']].map(([id,label,detail])=>entry(label,()=>openMenu(id),detail));
  if(menu==='care')return actions.care.map(([id,label,detail])=>entry(label,()=>act(id),detail,busy));
  if(menu==='play')return [...actions.play.map(([id,label,detail])=>entry(label,()=>act(id),detail,busy)),entry('My keepsakes',()=>openMenu('keepsakes'),Object.keys(p.discoveries||{}).length+'/6 found')];
  if(menu==='decorate')return E.catalog.map(item=>entry(item.name,()=>{selectedItem=item.id;openMenu('item');},p.decor[item.slot]===item.id?'Placed':p.owned[item.id]?'Owned · place it':item.cost+' stars'));
@@ -53,6 +55,7 @@ function menuChoices(){
  if(menu==='album')return [...(p.memories||[])].reverse().map(m=>entry(m.text,()=>{},new Date(m.at).toLocaleDateString()));
  if(menu==='keepsakes')return Object.keys(p.discoveries||{}).map(name=>entry(name,()=>{},'Found on an adventure'));
  if(menu==='rename')return [entry('Save name',async()=>{const result=await edit({type:'rename',name:nameDraft});if(result)openMenu('main');},'',busy),entry('Back',()=>openMenu('main'))];
+ if(menu==='camera')return [entry('Take photo',()=>{const c=document.createElement('canvas');c.width=c.height=160;c.getContext('2d').drawImage($('tamaScreen'),0,0,160,160);window.LumiCollection?.photo(c.toDataURL('image/jpeg',.76));},'Open in journal')];
  if(menu==='stats')return [entry('Back to menu',()=>openMenu('main'))];
  return [];
 }
@@ -76,13 +79,13 @@ function renderScreen(){const host=$('pocketScreenUI');if(!host)return;const p=o
  else html=`<div class="screen-presence" aria-label="Friend presence">${peers.map(peer=>`<button type="button" data-screen="friends" class="friend-presence ${peer.status}" aria-label="${esc(peer.name)} ${peer.status}"><i></i>${esc(peer.name)} <small>${peer.status==='unknown'?'?':peer.status}</small></button>`).join('')}</div><div class="screen-home-controls"><button type="button" data-screen="main">Menu</button><button type="button" data-screen="stats">✦ ${p.coins} · Stats</button><button type="button" data-screen="friends">Friends ${peers.filter(x=>x.status==='online').length}/2</button></div>`;
  if(p&&menu&&!inc&&!game)html='<div class="screen-presence" aria-label="Friend presence">'+peers.map(peer=>'<button type="button" data-screen="friends" class="friend-presence '+peer.status+'" aria-label="'+esc(peer.name)+' '+peer.status+'"><i></i>'+esc(peer.name)+' <small>'+peer.status+'</small></button>').join('')+'</div>'+html;
  if(Date.now()<noticeUntil&&notice&&!inc)html+=`<div class="screen-toast" role="status">${esc(notice)}</div>`;
- if(host.dataset.view!==html){host.innerHTML=html;host.dataset.view=html;}
+ if(host.dataset.view!==html){host.innerHTML=html;host.dataset.view=html;if(window.LumiCollection)host.querySelectorAll('button:not(#pocketConnect)').forEach(b=>{b.tabIndex=-1;});}
 }
 function update(){if(!root)return;
  const p=own();$('pocketDevice').classList.toggle('blue',petId!=='p2'&&petId!=='p3');$('pocketDevice').classList.toggle('pink',petId==='p2');$('pocketDevice').classList.toggle('lilac',petId==='p3');
  if(p&&!busy)setStatus(demo?'Local playground':cloud?.online===false?'Offline · reconnect to save':'Private studio · your pet only');
  const inc=incoming();if((inc?.id||null)!==promptId){promptId=inc?.id||null;cursor=0;if(inc){$('pocketNotice').textContent=(pets[inc.fromPet]?.name||'Your friend')+' is asking to play '+S.ACTIVITIES[inc.activity].name;}}
- renderScreen();
+ renderScreen();window.LumiCollection?.sync({pets,petId,peers:friends(),ready:!!p,invite:inc?.id});
 }
 
 function linkPanel(){if(!$('pocketLink'))return;if($('pocketPlayerSettings')){$('pocketPlayerSettings').hidden=!cloud;$('pocketPlayerSettings').open=!!cloud&&!petId;}if(!cloud){$('pocketLink').hidden=true;return;}$('pocketLink').hidden=false;
@@ -92,7 +95,7 @@ async function assign(){const active=cloud,uid=$('pocketLinkCode').value.trim(),
  try{const member=await active.get('members/'+uid);if(!member)throw Error('This player has not joined this studio. Copy your private invitation from My studio and have them open it in the same browser, then link their code again.');const existing=await active.get('pocketAccess/'+uid);if(existing&&existing.petId!==id)throw Error('This player is already linked to their own pet. Existing assignments cannot be switched here.');await active.set('pocketAccess/'+uid,{petId:id});say('Player linked to their own pet.');}catch(e){say('Could not link player: '+e.message);}}
 async function edit(action){if(busy||!cloud||!petId||!pets[petId])return false;if(cloud.online===false){say('You are offline. Reconnect before making changes.');return false;}
  busy=true;update();const active=cloud,ownedId=petId,token=epoch,at=now(),a={...action,id:crypto.randomUUID()};let message='';setStatus('Saving your pet…');
- try{const result=await active.transact('pocketPets/'+ownedId,raw=>{if(!raw||raw.v!==4)return;const r=E.applyOwned(raw,ownedId,a,at);message=r.message;return r.pet;});if(epoch!==token)return false;if(!result.committed)throw Error('Your save changed. Reconnect and try again.');pets[ownedId]=result.snapshot.val();say(message);return true;}
+ try{const result=await active.transact('pocketPets/'+ownedId,raw=>{if(!raw||raw.v!==4)return;const r=E.applyOwned(raw,ownedId,a,at);message=r.message;if(r.pet.revision!==raw.revision&&r.pet.receipts?.[a.id]===at&&['feed','snack','clean','rest','medicine','game'].includes(a.type)){r.pet.careLog=[...(Array.isArray(raw.careLog)?raw.careLog:[]),{at,type:a.type,name:r.pet.name}].slice(-30);}return r.pet;});if(epoch!==token)return false;if(!result.committed)throw Error('Your save changed. Reconnect and try again.');pets[ownedId]=result.snapshot.val();say(message);return true;}
  catch(e){if(epoch===token)say('Could not save: '+e.message);return false;}finally{if(epoch===token){busy=false;update();}}}
 function act(type,item){if(type==='game'){if(!own()||own().stage==='egg'){say('Your egg will hatch in a minute.');update();return;}menu=null;game={round:0,score:0,position:0,started:performance.now()};say('B when the marker is green. Ten catches!');update();return;}edit({type,item,seed:Math.floor(Math.random()*1e6)});}
 async function invite(uid,activity){if(socialBusy)return;const peer=onlinePeers().find(p=>p.uid===uid);if(!peer||!petId){say('That friend is no longer online.');return;}if(mine().some(e=>e.status==='pending'||(e.status==='accepted'&&!S.complete(e)))){say('Finish your current invitation first.');return;}
@@ -111,7 +114,7 @@ function press(key){if(!['A','B','C'].includes(key))return;if(!own()){if(key==='
  if(!menu){openMenu('main');return;}const list=menuChoices();if(key==='A'){cursor=(cursor+1)%Math.max(1,list.length);update();}else choose();
 }
 function frame(t){if(root){const p=own(),event=socialScene(),inc=incoming();if(game&&inc&&lastFrame)game.started+=t-lastFrame;if(game&&!inc)game.position=(Math.sin((t-game.started)/400)+1)/2;
- const visiblePets=E.scenePets(pets,now());if(p)visiblePets[petId]=p;
+ const visiblePets=E.scenePets(Object.fromEntries(Object.entries(pets).map(([id,p])=>[id,lightPet(p)])),now());if(p)visiblePets[petId]=p;
  window.LumiPetRenderer.render(ctx,p?{pets:visiblePets}:null,petId,{welcomeHint:!cloud?'Open My studio to begin':!petId?'Link your player code':'Loading your little friend…',scene:event?'garden':'room',guests:event?[event.fromPet,event.toPet]:null,social:event?{activity:event.activity,complete:S.complete(event)}:null,game:inc?null:game,label:inc?'A CHOOSE  B OK  C DECLINE':menu?'A NEXT   B OK   C BACK':'A MENU   B SELECT   C BACK'},t);
  if(t-lastUI>1000){lastUI=t;if(!$('pocketName')?.matches(':focus')||incoming())update();}}
  lastFrame=t;requestAnimationFrame(frame);}
@@ -130,6 +133,17 @@ async function connect(c){disconnect();cloud=c;const token=epoch;setStatus('Load
   }));
  }catch(e){if(token===epoch){setStatus('Player permissions need setup: '+e.message);linkPanel();}}
 }
-window.LumiTama={connect,disconnect,press,start:()=>{},refresh:()=>{if(cloud)connect(cloud);}};
+async function saveExtra(kind,value){
+ if(!cloud||!petId||!pets[petId]||cloud.online===false)throw Error('Connect your own pocket first.');
+ if(!['journal','shell'].includes(kind))throw Error('Unknown customization.');
+ const active=cloud,id=petId,token=epoch;
+ const result=await active.transact('pocketPets/'+id,raw=>{
+  if(!raw||raw.v!==4)return;
+  return {...raw,[kind]:kind==='journal'?[...(Array.isArray(raw.journal)?raw.journal:[]),value].slice(-8):value};
+ });
+ if(!result.committed)throw Error('Could not save. Please try again.');
+ if(token===epoch){pets[id]=result.snapshot.val();update();}
+}
+window.LumiTama={saveExtra,connect,disconnect,press,start:()=>{},refresh:()=>{if(cloud)connect(cloud);}};
 document.addEventListener('DOMContentLoaded',mount);
 })();

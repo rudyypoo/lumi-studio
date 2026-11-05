@@ -53,7 +53,7 @@
   }catch(error){message('Only the studio owner can copy an invitation from this browser. '+error.message);}
  });
  document.addEventListener('keydown',event=>{
-  if(event.repeat||dialog.open||/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(document.activeElement?.tagName))return;
+  if(event.repeat||dialog.open||document.getElementById("collectionDialog")?.open||document.getElementById("panel-tamagotchi")?.dataset.mode==="all"||/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(document.activeElement?.tagName))return;
   const key={ArrowLeft:'A',ArrowRight:'A',ArrowDown:'A',Enter:'B',' ':'B',Escape:'C',Backspace:'C'}[event.key];
   if(key){event.preventDefault();window.LumiTama.press(key);}
  });
