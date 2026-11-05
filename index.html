@@ -5,15 +5,15 @@
 <meta name="theme-color" content="#d4becb"><meta name="description" content="Pocket Lumi — a cozy virtual pet world for you and your friends. Care, decorate, explore, and meet up on your own terms.">
 <title>Pocket Lumi · Your little world</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="pet-pocket.css?v=pocket4"><link rel="stylesheet" href="studio-cute.css?v=clubhouse2">
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pet-pocket.css?v=pocket4"><link rel="stylesheet" href="studio-cute.css?v=ingame1">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script><script src="lumi-cloud.js?v=pocket4"></script>
-<script src="pet-engine.js?v=clubhouse2"></script><script src="pet-renderer.js?v=pocket5"></script>
-<script src="pet-social.js?v=pocket4"></script><script src="lumi-tamagotchi.js?v=clubhouse2"></script>
-<script defer src="pocket-shell.js?v=clubhouse2"></script>
+<script src="pet-engine.js?v=ingame1"></script><script src="pet-renderer.js?v=pocket5"></script>
+<script src="pet-social.js?v=ingame1"></script><script src="lumi-tamagotchi.js?v=ingame1"></script>
+<script defer src="pocket-shell.js?v=ingame1"></script>
 </head>
 <body>
 <header class="app-topbar"><div class="app-topbar-inner">
@@ -22,8 +22,8 @@
 </div></header>
 <main class="app-main">
  <section class="clubhouse-intro" aria-labelledby="welcomeTitle">
-  <div class="intro-copy"><span class="eyebrow">WELCOME TO YOUR LITTLE CLUBHOUSE</span><h1 id="welcomeTitle">Tiny creature.<br><em>Endless possibilities.</em></h1><p>Raise a little character, make a space your own, and find your next favorite adventure.</p><div class="intro-tags"><span>✦ Care &amp; grow</span><span>✦ Make it yours</span><span>✦ Meet friends</span></div></div>
-  <div class="intro-art"><img src="lumi-clubhouse.png?v=1" width="1536" height="1024" alt="Three little creature friends drawing, gaming, and relaxing in a warmly lit clubhouse."></div>
+  <div class="intro-copy"><span class="eyebrow">WELCOME TO YOUR LITTLE CLUBHOUSE</span><h1 id="welcomeTitle">Tiny friends. <em>Little adventures.</em></h1><p>Raise a little character, make a space your own, and find your next favorite adventure.</p><div class="intro-tags"><span>✦ Care &amp; grow</span><span>✦ Make it yours</span><span>✦ Meet friends</span></div></div>
+  <div class="intro-art"><img src="pocket-meadow.png?v=1" width="2172" height="724" alt="Tiny creature friends playing across a pastel meadow with clouds, a swing, and little flowers."></div>
  </section>
  <section id="panel-tamagotchi" aria-label="Pocket Lumi game"></section>
  <aside class="play-note"><span aria-hidden="true">✦</span><p>Your pet. Your pace. <span>Always playable here, with or without an Arduino.</span></p><span class="note-stamp">A LITTLE MORE PLAY, EVERY DAY</span></aside>
@@ -40,5 +40,6 @@
  <div class="studio-secondary"><button id="createStudio" class="action" type="button">Create a new studio</button><button id="disconnect" class="action ghost" type="button" disabled>Disconnect</button></div>
  <p id="cloudSetupHint" class="studio-feedback" role="status">Your browser remembers its studio and player identity.</p>
  <div class="studio-invitation"><span class="step-label">INVITE YOUR FRIENDS</span><p>Already playing? Share this studio’s invitation so your friends arrive in the right place.</p><button id="copyStudioInvite" class="action" type="button">Copy private invitation</button><div id="studioInviteLinkWrap" hidden><label for="studioInviteLink">Private invitation link</label><input id="studioInviteLink" type="text" readonly><small>Keep this link private. It grants entry to your studio.</small></div></div>
+ <div id="playerConnectionSettings"></div>
 </dialog>
 </body></html>
